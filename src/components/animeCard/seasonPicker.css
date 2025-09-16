@@ -1,0 +1,26 @@
+.seasonPickerContainer {
+	width: 22dvw;
+
+	--colSecondaryTrans: rgb(from var(--colSecondary) r g b / 0.9);
+}
+
+.seasonPicker {
+	height: 3rem;
+	width: 100%;
+	border-radius: 2rem;
+	padding-left: 1.2rem;
+
+	font-size: large;
+	color: white;
+	border: none;
+}
+
+select {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+}
+
+select::-ms-expand {
+	display: none;
+}
