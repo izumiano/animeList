@@ -13,6 +13,13 @@
 	font-size: large;
 	color: white;
 	border: none;
+
+	background-color: var(--colAccent);
+	transition: background-color 0.4s;
+}
+
+.seasonPicker.watched {
+	background-color: var(--colSecondaryTrans);
 }
 
 select {

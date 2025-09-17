@@ -7,9 +7,16 @@
 
 	height: var(--cardHeight);
 
+	background-color: var(--colPrimary);
+	transition: background-color 0.4s;
+
 	--cardHeight: 16.5rem;
 	--cardBorderRadius: max(5px, 3dvw);
 	--colSecondaryTrans: rgb(from var(--colSecondary) r g b / 0.6);
+}
+
+.card.watched {
+	background-color: var(--colSecondaryTrans);
 }
 
 .cardInfo {

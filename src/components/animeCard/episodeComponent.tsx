@@ -1,18 +1,30 @@
 import { useState } from "react";
-import type AnimeEpisode from "../../models/animeEpisode";
+import AnimeEpisode from "../../models/animeEpisode";
+import "./episodeComponent.css";
 
-const EpisodeComponent = ({ episode }: { episode: AnimeEpisode }) => {
+const EpisodeComponent = ({
+  episode,
+  onCompletionChange,
+}: {
+  episode: AnimeEpisode;
+  onCompletionChange: () => void;
+}) => {
   const [watched, setWatchedState] = useState(episode.watched);
-  const color = watched ? "var(--colSecondaryTrans)" : "var(--colAccent)";
+
+  function setWatched(watched: boolean) {
+    if (watched === episode.watched) return;
+
+    episode.watched = watched;
+    setWatchedState(watched);
+
+    onCompletionChange();
+  }
 
   return (
     <li
-      className="episodeContainer"
-      style={{
-        background: `linear-gradient(90deg, ${color} 0%, rgba(0, 0, 0, 0))`,
-      }}
+      className={`episodeContainer ${watched ? "watched" : ""}`}
       onClick={() => {
-        setWatchedState(!watched);
+        setWatched(!watched);
       }}
     >
       <p className="episodeNumber">
