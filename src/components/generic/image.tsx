@@ -1,10 +1,20 @@
 import missingImage from "../../assets/missingImage.png";
 
-interface ImageParams {
+const Image = ({
+  src,
+  className,
+  minWidth,
+  maxWidth,
+  minHeight,
+  maxHeight,
+}: {
   src: string | null;
-}
-
-const Image = ({ src }: ImageParams) => {
+  className?: string;
+  minWidth?: string | number;
+  maxWidth?: string | number;
+  minHeight?: string | number;
+  maxHeight?: string | number;
+}) => {
   if (src === "") {
     src = null;
   }
@@ -12,8 +22,14 @@ const Image = ({ src }: ImageParams) => {
   return (
     <img
       src={src ?? missingImage}
-      className="animeImage"
-      style={{ backgroundImage: `url('${missingImage}') no-repeat` }}
+      className={className}
+      style={{
+        backgroundImage: `url('${missingImage}') no-repeat`,
+        minWidth: minWidth,
+        maxWidth: maxWidth,
+        minHeight: minHeight,
+        maxHeight: maxHeight,
+      }}
     ></img>
   );
 };

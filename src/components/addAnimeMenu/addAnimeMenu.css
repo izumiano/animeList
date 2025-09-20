@@ -1,0 +1,66 @@
+#addAnimeMenu {
+	position: fixed;
+	top: 0;
+	left: -100%;
+	width: 100%;
+	min-height: 25%;
+	z-index: 1;
+	background-color: var(--colNeutral);
+	width: 81%;
+	padding: 1rem;
+
+	transition: left 0.8s;
+}
+
+#addAnimeMenu.open {
+	left: 0;
+}
+
+#thingToClose {
+	visibility: hidden;
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 1;
+
+	opacity: 0;
+
+	background-color: rgb(from var(--colNeutral) r g b / 0.5);
+	width: 100%;
+	height: 100%;
+
+	animation: "" 1s forwards;
+}
+
+@keyframes opacityCloseThing {
+	0% {
+		opacity: 1;
+		visibility: visible;
+	}
+
+	100% {
+		opacity: 0;
+	}
+}
+
+@keyframes opacityOpenThing {
+	0% {
+		opacity: 0;
+	}
+
+	100% {
+		opacity: 1;
+		visibility: visible;
+	}
+
+}
+
+#addAnimeInputs {
+	min-height: 2.5rem;
+}
+
+#addAnimeSearch {
+	flex: 1 1 auto;
+	text-align: center;
+	font-size: 1rem;
+}

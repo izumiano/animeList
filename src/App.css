@@ -7,6 +7,9 @@
 	--colSecondary: rgb(70, 173, 50);
 	--colAccent: rgba(170, 170, 170, 0.4);
 	--colBackground: rgb(30, 10, 20);
+	--colNeutral: rgb(13, 15, 19);
+
+	--toastify-toast-width: 500px;
 
 	background-color: var(--colBackground);
 }
@@ -20,10 +23,41 @@
 	flex-direction: row;
 }
 
+.flexColumn {
+	display: flex;
+	flex-direction: column;
+}
+
 .flexGrow {
 	flex: 1 1 auto;
 }
 
 .transparentButton {
 	background-color: transparent;
+}
+
+.customFileInput {
+	cursor: pointer;
+}
+
+.customFileInput > * {
+	margin: 0.3rem;
+}
+
+.customFileInput > input {
+	display: none;
+}
+
+.customFileInput > img {
+	width: 3rem;
+	opacity: 0.6;
+}
+
+h1 {
+	font-size: 1.8rem;
+}
+
+h2 {
+	font-size: 1.2rem;
+	font-weight: 600;
 }

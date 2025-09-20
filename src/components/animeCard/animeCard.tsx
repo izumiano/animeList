@@ -10,6 +10,7 @@ import ExternalLink from "../../models/externalLink";
 import trashIcon from "../../assets/bin.png";
 import LocalDB from "../../indexedDb/indexedDb";
 
+const justAddedAnimName = "justAdded";
 const toRemoveAnimName = "toRemoveAnim";
 
 const AnimeCard = ({
@@ -21,6 +22,7 @@ const AnimeCard = ({
 }) => {
   const [index, setIndex] = useState(0);
   const [watched, setWatchedState] = useState(anime.watched);
+  const [justAdded, setJustAddedState] = useState(anime.justAdded);
   const [toBeRemoved, setToBeRemovedState] = useState(false);
 
   const selectedSeason = anime.seasons[index];
@@ -40,24 +42,34 @@ const AnimeCard = ({
 
   const isWatchedClass = watched ? "watched" : "";
   const isToBeRemovedClass = toBeRemoved ? "toRemove" : "";
+  const isJustAddedClass = justAdded ? "justAdded" : "";
 
   return (
     <div>
       <div
-        className={`card ${isWatchedClass} ${isToBeRemovedClass}`}
+        className={`card ${isWatchedClass} ${isJustAddedClass} ${isToBeRemovedClass}`}
         onAnimationEnd={(event) => {
-          if (event.nativeEvent.animationName !== toRemoveAnimName) return;
+          switch (event.nativeEvent.animationName) {
+            case justAddedAnimName:
+              setJustAddedState(false);
+              anime.justAdded = false;
+              break;
+            case toRemoveAnimName:
+              removeAnime(anime);
+              break;
 
-          removeAnime(anime);
+            default:
+              break;
+          }
         }}
       >
         <div className="imageContainer">
-          <Image src={anime.imageLink} />
+          <Image src={anime.imageLink} className="animeImage" />
         </div>
 
         <div className="cardInfo">
           <div className={`flexRow`}>
-            <span className="title flexGrow">
+            <h1 className="title flexGrow">
               <b>{anime.title}</b>
               <span style={{ color: "rgb(160, 160, 160)" }}> | </span>
               {seasonExternalLink ? (
@@ -74,7 +86,7 @@ const AnimeCard = ({
                   ></img>
                 </a>
               ) : null}
-            </span>
+            </h1>
             <button
               className="transparentButton"
               onClick={() => {

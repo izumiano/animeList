@@ -1,0 +1,30 @@
+.searchResultsContainer {
+	display: grid;
+	margin: 1rem;
+	overflow-y: scroll;
+	grid-template-columns: repeat(auto-fit, minmax(var(--minCardWidth), 1fr));
+	gap: 10px;
+
+	--minCardWidth: 300px;
+}
+
+.searchResultCard {
+	min-width: var(--minCardWidth);
+	transition: background-color 0.8s;
+
+	margin: 0;
+	padding: 0;
+
+	border-radius: clamp(20px, 3dvw, 30px);
+
+	color: white;
+}
+
+.searchResultCard > img {
+	max-width: 13dvw;
+	max-height: 40dvh;
+}
+
+.searchResultCard.selected {
+	background-color: rgb(from var(--colSecondary) r g b / 0.7);
+}

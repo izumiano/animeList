@@ -7,6 +7,7 @@
 .episodeContainer {
 	display: flex;
 	flex-direction: row;
+	cursor: pointer;
 
 	--backgroundCol: var(--colAccent);
 	background: linear-gradient(to right, var(--backgroundCol), rgba(0, 0, 0, 0));

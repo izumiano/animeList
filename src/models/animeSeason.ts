@@ -2,15 +2,17 @@ import AppData from "../appData";
 import AnimeEpisode from "./animeEpisode";
 import ExternalLink from "./externalLink";
 
+type MediaType = "tv" | "movie" | "ona" | "ova" | "tv_special" | "special";
+
 export default class AnimeSeason {
   title: string;
   episodes: AnimeEpisode[];
   watched: boolean;
   seasonNumber: number;
-  // mediaType : "ona",
+  mediaType: MediaType;
   externalLink: ExternalLink | null;
-  // "dateStarted" : 753062400,
-  // "dateFinished" : 773452800,
+  dateStarted: Date | null;
+  dateFinished: Date | null;
 
   constructor(
     animeDbId: string,
@@ -18,13 +20,20 @@ export default class AnimeSeason {
     episodes: AnimeEpisode[],
     watched: boolean,
     seasonNumber: number,
-    externalLink: ExternalLink | null
+    mediaType: MediaType,
+    externalLink: ExternalLink | null,
+    dateStarted: Date | number | null,
+    dateFinished: Date | number | null
   ) {
     this.title = title;
     this.episodes = episodes;
     this.watched = watched;
     this.seasonNumber = seasonNumber;
+    this.mediaType = mediaType;
     this.externalLink = externalLink;
+
+    this.dateStarted = !dateStarted ? null : new Date(dateStarted);
+    this.dateFinished = !dateFinished ? null : new Date(dateFinished);
 
     return new Proxy(this, {
       set: function (

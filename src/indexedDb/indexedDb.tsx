@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 import Anime from "../models/anime";
 import { sleepFor } from "../utils";
 
@@ -113,10 +114,16 @@ export default class LocalDB {
 
   public saveAnime(anime: Anime, store: IDBObjectStore) {
     console.debug("Saving to local database: ", anime);
-    return store.put(anime.toIndexedDBObj(), anime.getAnimeDbId());
+    const request = store.put(anime.toIndexedDBObj(), anime.getAnimeDbId());
+
+    request.addEventListener("error", () => {
+      toast.error(`Failed saving ${anime.title}`);
+    });
+
+    return request;
   }
 
-  public async deleteAnime(anime: Anime, callbacks: TransactionResponse) {
+  public async deleteAnime(anime: Anime, callbacks?: TransactionResponse) {
     const key = anime.getAnimeDbId();
     this.doTransaction(
       (store) => {
@@ -134,7 +141,7 @@ export default class LocalDB {
               return store.delete(key);
             },
             {
-              onSuccess: (result) => callbacks.onSuccess?.call(this, result),
+              onSuccess: (result) => callbacks?.onSuccess?.call(this, result),
               onError: (error) => onError(error),
             }
           );
@@ -144,8 +151,13 @@ export default class LocalDB {
     );
 
     function onError(this: any, error: DOMException | Error | null) {
+      toast.error(
+        <span>
+          Failed deleting <b>{anime.title}</b>
+        </span>
+      );
       console.error(error);
-      callbacks.onError?.call(this, error);
+      callbacks?.onError?.call(this, error);
     }
   }
 
@@ -159,7 +171,7 @@ export default class LocalDB {
       index.openCursor(null, "next").onsuccess = (event) => {
         const cursor = (event.target as IDBRequest).result;
         if (cursor) {
-          const anime = Anime.Load(cursor.value);
+          const anime = Anime.Load(cursor.value, false);
           animes.set(anime.getAnimeDbId(), anime);
           cursor.continue();
         } else {

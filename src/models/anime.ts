@@ -11,10 +11,10 @@ class Anime {
   externalLink: ExternalLink | null;
   order: number;
 
-  // var dateStarted: Date?
-  // var dateStartedSet = false
-  // var dateFinished: Date?
-  // var dateFinishedSet = false
+  justAdded: boolean;
+
+  dateStarted: Date | null;
+  dateFinished: Date | null;
 
   constructor(
     title: string,
@@ -22,7 +22,10 @@ class Anime {
     watched: boolean,
     imageLink: string | null,
     externalLink: ExternalLink | null,
-    order: number
+    order: number,
+    dateStarted: Date | number | null,
+    dateFinished: Date | number | null,
+    justAdded: boolean = true
   ) {
     this.title = title;
     this.seasons = seasons;
@@ -30,6 +33,11 @@ class Anime {
     this.imageLink = imageLink;
     this.externalLink = externalLink;
     this.order = order;
+
+    this.dateStarted = !dateStarted ? null : new Date(dateStarted);
+    this.dateFinished = !dateFinished ? null : new Date(dateFinished);
+
+    this.justAdded = justAdded;
 
     return new Proxy(this, {
       set: function (target: Anime, property: keyof Anime, value: any) {
@@ -41,7 +49,10 @@ class Anime {
             value
           );
           Reflect.set(target, property, value);
-          target.saveToDb();
+
+          if (property !== "justAdded") {
+            target.saveToDb();
+          }
         }
         return true;
       },
@@ -62,7 +73,7 @@ class Anime {
     return `${externalLinkType ?? "NONE"}${externalLinkId ?? title}`;
   }
 
-  public static Load(animeData: any) {
+  public static Load(animeData: any, justAdded: boolean) {
     const seasons: AnimeSeason[] = [];
     const animeDbId = this.getAnimeDbId(
       animeData.externalLink ? animeData.externalLink.type : null,
@@ -98,13 +109,16 @@ class Anime {
           episodes,
           season.watched,
           season.seasonNumber,
+          season.mediaType,
           season.externalLink
             ? new ExternalLink(
                 animeDbId,
                 season.externalLink.id,
                 season.externalLink.type
               )
-            : null
+            : null,
+          season.dateStarted,
+          season.dateFinished
         )
       );
     }
@@ -128,7 +142,10 @@ class Anime {
             animeData.externalLink.type
           )
         : null,
-      animeData.order
+      animeData.order,
+      animeData.dateStarted,
+      animeData.dateFinished,
+      justAdded
     );
   }
 
@@ -143,6 +160,10 @@ class Anime {
     const objCopy: { [key: string]: any } = {};
     for (const key in this) {
       if (Object.prototype.hasOwnProperty.call(this, key)) {
+        if (key === "justAdded") {
+          continue;
+        }
+
         if (key === "seasons") {
           const seasons = [];
           for (const season of this[key] as AnimeSeason[]) {
