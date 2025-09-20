@@ -1,4 +1,4 @@
-.seasonList {
+.episodeList {
 	padding: 0;
 
 	overflow-y: scroll;
@@ -7,11 +7,11 @@
 	--colSecondaryTrans: rgb(from var(--colSecondary) r g b / 0.6);
 }
 
-.seasonList p {
+.episodeList p {
 	margin: 0;
 }
 
-.seasonList > * {
+.episodeList > * {
 	margin: 0;
 	margin-top: var(--marginTopBottom);
 	margin-bottom: var(--marginTopBottom);

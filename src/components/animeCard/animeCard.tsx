@@ -1,7 +1,7 @@
 import "./animeCard.css";
 import Image from "../generic/image";
 import Anime from "../../models/anime";
-import SeasonList from "./seasonList";
+import EpisodeList from "./episodeList";
 import SeasonPicker from "./seasonPicker";
 import { useState } from "react";
 import malLogo from "../../assets/malLogo.png";
@@ -63,7 +63,7 @@ const AnimeCard = ({ anime }: { anime: Anime }) => {
             setSelectedSeasonWatchedState(newSelectedSeason.watched);
           }}
         />
-        <SeasonList
+        <EpisodeList
           anime={anime}
           season={selectedSeason}
           onCompletionChange={updateWatchedState}

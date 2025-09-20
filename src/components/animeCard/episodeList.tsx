@@ -1,9 +1,9 @@
 import Anime from "../../models/anime";
 import AnimeSeason from "../../models/animeSeason";
 import EpisodeComponent from "./episodeComponent";
-import "./seasonList.css";
+import "./episodeList.css";
 
-const SeasonList = ({
+const EpisodeList = ({
   anime,
   season,
   onCompletionChange,
@@ -12,7 +12,7 @@ const SeasonList = ({
   season: AnimeSeason;
   onCompletionChange: () => void;
 }) => (
-  <ul className="seasonList">
+  <ul className="episodeList">
     {season.episodes.map((episode) => (
       <EpisodeComponent
         episode={episode}
@@ -25,4 +25,4 @@ const SeasonList = ({
   </ul>
 );
 
-export default SeasonList;
+export default EpisodeList;
