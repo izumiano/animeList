@@ -53,7 +53,7 @@ export default class AnimeSeason {
     for (const episode of season.episodes) {
       if (!episode.watched) {
         season.watched = false;
-        console.debug("not watched episode", episode, "season", season.title);
+        console.debug("not watched episode", episode, season.title);
         return false;
       }
     }

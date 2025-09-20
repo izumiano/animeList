@@ -2,12 +2,17 @@ import "./App.css";
 // import testData from "../testData/animeListData.json";
 import AnimeCardList from "./components/animeCard/animeCardList";
 import Anime from "./models/anime";
-import LocalDB from "./localDb/localDb";
+import LocalDB from "./indexedDb/indexedDb";
 import { useEffect, useState } from "react";
 import AppData from "./appData";
 
 function App() {
   const [animes, setAnimesState] = useState<Map<string, Anime>>(new Map());
+
+  function removeAnime(anime: Anime) {
+    animes.delete(anime.getAnimeDbId());
+    setAnimesState(new Map(animes));
+  }
 
   AppData.animes = animes;
 
@@ -20,7 +25,12 @@ function App() {
     })();
   }, []);
 
-  return <AnimeCardList animes={Array.from(animes.values())} />;
+  return (
+    <AnimeCardList
+      animes={Array.from(animes.values())}
+      removeAnime={removeAnime}
+    />
+  );
 }
 
 async function loadAnimes(
@@ -33,6 +43,8 @@ async function loadAnimes(
   //   testData.forEach((anime) => {
   //     db.saveAnime(Anime.Load(anime), store);
   //   });
+
+  //   return null;
   // });
 
   setAnimesState(await db.loadAllSortedBy("order"));

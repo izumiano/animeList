@@ -14,3 +14,16 @@
 #root {
 	width: 100%;
 }
+
+.flexRow {
+	display: flex;
+	flex-direction: row;
+}
+
+.flexGrow {
+	flex: 1 1 auto;
+}
+
+.transparentButton {
+	background-color: transparent;
+}

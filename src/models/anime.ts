@@ -1,4 +1,4 @@
-import LocalDB from "../localDb/localDb";
+import LocalDB from "../indexedDb/indexedDb";
 import AnimeEpisode from "./animeEpisode";
 import AnimeSeason from "./animeSeason";
 import ExternalLink, { type ExternalLinkType } from "./externalLink";
@@ -135,7 +135,7 @@ class Anime {
   public saveToDb() {
     const db = LocalDB.Instance;
     db?.doTransaction((store) => {
-      db.saveAnime(this, store);
+      return db.saveAnime(this, store);
     });
   }
 

@@ -7,10 +7,21 @@ import { useState } from "react";
 import malLogo from "../../assets/malLogo.png";
 import tmdbLogo from "../../assets/tmdbLogo.png";
 import ExternalLink from "../../models/externalLink";
+import trashIcon from "../../assets/bin.png";
+import LocalDB from "../../indexedDb/indexedDb";
 
-const AnimeCard = ({ anime }: { anime: Anime }) => {
+const toRemoveAnimName = "toRemoveAnim";
+
+const AnimeCard = ({
+  anime,
+  removeAnime,
+}: {
+  anime: Anime;
+  removeAnime: (anime: Anime) => void;
+}) => {
   const [index, setIndex] = useState(0);
   const [watched, setWatchedState] = useState(anime.watched);
+  const [toBeRemoved, setToBeRemovedState] = useState(false);
 
   const selectedSeason = anime.seasons[index];
   const seasonExternalLink = selectedSeason.externalLink;
@@ -27,47 +38,74 @@ const AnimeCard = ({ anime }: { anime: Anime }) => {
     setWatchedState(watched);
   }
 
-  return (
-    <div className={`card ${watched ? "watched" : ""}`}>
-      <div className="imageContainer">
-        <Image src={anime.imageLink} />
-      </div>
+  const isWatchedClass = watched ? "watched" : "";
+  const isToBeRemovedClass = toBeRemoved ? "toRemove" : "";
 
-      <div className="cardInfo">
-        <span className="title">
-          <b>{anime.title}</b>
-          <span style={{ color: "rgb(160, 160, 160)" }}> | </span>
-          {seasonExternalLink ? (
-            <a
-              href={
-                getUrl(seasonExternalLink, anime.externalLink) ??
-                "javascript:undefined"
-              }
-              target="_blank"
-              rel="noopener noreferrer"
+  return (
+    <div>
+      <div
+        className={`card ${isWatchedClass} ${isToBeRemovedClass}`}
+        onAnimationEnd={(event) => {
+          if (event.nativeEvent.animationName !== toRemoveAnimName) return;
+
+          removeAnime(anime);
+        }}
+      >
+        <div className="imageContainer">
+          <Image src={anime.imageLink} />
+        </div>
+
+        <div className="cardInfo">
+          <div className={`flexRow`}>
+            <span className="title flexGrow">
+              <b>{anime.title}</b>
+              <span style={{ color: "rgb(160, 160, 160)" }}> | </span>
+              {seasonExternalLink ? (
+                <a
+                  href={
+                    getUrl(seasonExternalLink, anime.externalLink) ??
+                    "javascript:undefined"
+                  }
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <img
+                    src={seasonExternalLink.type == "MAL" ? malLogo : tmdbLogo}
+                  ></img>
+                </a>
+              ) : null}
+            </span>
+            <button
+              className="transparentButton"
+              onClick={() => {
+                console.log("delete");
+                LocalDB.Instance?.deleteAnime(anime, {
+                  onSuccess: (_) => {
+                    setToBeRemovedState(true);
+                  },
+                });
+              }}
             >
-              <img
-                src={seasonExternalLink.type == "MAL" ? malLogo : tmdbLogo}
-              ></img>
-            </a>
-          ) : null}
-        </span>
-        <SeasonPicker
-          animeTitle={anime.title}
-          seasons={anime.seasons}
-          selectedSeasonWatched={selectedSeasonWatched}
-          onSelect={(seasonNumber) => {
-            setIndex(seasonNumber - 1);
-            const newSelectedSeason = anime.seasons[seasonNumber - 1];
-            newSelectedSeason.checkWatchedAll(newSelectedSeason);
-            setSelectedSeasonWatchedState(newSelectedSeason.watched);
-          }}
-        />
-        <EpisodeList
-          anime={anime}
-          season={selectedSeason}
-          onCompletionChange={updateWatchedState}
-        />
+              <img src={trashIcon} width="25"></img>
+            </button>
+          </div>
+          <SeasonPicker
+            animeTitle={anime.title}
+            seasons={anime.seasons}
+            selectedSeasonWatched={selectedSeasonWatched}
+            onSelect={(seasonNumber) => {
+              setIndex(seasonNumber - 1);
+              const newSelectedSeason = anime.seasons[seasonNumber - 1];
+              newSelectedSeason.checkWatchedAll(newSelectedSeason);
+              setSelectedSeasonWatchedState(newSelectedSeason.watched);
+            }}
+          />
+          <EpisodeList
+            anime={anime}
+            season={selectedSeason}
+            onCompletionChange={updateWatchedState}
+          />
+        </div>
       </div>
     </div>
   );
