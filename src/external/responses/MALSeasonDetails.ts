@@ -1,5 +1,6 @@
+import type { MediaType } from "../../models/anime";
 import type { IResponseData } from "./IResponse";
-import type { SeasonImages } from "./SearchResponse";
+import type { SeasonImages } from "./SeasonDetails";
 
 export class MALSeasonDetails implements IResponseData {
   statusCode: number | undefined;
@@ -13,7 +14,7 @@ export class MALSeasonDetails implements IResponseData {
   episodes?: number;
   status?: string;
   relations?: SeasonRelation[];
-  type?: string;
+  type?: MediaType;
   aired?: { from: Date };
 }
 

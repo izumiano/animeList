@@ -6,17 +6,16 @@ export default class AnimeEpisode {
   watched: boolean;
 
   constructor(params: {
-    animeDbId: string;
+    animeDbId?: string;
     title: string;
     episodeNumber: number;
     watched: boolean;
-    autoSave?: boolean;
   }) {
     this.title = params.title;
     this.episodeNumber = params.episodeNumber;
     this.watched = params.watched;
 
-    if (params.autoSave ?? false) {
+    if (params.animeDbId) {
       return new Proxy(this, {
         set: function (
           target: AnimeEpisode,
@@ -31,7 +30,7 @@ export default class AnimeEpisode {
               value
             );
             Reflect.set(target, property, value);
-            AppData.animes.get(params.animeDbId)?.saveToDb();
+            AppData.animes.get(params.animeDbId!)?.saveToDb();
           }
           return true;
         },

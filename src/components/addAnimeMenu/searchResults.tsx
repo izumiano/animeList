@@ -1,4 +1,4 @@
-import type { SeasonDetails } from "../../external/responses/SearchResponse";
+import type { SeasonDetails } from "../../external/responses/SeasonDetails";
 import Image from "../generic/image";
 import LoadingSpinner from "../generic/loadingSpinner";
 import "./searchResults.css";

@@ -1,7 +1,7 @@
 import { MediaTypeValues, type MediaType } from "../../models/anime";
 import type { ExternalLinkType } from "../../models/externalLink";
 import ExternalLink from "../../models/externalLink";
-import type { MALSeasonDetails } from "./MALSeasonDetails";
+import { MALSeasonDetails } from "./MALSeasonDetails";
 
 export class SeasonDetails {
   externalLink?: ExternalLink;
@@ -22,7 +22,6 @@ export class SeasonDetails {
     approved: boolean | undefined;
     images: SeasonImages | undefined;
     popularity: number | undefined;
-    title_english: string | undefined;
     title: string | undefined;
     episodes: number | undefined;
     status: string | undefined;
@@ -34,10 +33,10 @@ export class SeasonDetails {
     this.approved = params.approved;
     this.images = params.images;
     this.popularity = params.popularity;
-    this.title = this.getTitle(params.title, params.title_english);
+    this.title = params.title;
     this.episodeCount = params.episodes;
     this.status = params.status;
-    this.mediaType = this.getTypeName(params.media_type);
+    this.mediaType = SeasonDetails.getTypeName(params.media_type);
     this.airedDate = params.started_date;
 
     if (params.id && params.externalLinkType) {
@@ -49,7 +48,9 @@ export class SeasonDetails {
     }
   }
 
-  private getTypeName(type: string | undefined): MediaType | undefined {
+  public static getTypeName(
+    type: string | undefined | MediaType
+  ): MediaType | undefined {
     if (!type) {
       return undefined;
     }
@@ -64,10 +65,13 @@ export class SeasonDetails {
     return title;
   }
 
-  private getTitle(
-    title: string | undefined,
-    title_english: string | undefined
-  ) {
+  public static getTitle({
+    title_english,
+    title,
+  }: {
+    title_english: string | undefined;
+    title: string | undefined;
+  }) {
     if (title_english) {
       return title_english;
     }
@@ -83,8 +87,10 @@ export class SeasonDetails {
       approved: malSeasonDetails.approved,
       images: malSeasonDetails.images,
       popularity: malSeasonDetails.popularity,
-      title_english: malSeasonDetails.title_english,
-      title: malSeasonDetails.title,
+      title: SeasonDetails.getTitle({
+        title_english: malSeasonDetails.title_english,
+        title: malSeasonDetails.title,
+      }),
       episodes: malSeasonDetails.episodes,
       status: malSeasonDetails.status,
       media_type: malSeasonDetails.type,

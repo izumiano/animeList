@@ -69,6 +69,13 @@ export default class LocalDB {
   ) {
     if (!this.Instance) {
       console.error("LocalDB instance undefined");
+      new Promise(async (resolve) => {
+        const db = await this.Create();
+        this.doTransaction((store) => {
+          return transaction(store, db);
+        }, params);
+        resolve(null);
+      });
       return;
     }
 
@@ -116,7 +123,8 @@ export default class LocalDB {
     console.debug("Saving to local database: ", anime);
     const request = store.put(anime.toIndexedDBObj(), anime.getAnimeDbId());
 
-    request.addEventListener("error", () => {
+    request.addEventListener("error", (event) => {
+      console.error(event);
       toast.error(`Failed saving ${anime.title}`);
     });
 

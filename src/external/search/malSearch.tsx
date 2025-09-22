@@ -1,4 +1,5 @@
 import WebUtil from "../../utils/webUtil";
+import JikanErrorHandler from "../errorHandlers/jikanErrorHandler";
 import BadResponse from "../responses/badResponse";
 import MALSearchResponse from "../responses/MALSearchResponse";
 import { MALSeasonDetails } from "../responses/MALSeasonDetails";
@@ -8,7 +9,7 @@ export default class MALSearch {
   public static async GetResults(
     query: string,
     limit: number = 9
-  ): Promise<MALSeasonDetails[] | BadResponse<any>> {
+  ): Promise<MALSeasonDetails[] | BadResponse> {
     const searchResultsData = await this.GetResultsAsyncRetry(query, limit);
 
     if (searchResultsData instanceof BadResponse) {
@@ -22,7 +23,7 @@ export default class MALSearch {
 
   private static async GetResultsAsync(
     data: MALSearchResponse | MALSeasonResponse
-  ): Promise<MALSeasonDetails[] | BadResponse<any>> {
+  ): Promise<MALSeasonDetails[] | BadResponse> {
     if (data.statusCode != 200) {
       return new BadResponse(
         (
@@ -89,23 +90,19 @@ export default class MALSearch {
     }
     const id = parseInt(_query);
     if (!Number.isNaN(id)) {
-      return await WebUtil.RatelimitRetryFunc(async () => {
+      return await WebUtil.ratelimitRetryFunc(async () => {
         return await this.GetAnimeDataRetry(id);
       });
     }
 
-    console.debug("normal search");
-    return await WebUtil.RatelimitRetryFunc(async () => {
+    return await WebUtil.ratelimitRetryFunc(async () => {
       return await this.MyAnimeListSearch(query, limit);
     });
   }
 
-  private static async MyAnimeListSearch(
-    query: string,
-    limit: number
-  ): Promise<MALSearchResponse> {
+  private static async MyAnimeListSearch(query: string, limit: number) {
     query = encodeURIComponent(query);
-    const animeDataResponse: MALSearchResponse | BadResponse<any> =
+    const animeDataResponse: MALSearchResponse | BadResponse =
       await WebUtil.get(
         `https://api.jikan.moe/v4/anime?q=${query}&limit=${limit}&sfw`
       );
@@ -121,24 +118,17 @@ export default class MALSearch {
     return animeDataResponse;
   }
 
-  public static async GetAnimeDataRetry(
-    id: number
-  ): Promise<MALSeasonResponse> {
-    let animeDataResponse: MALSeasonResponse | undefined;
+  public static async GetAnimeDataRetry(id: number) {
     try {
-      animeDataResponse = (await WebUtil.get(
-        `https://api.jikan.moe/v4/anime/${id}/full`
-      )) as MALSeasonResponse;
+      return (await WebUtil.get(`https://api.jikan.moe/v4/anime/${id}/full`, {
+        errorHandler: new JikanErrorHandler("Failed getting anime data"),
+      })) as MALSeasonResponse | BadResponse;
     } catch (ex) {
       if (ex instanceof BadResponse) {
-        return new MALSeasonResponse({ statusCode: ex.statusCode });
+        return ex;
       }
+      const err = ex as Error;
+      return new BadResponse(err.message, { data: err });
     }
-
-    if (!animeDataResponse?.statusCode) {
-      throw new Error("season data did not have a statusCode");
-    }
-
-    return animeDataResponse;
   }
 }

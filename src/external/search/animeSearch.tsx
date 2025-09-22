@@ -1,5 +1,5 @@
 import type { ExternalLinkType } from "../../models/externalLink";
-import { SeasonDetails } from "../responses/SearchResponse";
+import { SeasonDetails } from "../responses/SeasonDetails";
 import MALSearch from "./malSearch";
 import BadResponse from "../responses/badResponse";
 import { showError, sleepFor } from "../../utils/utils";
@@ -29,11 +29,15 @@ export default class AnimeSearch {
 
     const malSearch = MALSearch.GetResults(query, limit);
 
-    malSearch.catch(showError);
+    malSearch.catch((results) => {
+      showError(results);
+      callback({ seasons: [], externalType: "MAL" });
+    });
 
     malSearch.then((results) => {
       if (results instanceof BadResponse) {
         showError(results);
+        callback({ seasons: [], externalType: "MAL" });
         return;
       }
 

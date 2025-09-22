@@ -7,7 +7,8 @@ import { toast } from "react-toastify";
 import AppData from "../../appData";
 import fileIcon from "../../assets/file.png";
 import AnimeSearch from "../../external/search/animeSearch";
-import type { SeasonDetails } from "../../external/responses/SearchResponse";
+import type { SeasonDetails } from "../../external/responses/SeasonDetails";
+import AnimeCardFactory from "../../external/factories/animeCardFactory";
 
 const AddAnimeMenu = ({
   addAnime,
@@ -132,27 +133,30 @@ const AddAnimeMenu = ({
               return;
             }
 
-            const newAnime = Anime.Load({
-              animeData: selectedAnime,
-              justAdded: true,
-            });
-            LocalDB.doTransaction(
-              (store, db) => {
-                return db.saveAnime(newAnime, store);
+            AnimeCardFactory.create({
+              animeExternalLink: selectedAnime.externalLink,
+              order: AppData.animes.size + 1,
+              getSequels: true,
+              callback: (anime) => {
+                LocalDB.doTransaction(
+                  (store, db) => {
+                    return db.saveAnime(anime, store);
+                  },
+                  {
+                    onSuccess: () => {
+                      const addAnimeSearchElement = document.getElementById(
+                        "addAnimeSearch"
+                      ) as HTMLInputElement;
+                      addAnimeSearchElement.value = "";
+                      setSearchResultsState([]);
+                      setSelectedAnimeIndexState(null);
+                      setIsOpenState(false);
+                      addAnime(anime);
+                    },
+                  }
+                );
               },
-              {
-                onSuccess: () => {
-                  const addAnimeSearchElement = document.getElementById(
-                    "addAnimeSearch"
-                  ) as HTMLInputElement;
-                  addAnimeSearchElement.value = "";
-                  setSearchResultsState([]);
-                  setSelectedAnimeIndexState(null);
-                  setIsOpenState(false);
-                  addAnime(newAnime);
-                },
-              }
-            );
+            });
           }}
         >
           Add

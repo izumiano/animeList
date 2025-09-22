@@ -31,7 +31,7 @@ export default class Anime {
     title: string;
     seasons: AnimeSeason[];
     watched: boolean;
-    imageLink: string | null;
+    imageLink: string | null | undefined;
     externalLink: ExternalLink | null;
     order: number;
     dateStarted: Date | number | null;
@@ -41,7 +41,7 @@ export default class Anime {
   }) {
     this.title = params.title;
     this.watched = params.watched;
-    this.imageLink = params.imageLink;
+    this.imageLink = params.imageLink ?? null;
     this.externalLink = params.externalLink;
     this.order = params.order;
 
@@ -57,7 +57,7 @@ export default class Anime {
     this.seasons = params.seasons.map((season) => {
       return new AnimeSeason({
         ...season,
-        ...{ animeDbId: this.getAnimeDbId(), autoSave: params.autoSave },
+        ...{ animeDbId: params.autoSave ? this.getAnimeDbId() : undefined },
       });
     });
 
@@ -99,19 +99,23 @@ export default class Anime {
     return `${externalLinkType ?? "NONE"}${externalLinkId ?? title}`;
   }
 
-  public static Load(params: {
+  public static Load({
+    animeData,
+    justAdded,
+    autoSave,
+  }: {
     animeData: any;
     justAdded: boolean;
     autoSave?: boolean;
   }) {
-    const animeData = params.animeData;
-    const autoSave = params.autoSave;
     const seasons: AnimeSeason[] = [];
-    const animeDbId = this.getAnimeDbId(
-      animeData.externalLink ? animeData.externalLink.type : null,
-      animeData.externalLink ? animeData.externalLink.id : null,
-      animeData.title
-    );
+    const animeDbId = autoSave
+      ? this.getAnimeDbId(
+          animeData.externalLink ? animeData.externalLink.type : null,
+          animeData.externalLink ? animeData.externalLink.id : null,
+          animeData.title
+        )
+      : undefined;
 
     for (const season of animeData.seasons) {
       const episodes: AnimeEpisode[] = [];
@@ -123,7 +127,6 @@ export default class Anime {
             title: episode.title,
             episodeNumber: episode.episodeNumber,
             watched: episode.watched,
-            autoSave: autoSave,
           })
         );
       }
@@ -152,7 +155,6 @@ export default class Anime {
             : null,
           dateStarted: season.dateStarted,
           dateFinished: season.dateFinished,
-          autoSave: autoSave,
         })
       );
     }
@@ -179,8 +181,8 @@ export default class Anime {
       order: animeData.order,
       dateStarted: animeData.dateStarted,
       dateFinished: animeData.dateFinished,
-      justAdded: params.justAdded,
-      autoSave: true,
+      justAdded: justAdded,
+      autoSave: autoSave,
     });
   }
 

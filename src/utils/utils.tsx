@@ -1,5 +1,6 @@
 import { toast } from "react-toastify";
 import BadResponse from "../external/responses/badResponse";
+import "../App.css";
 
 export async function sleepFor(
   milliseconds: number,
@@ -25,15 +26,24 @@ export function remToPx(remValue: number) {
 }
 
 export function showError(ex: unknown) {
-  if (ex instanceof BadResponse) {
-    toast.error(ex.displayMessage);
+  let message: React.ReactNode;
+
+  if (typeof ex === "string") {
+    message = ex;
+  } else if (ex instanceof BadResponse) {
+    message = ex.displayMessage;
   } else if (ex instanceof Error) {
-    toast.error(ex.message);
+    message = ex.message;
   } else {
-    toast.error(
+    (message = (
       <span>
         Unknown Error <b>{ex as any}</b>
       </span>
-    );
+    )),
+      { className: "leftAlignedToastBody" };
   }
+
+  toast.error(message, {
+    className: "leftAlignedToastBody",
+  });
 }

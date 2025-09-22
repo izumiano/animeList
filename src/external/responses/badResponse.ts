@@ -1,22 +1,28 @@
-import { IResponse, type IResponseDataType } from "./IResponse";
+import { IResponse, type IResponseData } from "./IResponse";
 
-export default class BadResponse<T extends IResponseDataType>
+export default class BadResponse
   extends Error
-  implements IResponse<T>
+  implements IResponse<BadResponseData>
 {
-  displayMessage: string | React.ReactNode;
+  displayMessage: React.ReactNode;
   statusCode: number | undefined;
-  data: T;
+  data: BadResponseData | null;
 
   constructor(
-    message: string | React.ReactNode,
-    params?: { data?: any; statusCode?: number }
+    message: React.ReactNode,
+    params?: { data?: unknown; statusCode?: number }
   ) {
     super(message?.toString());
 
     this.displayMessage = message;
 
     this.statusCode = params?.statusCode;
-    this.data = params?.data;
+    this.data = params
+      ? { data: params.data, statusCode: params.statusCode }
+      : null;
   }
+}
+
+export interface BadResponseData extends IResponseData {
+  data: unknown;
 }

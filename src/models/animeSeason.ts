@@ -14,8 +14,8 @@ export default class AnimeSeason {
   dateFinished: Date | null;
 
   constructor(params: {
-    animeDbId: string;
-    title: string;
+    animeDbId?: string;
+    title?: string;
     episodes: AnimeEpisode[];
     watched: boolean;
     seasonNumber: number;
@@ -23,13 +23,12 @@ export default class AnimeSeason {
     externalLink: ExternalLink | null;
     dateStarted: Date | number | null;
     dateFinished: Date | number | null;
-    autoSave?: boolean;
   }) {
-    this.title = params.title;
+    this.title = params.title ?? `Season ${params.seasonNumber}`;
     this.episodes = params.episodes.map((episode) => {
       return new AnimeEpisode({
         ...episode,
-        ...{ animeDbId: params.animeDbId, autoSave: params.autoSave },
+        ...{ animeDbId: params.animeDbId },
       });
     });
     this.watched = params.watched;
@@ -44,7 +43,7 @@ export default class AnimeSeason {
       ? null
       : new Date(params.dateFinished);
 
-    if (params.autoSave ?? false) {
+    if (params.animeDbId) {
       return new Proxy(this, {
         set: function (
           target: AnimeSeason,
@@ -59,7 +58,7 @@ export default class AnimeSeason {
               value
             );
             Reflect.set(target, property, value);
-            AppData.animes.get(params.animeDbId)?.saveToDb();
+            AppData.animes.get(params.animeDbId!)?.saveToDb();
           }
           return true;
         },

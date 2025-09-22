@@ -7,15 +7,14 @@ export default class ExternalLink {
   type: ExternalLinkType;
 
   constructor(params: {
-    animeDbId: string;
+    animeDbId?: string;
     id: number;
     type: ExternalLinkType;
-    autoSave?: boolean;
   }) {
     this.id = params.id;
     this.type = params.type;
 
-    if (params.autoSave ?? false) {
+    if (params.animeDbId) {
       return new Proxy(this, {
         set: function (
           target: ExternalLink,
@@ -30,7 +29,7 @@ export default class ExternalLink {
               value
             );
             Reflect.set(target, property, value);
-            AppData.animes.get(params.animeDbId)?.saveToDb();
+            AppData.animes.get(params.animeDbId!)?.saveToDb();
           }
           return true;
         },
