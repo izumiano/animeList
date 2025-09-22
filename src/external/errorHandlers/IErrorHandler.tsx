@@ -1,11 +1,11 @@
 import React from "react";
 
 export default class IErrorHandler<TError> {
-  public isSuccess(data: any, acceptStatusCodes: number[]) {
+  public isSuccess(_data: any, _acceptStatusCodes: number[]) {
     return true;
   }
 
-  public getFailureMessage(url: string, data: TError): React.ReactNode {
+  public getFailureMessage(_url: string, _data: TError): React.ReactNode {
     return null;
   }
 }

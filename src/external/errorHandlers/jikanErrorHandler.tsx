@@ -14,7 +14,7 @@ export default class JikanErrorHandler extends IErrorHandler<JikanErrorResponse>
     return acceptStatusCodes.includes(parseInt(data.status));
   }
 
-  public getFailureMessage(url: string, data: JikanErrorResponse) {
+  public getFailureMessage(_url: string, data: JikanErrorResponse) {
     return (
       <span>
         {this.message}
