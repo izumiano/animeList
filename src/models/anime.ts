@@ -3,7 +3,18 @@ import AnimeEpisode from "./animeEpisode";
 import AnimeSeason from "./animeSeason";
 import ExternalLink, { type ExternalLinkType } from "./externalLink";
 
-class Anime {
+export const MediaTypeValues = [
+  "tv",
+  "movie",
+  "ona",
+  "ova",
+  "tv_special",
+  "special",
+] as const;
+
+export type MediaType = (typeof MediaTypeValues)[number];
+
+export default class Anime {
   title: string;
   seasons: AnimeSeason[];
   watched: boolean;
@@ -16,64 +27,85 @@ class Anime {
   dateStarted: Date | null;
   dateFinished: Date | null;
 
-  constructor(
-    title: string,
-    seasons: AnimeSeason[],
-    watched: boolean,
-    imageLink: string | null,
-    externalLink: ExternalLink | null,
-    order: number,
-    dateStarted: Date | number | null,
-    dateFinished: Date | number | null,
-    justAdded: boolean = true
-  ) {
-    this.title = title;
-    this.seasons = seasons;
-    this.watched = watched;
-    this.imageLink = imageLink;
-    this.externalLink = externalLink;
-    this.order = order;
+  constructor(params: {
+    title: string;
+    seasons: AnimeSeason[];
+    watched: boolean;
+    imageLink: string | null;
+    externalLink: ExternalLink | null;
+    order: number;
+    dateStarted: Date | number | null;
+    dateFinished: Date | number | null;
+    justAdded?: boolean;
+    autoSave?: boolean;
+  }) {
+    this.title = params.title;
+    this.watched = params.watched;
+    this.imageLink = params.imageLink;
+    this.externalLink = params.externalLink;
+    this.order = params.order;
 
-    this.dateStarted = !dateStarted ? null : new Date(dateStarted);
-    this.dateFinished = !dateFinished ? null : new Date(dateFinished);
+    this.dateStarted = !params.dateStarted
+      ? null
+      : new Date(params.dateStarted);
+    this.dateFinished = !params.dateFinished
+      ? null
+      : new Date(params.dateFinished);
 
-    this.justAdded = justAdded;
+    this.justAdded = params.justAdded ?? true;
 
-    return new Proxy(this, {
-      set: function (target: Anime, property: keyof Anime, value: any) {
-        if (target[property] !== value) {
-          console.debug(
-            `Anime Property in '${title}' '${property}' changed from'`,
-            target[property],
-            "to",
-            value
-          );
-          Reflect.set(target, property, value);
-
-          if (property !== "justAdded") {
-            target.saveToDb();
-          }
-        }
-        return true;
-      },
+    this.seasons = params.seasons.map((season) => {
+      return new AnimeSeason({
+        ...season,
+        ...{ animeDbId: this.getAnimeDbId(), autoSave: params.autoSave },
+      });
     });
+
+    if (params.autoSave ?? false) {
+      return new Proxy(this, {
+        set: function (target: Anime, property: keyof Anime, value: any) {
+          if (target[property] !== value) {
+            console.debug(
+              `Anime Property in '${params.title}' '${property}' changed from'`,
+              target[property],
+              "to",
+              value
+            );
+            Reflect.set(target, property, value);
+
+            if (property !== "justAdded") {
+              target.saveToDb();
+            }
+          }
+          return true;
+        },
+      });
+    }
   }
 
   public getAnimeDbId() {
-    return `${this.externalLink?.type ?? "NONE"}${
-      this.externalLink?.id ?? this.title
-    }`;
+    return Anime.getAnimeDbId(
+      this.externalLink?.type,
+      this.externalLink?.id,
+      this.title
+    );
   }
 
   public static getAnimeDbId(
-    externalLinkType: ExternalLinkType | null,
-    externalLinkId: number | null,
+    externalLinkType: ExternalLinkType | null | undefined,
+    externalLinkId: number | null | undefined,
     title: string
   ) {
     return `${externalLinkType ?? "NONE"}${externalLinkId ?? title}`;
   }
 
-  public static Load(animeData: any, justAdded: boolean) {
+  public static Load(params: {
+    animeData: any;
+    justAdded: boolean;
+    autoSave?: boolean;
+  }) {
+    const animeData = params.animeData;
+    const autoSave = params.autoSave;
     const seasons: AnimeSeason[] = [];
     const animeDbId = this.getAnimeDbId(
       animeData.externalLink ? animeData.externalLink.type : null,
@@ -86,12 +118,13 @@ class Anime {
 
       for (const episode of season.episodes) {
         episodes.push(
-          new AnimeEpisode(
-            animeDbId,
-            episode.title,
-            episode.episodeNumber,
-            episode.watched
-          )
+          new AnimeEpisode({
+            animeDbId: animeDbId,
+            title: episode.title,
+            episodeNumber: episode.episodeNumber,
+            watched: episode.watched,
+            autoSave: autoSave,
+          })
         );
       }
 
@@ -103,23 +136,24 @@ class Anime {
       });
 
       seasons.push(
-        new AnimeSeason(
-          animeDbId,
-          season.title,
-          episodes,
-          season.watched,
-          season.seasonNumber,
-          season.mediaType,
-          season.externalLink
-            ? new ExternalLink(
-                animeDbId,
-                season.externalLink.id,
-                season.externalLink.type
-              )
+        new AnimeSeason({
+          animeDbId: animeDbId,
+          title: season.title,
+          episodes: episodes,
+          watched: season.watched,
+          seasonNumber: season.seasonNumber,
+          mediaType: season.mediaType,
+          externalLink: season.externalLink
+            ? new ExternalLink({
+                animeDbId: animeDbId,
+                id: season.externalLink.id,
+                type: season.externalLink.type,
+              })
             : null,
-          season.dateStarted,
-          season.dateFinished
-        )
+          dateStarted: season.dateStarted,
+          dateFinished: season.dateFinished,
+          autoSave: autoSave,
+        })
       );
     }
 
@@ -130,23 +164,24 @@ class Anime {
       return -1;
     });
 
-    return new Anime(
-      animeData.title,
-      seasons,
-      animeData.watched,
-      animeData.imageLink,
-      animeData.externalLink
-        ? new ExternalLink(
-            animeDbId,
-            animeData.externalLink.id,
-            animeData.externalLink.type
-          )
+    return new Anime({
+      title: animeData.title,
+      seasons: seasons,
+      watched: animeData.watched,
+      imageLink: animeData.imageLink,
+      externalLink: animeData.externalLink
+        ? new ExternalLink({
+            animeDbId: animeDbId,
+            id: animeData.externalLink.id,
+            type: animeData.externalLink.type,
+          })
         : null,
-      animeData.order,
-      animeData.dateStarted,
-      animeData.dateFinished,
-      justAdded
-    );
+      order: animeData.order,
+      dateStarted: animeData.dateStarted,
+      dateFinished: animeData.dateFinished,
+      justAdded: params.justAdded,
+      autoSave: true,
+    });
   }
 
   public saveToDb() {
@@ -194,5 +229,3 @@ class Anime {
     return true;
   }
 }
-
-export default Anime;

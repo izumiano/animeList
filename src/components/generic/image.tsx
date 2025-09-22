@@ -8,7 +8,7 @@ const Image = ({
   minHeight,
   maxHeight,
 }: {
-  src: string | null;
+  src: string | null | undefined;
   className?: string;
   minWidth?: string | number;
   maxWidth?: string | number;

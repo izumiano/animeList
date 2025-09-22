@@ -5,6 +5,8 @@
 	grid-template-columns: repeat(auto-fit, minmax(var(--minCardWidth), 1fr));
 	gap: 10px;
 
+	min-height: 10rem;
+
 	--minCardWidth: 300px;
 }
 
@@ -21,7 +23,7 @@
 }
 
 .searchResultCard > img {
-	max-width: 13dvw;
+	max-width: 10dvw;
 	max-height: 40dvh;
 }
 

@@ -1,12 +1,13 @@
 import { useState } from "react";
 import LocalDB from "../../indexedDb/indexedDb";
-import testData from "../../../testData/animeListData.json";
 import Anime from "../../models/anime";
 import SearchResults from "./searchResults";
 import "./addAnimeMenu.css";
 import { toast } from "react-toastify";
 import AppData from "../../appData";
 import fileIcon from "../../assets/file.png";
+import AnimeSearch from "../../external/search/animeSearch";
+import type { SeasonDetails } from "../../external/responses/SearchResponse";
 
 const AddAnimeMenu = ({
   addAnime,
@@ -17,7 +18,9 @@ const AddAnimeMenu = ({
   isOpen: boolean;
   setIsOpenState: (isOpen: boolean) => void;
 }) => {
-  const [searchResults, setSearchResultsState] = useState<Anime[]>([]);
+  const [searchResults, setSearchResultsState] = useState<
+    SeasonDetails[] | "loading"
+  >([]);
   const [selectedAnimeIndex, setSelectedAnimeIndexState] = useState<
     number | null
   >(null);
@@ -46,22 +49,16 @@ const AddAnimeMenu = ({
             placeholder="Search"
             onChange={(event) => {
               const text = event.target.value;
-
-              setSearchResultsState(
-                text === ""
-                  ? []
-                  : testData
-                      .filter((anime) => {
-                        return anime.title
-                          .replaceAll(/\s/g, "")
-                          .toLowerCase()
-                          .includes(text.replaceAll(/\s/g, "").toLowerCase());
-                      })
-                      .map((anime) => {
-                        return Anime.Load(anime, true);
-                      })
-              );
+              setSearchResultsState("loading");
               setSelectedAnimeIndexState(null);
+              AnimeSearch.search(text, ({ seasons, externalType }) => {
+                console.debug(seasons);
+                switch (externalType) {
+                  case "MAL":
+                    setSearchResultsState(seasons);
+                    break;
+                }
+              });
             }}
           ></input>
           <label className="customFileInput">
@@ -86,7 +83,10 @@ const AddAnimeMenu = ({
                   console.log(objs);
                   LocalDB.doTransaction((store, db) => {
                     objs.forEach((anime: any) => {
-                      const newAnime = Anime.Load(anime, false);
+                      const newAnime = Anime.Load({
+                        animeData: anime,
+                        justAdded: false,
+                      });
                       db.saveAnime(newAnime, store).onsuccess = () => {
                         addAnime(newAnime, { doScroll: false });
                       };
@@ -103,14 +103,23 @@ const AddAnimeMenu = ({
         </div>
         <button
           onClick={() => {
-            if (selectedAnimeIndex === null) {
+            if (selectedAnimeIndex === null || searchResults === "loading") {
               toast.error("Nothing is selected");
               return;
             }
 
             const selectedAnime = searchResults[selectedAnimeIndex];
+            if (!selectedAnime.title) {
+              console.error("Selected", selectedAnime, "has no title");
+              toast.error("Selection has no title");
+              return;
+            }
             const alreadyExistingAnime = AppData.animes.get(
-              selectedAnime.getAnimeDbId()
+              Anime.getAnimeDbId(
+                selectedAnime.externalLink?.type,
+                selectedAnime.externalLink?.id,
+                selectedAnime.title
+              )
             );
             if (alreadyExistingAnime) {
               toast.error(
@@ -123,7 +132,10 @@ const AddAnimeMenu = ({
               return;
             }
 
-            const newAnime = Anime.Load(selectedAnime, true);
+            const newAnime = Anime.Load({
+              animeData: selectedAnime,
+              justAdded: true,
+            });
             LocalDB.doTransaction(
               (store, db) => {
                 return db.saveAnime(newAnime, store);

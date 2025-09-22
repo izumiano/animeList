@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 import Anime from "../models/anime";
-import { sleepFor } from "../utils";
+import { sleepFor } from "../utils/utils";
 
 const dbName = "animesDB";
 const storeName = "animes";
@@ -171,7 +171,11 @@ export default class LocalDB {
       index.openCursor(null, "next").onsuccess = (event) => {
         const cursor = (event.target as IDBRequest).result;
         if (cursor) {
-          const anime = Anime.Load(cursor.value, false);
+          const anime = Anime.Load({
+            animeData: cursor.value,
+            justAdded: false,
+            autoSave: true,
+          });
           animes.set(anime.getAnimeDbId(), anime);
           cursor.continue();
         } else {

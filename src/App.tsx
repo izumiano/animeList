@@ -14,8 +14,13 @@ function App() {
   const [addAnimeMenuIsOpen, setAddAnimeMenuIsOpenState] = useState(false);
 
   function addAnime(anime: Anime, params?: { doScroll: boolean }) {
-    animes.set(anime.getAnimeDbId(), anime);
+    animes.set(
+      anime.getAnimeDbId(),
+      new Anime({ ...anime, ...{ autoSave: true } })
+    );
     setAnimesState(new Map(animes));
+
+    new Anime(anime);
 
     const doScroll = !params ? true : false;
     if (doScroll) {

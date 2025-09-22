@@ -1,8 +1,7 @@
 import AppData from "../appData";
+import type { MediaType } from "./anime";
 import AnimeEpisode from "./animeEpisode";
 import ExternalLink from "./externalLink";
-
-type MediaType = "tv" | "movie" | "ona" | "ova" | "tv_special" | "special";
 
 export default class AnimeSeason {
   title: string;
@@ -14,46 +13,58 @@ export default class AnimeSeason {
   dateStarted: Date | null;
   dateFinished: Date | null;
 
-  constructor(
-    animeDbId: string,
-    title: string,
-    episodes: AnimeEpisode[],
-    watched: boolean,
-    seasonNumber: number,
-    mediaType: MediaType,
-    externalLink: ExternalLink | null,
-    dateStarted: Date | number | null,
-    dateFinished: Date | number | null
-  ) {
-    this.title = title;
-    this.episodes = episodes;
-    this.watched = watched;
-    this.seasonNumber = seasonNumber;
-    this.mediaType = mediaType;
-    this.externalLink = externalLink;
-
-    this.dateStarted = !dateStarted ? null : new Date(dateStarted);
-    this.dateFinished = !dateFinished ? null : new Date(dateFinished);
-
-    return new Proxy(this, {
-      set: function (
-        target: AnimeSeason,
-        property: keyof AnimeSeason,
-        value: any
-      ) {
-        if (target[property] !== value) {
-          console.debug(
-            `AnimeSeason Property in '${title}' '${property}' changed from'`,
-            target[property],
-            "to",
-            value
-          );
-          Reflect.set(target, property, value);
-          AppData.animes.get(animeDbId)?.saveToDb();
-        }
-        return true;
-      },
+  constructor(params: {
+    animeDbId: string;
+    title: string;
+    episodes: AnimeEpisode[];
+    watched: boolean;
+    seasonNumber: number;
+    mediaType: MediaType;
+    externalLink: ExternalLink | null;
+    dateStarted: Date | number | null;
+    dateFinished: Date | number | null;
+    autoSave?: boolean;
+  }) {
+    this.title = params.title;
+    this.episodes = params.episodes.map((episode) => {
+      return new AnimeEpisode({
+        ...episode,
+        ...{ animeDbId: params.animeDbId, autoSave: params.autoSave },
+      });
     });
+    this.watched = params.watched;
+    this.seasonNumber = params.seasonNumber;
+    this.mediaType = params.mediaType;
+    this.externalLink = params.externalLink;
+
+    this.dateStarted = !params.dateStarted
+      ? null
+      : new Date(params.dateStarted);
+    this.dateFinished = !params.dateFinished
+      ? null
+      : new Date(params.dateFinished);
+
+    if (params.autoSave ?? false) {
+      return new Proxy(this, {
+        set: function (
+          target: AnimeSeason,
+          property: keyof AnimeSeason,
+          value: any
+        ) {
+          if (target[property] !== value) {
+            console.debug(
+              `AnimeSeason Property in '${params.title}' '${property}' changed from'`,
+              target[property],
+              "to",
+              value
+            );
+            Reflect.set(target, property, value);
+            AppData.animes.get(params.animeDbId)?.saveToDb();
+          }
+          return true;
+        },
+      });
+    }
   }
 
   public checkWatchedAll(season: AnimeSeason | null = null) {

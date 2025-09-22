@@ -1,0 +1,28 @@
+.loadingSpinnerContainer {
+	display: flex;
+}
+
+.loadingSpinnerContainer.centered {
+	justify-content: center;
+	align-items: center;
+}
+
+.loadingSpinner {
+	padding: 8px;
+	border-radius: 50%;
+	background: var(--colPrimary);
+	--_gradient:
+		conic-gradient(#0000 10%, #000),
+		linear-gradient(#000 0 0) content-box;
+	-webkit-mask: var(--_gradient);
+	mask: var(--_gradient);
+	-webkit-mask-composite: source-out;
+	mask-composite: subtract;
+	animation: fullRotation 1s infinite linear;
+}
+
+@keyframes fullRotation {
+	to {
+		transform: rotate(1turn)
+	}
+}

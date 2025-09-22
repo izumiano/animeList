@@ -4,6 +4,7 @@
 	left: -100%;
 	width: 100%;
 	min-height: 25%;
+	max-height: 100%;
 	z-index: 1;
 	background-color: var(--colNeutral);
 	width: 81%;
@@ -56,11 +57,12 @@
 }
 
 #addAnimeInputs {
-	min-height: 2.5rem;
+	height: fit-content;
 }
 
 #addAnimeSearch {
 	flex: 1 1 auto;
 	text-align: center;
 	font-size: 1rem;
+	margin-bottom: 0.8rem;
 }
