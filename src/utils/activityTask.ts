@@ -20,8 +20,8 @@ export default class ActivityTask<T> {
 
   public async start() {
     return await this.task({
-      addProgress: (count) => {},
-      addMaxProgress: (count) => {},
+      addProgress: (_count) => {},
+      addMaxProgress: (_count) => {},
     });
   }
 }
