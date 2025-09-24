@@ -21,7 +21,8 @@ export default class AnimeCardFactory {
         });
         break;
       case "TMDB":
-      // TMDBCardFactory.Create(id: externalLink?.id, order: order, callback: callback)
+        // TMDBCardFactory.Create(id: externalLink?.id, order: order, callback: callback)
+        return;
       default:
         showError("Cannot construct new anime, missing external link");
         return;

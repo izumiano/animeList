@@ -73,37 +73,39 @@ const AddAnimeMenu = ({
 
                 const objs: any[] = [];
 
-                new Promise(async (resolve) => {
-                  for (const file of files) {
-                    const obj = JSON.parse(await file.text());
-                    for (const o of obj) {
-                      objs.push(o);
+                new Promise((resolve) => {
+                  (async () => {
+                    for (const file of files) {
+                      const obj = JSON.parse(await file.text());
+                      for (const o of obj) {
+                        objs.push(o);
+                      }
                     }
-                  }
 
-                  objs.sort((lhs, rhs) => {
-                    if (lhs.order < rhs.order) return -1;
-                    return 1;
-                  });
-
-                  objs.forEach((obj, index) => {
-                    obj.order = index;
-                  });
-
-                  LocalDB.doTransaction((store, db) => {
-                    objs.forEach((anime: any) => {
-                      const newAnime = Anime.Load({
-                        animeData: anime,
-                        justAdded: false,
-                      });
-                      db.saveAnime(newAnime, store).onsuccess = () => {
-                        addAnime(newAnime, { doScroll: false });
-                      };
+                    objs.sort((lhs, rhs) => {
+                      if (lhs.order < rhs.order) return -1;
+                      return 1;
                     });
 
-                    return null;
-                  });
-                  resolve(null);
+                    objs.forEach((obj, index) => {
+                      obj.order = index;
+                    });
+
+                    LocalDB.doTransaction((store, db) => {
+                      objs.forEach((anime: any) => {
+                        const newAnime = Anime.Load({
+                          animeData: anime,
+                          justAdded: false,
+                        });
+                        db.saveAnime(newAnime, store).onsuccess = () => {
+                          addAnime(newAnime, { doScroll: false });
+                        };
+                      });
+
+                      return null;
+                    });
+                    resolve(null);
+                  })();
                 });
               }}
             />

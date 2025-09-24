@@ -74,12 +74,14 @@ export default class LocalDB {
   ) {
     if (!this.Instance) {
       console.error("LocalDB instance undefined");
-      new Promise(async (resolve) => {
-        const db = await this.Create();
-        this.doTransaction((store) => {
-          return transaction(store, db);
-        }, params);
-        resolve(null);
+      new Promise((resolve) => {
+        (async () => {
+          const db = await this.Create();
+          this.doTransaction((store) => {
+            return transaction(store, db);
+          }, params);
+          resolve(null);
+        })();
       });
       return;
     }
@@ -226,7 +228,7 @@ export default class LocalDB {
     let animesRet: Map<string, Anime> | undefined;
 
     this.doTransaction((store) => {
-      let index = store.index(key);
+      const index = store.index(key);
 
       const animes: Map<string, Anime> = new Map();
       index.openCursor(null, "next").onsuccess = (event) => {

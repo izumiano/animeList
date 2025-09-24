@@ -45,7 +45,7 @@ export default class MALSearch {
       return [seasons];
     }
 
-    let searchResults: MALSeasonDetails[] = [];
+    const searchResults: MALSeasonDetails[] = [];
     for (const season of seasons) {
       const seasonMalId = season.mal_id;
       if (!seasonMalId) {
@@ -59,11 +59,7 @@ export default class MALSearch {
         console.debug(`${seasonMalId} not approved`);
         continue;
       }
-      if (
-        searchResults.some((result) => {
-          result.mal_id === seasonMalId;
-        })
-      ) {
+      if (searchResults.some((result) => result.mal_id === seasonMalId)) {
         console.debug("mal_id already added");
         continue;
       }

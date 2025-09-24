@@ -91,7 +91,7 @@ export default class WebUtil {
     TReturn extends IResponse<TData>
   >(callback: () => Promise<TReturn>) {
     let response = await doCallback();
-    var i = 0;
+    let i = 0;
 
     while (response.statusCode === 429) {
       if (i > MAX_RATELIMIT_ITERATIONS) {

@@ -95,7 +95,7 @@ export default class MALCardFactory {
 
       const episodes = [];
 
-      let episodesData = await this.getPaginatedEpisodes(seasonData);
+      const episodesData = await this.getPaginatedEpisodes(seasonData);
       if (episodesData instanceof BadResponse) {
         return episodesData;
       }
@@ -158,7 +158,7 @@ export default class MALCardFactory {
       );
     }
 
-    let animeToSave: Anime = new Anime({
+    const animeToSave: Anime = new Anime({
       title: title,
       seasons: seasons,
       watched: false,
@@ -173,7 +173,7 @@ export default class MALCardFactory {
   }
 
   private static async getAnimeData(id: number) {
-    let season = await WebUtil.ratelimitRetryFunc(async () => {
+    const season = await WebUtil.ratelimitRetryFunc(async () => {
       return await MALSearch.GetAnimeDataRetry(id);
     });
 
@@ -189,7 +189,7 @@ export default class MALCardFactory {
   }
 
   private static async getSeasons(season: MALSeasonDetails) {
-    let seasonData = [];
+    const seasonData = [];
     seasonData.push(season);
 
     let currentAnimeData: MALSeasonDetails | BadResponse | null = season;
@@ -285,24 +285,26 @@ export default class MALCardFactory {
     const episodePromises = [];
     for (let i = pageStartIndex; i < pageCount + 1; i++) {
       episodePromises.push(
-        new Promise<EpisodeDetails[]>(async (resolve, reject) => {
-          const episodeResponse = await this.getEpisodesPage({
-            id: id,
-            pageIndex: i,
-          });
+        new Promise<EpisodeDetails[]>((resolve, reject) => {
+          (async () => {
+            const episodeResponse = await this.getEpisodesPage({
+              id: id,
+              pageIndex: i,
+            });
 
-          if (episodeResponse instanceof Error) {
-            reject(episodeResponse);
-            return;
-          }
+            if (episodeResponse instanceof Error) {
+              reject(episodeResponse);
+              return;
+            }
 
-          const data = episodeResponse.data;
-          if (!data) {
-            reject("Missing data in GetPaginatedEpisodes");
-            return;
-          }
+            const data = episodeResponse.data;
+            if (!data) {
+              reject("Missing data in GetPaginatedEpisodes");
+              return;
+            }
 
-          resolve(data ?? []);
+            resolve(data ?? []);
+          })();
         })
       );
     }

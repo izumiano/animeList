@@ -92,7 +92,7 @@ const AnimeCard = ({
               onClick={() => {
                 console.debug("deleting", anime);
                 LocalDB.Instance?.deleteAnime(anime, {
-                  onSuccess: (_) => {
+                  onSuccess: () => {
                     setToBeRemovedState(true);
                   },
                 });

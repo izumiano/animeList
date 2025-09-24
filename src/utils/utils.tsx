@@ -35,12 +35,11 @@ export function showError(ex: unknown) {
   } else if (ex instanceof Error) {
     message = ex.message;
   } else {
-    (message = (
+    message = (
       <span>
         Unknown Error <b>{ex as any}</b>
       </span>
-    )),
-      { className: "leftAlignedToastBody" };
+    );
   }
 
   toast.error(message, {

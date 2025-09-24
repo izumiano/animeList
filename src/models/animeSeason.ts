@@ -67,6 +67,7 @@ export default class AnimeSeason {
   }
 
   public checkWatchedAll(season: AnimeSeason | null = null) {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     season ??= this;
 
     for (const episode of season.episodes) {
