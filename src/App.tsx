@@ -1,5 +1,4 @@
 import "./App.css";
-// import testData from "../testData/animeListData.json";
 import AnimeCardList from "./components/animeCard/animeCardList";
 import Anime from "./models/anime";
 import LocalDB from "./indexedDb/indexedDb";
@@ -15,7 +14,8 @@ function App() {
 
   function addAnime(anime: Anime, params?: { doScroll: boolean }) {
     animes.set(anime.getAnimeDbId(), new Anime({ ...anime, autoSave: true }));
-    setAnimesState(new Map(animes));
+    AppData.animes = new Map(animes);
+    setAnimesState(AppData.animes);
 
     new Anime(anime);
 
@@ -31,16 +31,20 @@ function App() {
     }
   }
 
-  function removeAnime(anime: Anime) {
-    animes.delete(anime.getAnimeDbId());
-    setAnimesState(new Map(animes));
+  function reloadAnimes() {
+    setAnimesState(new Map(AppData.animes));
   }
 
   AppData.animes = animes;
   // Delete all animes
-  // AppData.animes.forEach((anime) => {
-  //   LocalDB.Instance?.deleteAnime(anime);
-  // });
+  // LocalDB.Instance?.doTransaction(
+  //   (store) => {
+  //     return Array.from(AppData.animes.values()).map((anime) => {
+  //       return store.delete(anime.getAnimeDbId());
+  //     });
+  //   },
+  //   { onError: () => toast.error("Failed deleting all") }
+  // );
 
   useEffect(() => {
     (async () => {
@@ -59,7 +63,7 @@ function App() {
       <AddAnimeButton setIsOpenState={setAddAnimeMenuIsOpenState} />
       <AnimeCardList
         animes={Array.from(animes.values())}
-        removeAnime={removeAnime}
+        reloadAnimes={reloadAnimes}
       />
       <ToastContainer position="bottom-left" />
     </div>
@@ -72,15 +76,18 @@ async function loadAnimes(
 ) {
   console.debug("loading");
 
-  // db.doTransaction((store) => {
-  //   testData.forEach((anime) => {
-  //     db.saveAnime(Anime.Load(anime, false), store);
-  //   });
+  const animes = await db.loadAllSortedBy("order");
+  Array.from(animes.values()).forEach((anime, index) => {
+    if (index !== anime.order) {
+      console.warn(
+        anime.title,
+        `has the wrong order ${anime.order} fixing to ${index}`
+      );
+      anime.order = index;
+    }
+  });
 
-  //   return null;
-  // });
-
-  setAnimesState(await db.loadAllSortedBy("order"));
+  setAnimesState(animes);
 }
 
 export default App;

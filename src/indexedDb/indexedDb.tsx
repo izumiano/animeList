@@ -1,13 +1,18 @@
 import { toast } from "react-toastify";
 import Anime from "../models/anime";
 import { sleepFor } from "../utils/utils";
+import AppData from "../appData";
 
 const dbName = "animesDB";
 const storeName = "animes";
 
+type TransactionResponseErrorTypes = DOMException | Error | null;
+
 interface TransactionResponse {
   onSuccess?: (result: unknown) => void;
-  onError?: (error: DOMException | Error | null) => void;
+  onError?: (
+    error: TransactionResponseErrorTypes | TransactionResponseErrorTypes[]
+  ) => void;
 }
 
 export default class LocalDB {
@@ -86,37 +91,59 @@ export default class LocalDB {
   }
 
   public doTransaction(
-    transaction: (store: IDBObjectStore) => IDBRequest | IDBRequest[] | null,
+    transaction: (
+      store: IDBObjectStore
+    ) => IDBRequest | null | (IDBRequest | null)[],
     params?: {
       mode?: IDBTransactionMode | undefined;
     } & TransactionResponse
   ) {
     const mode = params?.mode ?? "readwrite";
-    const request = transaction(
+    const transactionResult = transaction(
       this.db.transaction(storeName, mode).objectStore(storeName)
     );
 
-    if (!request) {
+    if (!transactionResult) {
+      params?.onSuccess?.call(null, null);
       return;
     }
 
-    if (Array.isArray(request)) {
-      request.forEach((request) => addEventListeners(request, this));
+    if (Array.isArray(transactionResult)) {
+      const request = transactionResult.map((request) => {
+        return new Promise<any>((resolve, reject) => {
+          if (!request) {
+            resolve(null);
+            return;
+          }
+
+          request.addEventListener("success", (event) => {
+            resolve((event.target as IDBRequest).result);
+          });
+          request.addEventListener("error", (event) => {
+            const request = event.target as IDBRequest;
+            console.error(request.error);
+            reject(request.error);
+          });
+        });
+      });
+
+      Promise.allSettled(request)
+        .then((result) => params?.onSuccess?.call(this, result))
+        .catch((error: (DOMException | null)[]) => {
+          params?.onError?.call(this, error);
+        });
+
       return;
     }
 
-    addEventListeners(request, this);
-
-    function addEventListeners(request: IDBRequest, instance: LocalDB) {
-      request.addEventListener("success", (event) => {
-        params?.onSuccess?.call(instance, (event.target as IDBRequest).result);
-      });
-      request.addEventListener("error", (event) => {
-        const request = event.target as IDBRequest;
-        console.error(request.error);
-        params?.onError?.call(instance, request.error);
-      });
-    }
+    transactionResult.addEventListener("success", (event) => {
+      params?.onSuccess?.call(this, (event.target as IDBRequest).result);
+    });
+    transactionResult.addEventListener("error", (event) => {
+      const request = event.target as IDBRequest;
+      console.error(request.error);
+      params?.onError?.call(this, request.error);
+    });
   }
 
   public saveAnime(anime: Anime, store: IDBObjectStore) {
@@ -149,7 +176,30 @@ export default class LocalDB {
               return store.delete(key);
             },
             {
-              onSuccess: (result) => callbacks?.onSuccess?.call(this, result),
+              onSuccess: (result) => {
+                AppData.animes.delete(anime.getAnimeDbId());
+                this.doTransaction(
+                  (store) => {
+                    return Array.from(AppData.animes.values())
+                      .filter(
+                        (animeToCheck) => animeToCheck.order > anime.order
+                      )
+                      .map((anime) => {
+                        anime.runWithoutUpdatingDb(() => {
+                          anime.order--;
+                        });
+                        return this.saveAnime(anime, store);
+                      });
+                  },
+                  {
+                    onSuccess: (result) =>
+                      callbacks?.onSuccess?.call(this, result),
+                    onError: (error) => onError(error),
+                  }
+                );
+                return callbacks?.onSuccess?.call(this, result);
+                // return callbacks?.onSuccess?.call(this, result);
+              },
               onError: (error) => onError(error),
             }
           );
@@ -158,7 +208,10 @@ export default class LocalDB {
       }
     );
 
-    function onError(this: any, error: DOMException | Error | null) {
+    function onError(
+      this: any,
+      error: TransactionResponseErrorTypes | TransactionResponseErrorTypes[]
+    ) {
       toast.error(
         <span>
           Failed deleting <b>{anime.title}</b>

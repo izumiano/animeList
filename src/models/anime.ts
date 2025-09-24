@@ -27,6 +27,8 @@ export default class Anime {
   dateStarted: Date | null;
   dateFinished: Date | null;
 
+  pauseAutoSave = false;
+
   constructor(params: {
     title: string;
     seasons: AnimeSeason[];
@@ -65,15 +67,19 @@ export default class Anime {
       return new Proxy(this, {
         set: function (target: Anime, property: keyof Anime, value: any) {
           if (target[property] !== value) {
-            console.debug(
-              `Anime Property in '${params.title}' '${property}' changed from'`,
-              target[property],
-              "to",
-              value
-            );
             Reflect.set(target, property, value);
 
-            if (property !== "justAdded") {
+            if (
+              !target.pauseAutoSave &&
+              property !== "justAdded" &&
+              property !== "pauseAutoSave"
+            ) {
+              console.debug(
+                `Anime Property in '${params.title}' '${property}' changed from'`,
+                target[property],
+                "to",
+                value
+              );
               target.saveToDb();
             }
           }
@@ -81,6 +87,12 @@ export default class Anime {
         },
       });
     }
+  }
+
+  public runWithoutUpdatingDb(action: () => void) {
+    this.pauseAutoSave = true;
+    action();
+    this.pauseAutoSave = false;
   }
 
   public getAnimeDbId() {

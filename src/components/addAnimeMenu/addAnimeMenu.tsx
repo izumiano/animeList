@@ -81,7 +81,15 @@ const AddAnimeMenu = ({
                     }
                   }
 
-                  console.log(objs);
+                  objs.sort((lhs, rhs) => {
+                    if (lhs.order < rhs.order) return -1;
+                    return 1;
+                  });
+
+                  objs.forEach((obj, index) => {
+                    obj.order = index;
+                  });
+
                   LocalDB.doTransaction((store, db) => {
                     objs.forEach((anime: any) => {
                       const newAnime = Anime.Load({
@@ -135,7 +143,7 @@ const AddAnimeMenu = ({
 
             AnimeCardFactory.create({
               animeExternalLink: selectedAnime.externalLink,
-              order: AppData.animes.size + 1,
+              order: AppData.animes.size,
               getSequels: true,
               callback: (anime) => {
                 LocalDB.doTransaction(

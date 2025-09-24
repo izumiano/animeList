@@ -4,14 +4,14 @@ import "./animeCardList.css";
 
 const AnimeCardList = ({
   animes,
-  removeAnime,
+  reloadAnimes: removeAnime,
 }: {
   animes: Anime[];
-  removeAnime: (anime: Anime) => void;
+  reloadAnimes: () => void;
 }) => (
   <ul className="animeCardList">
     {animes.map((anime) => (
-      <li key={anime.order}>
+      <li key={anime.getAnimeDbId()}>
         <AnimeCard anime={anime} removeAnime={removeAnime} />
       </li>
     ))}

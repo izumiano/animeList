@@ -18,7 +18,7 @@ const AnimeCard = ({
   removeAnime,
 }: {
   anime: Anime;
-  removeAnime: (anime: Anime) => void;
+  removeAnime: () => void;
 }) => {
   const [index, setIndex] = useState(0);
   const [watched, setWatchedState] = useState(anime.watched);
@@ -55,7 +55,7 @@ const AnimeCard = ({
               anime.justAdded = false;
               break;
             case toRemoveAnimName:
-              removeAnime(anime);
+              removeAnime();
               break;
 
             default:
@@ -70,7 +70,7 @@ const AnimeCard = ({
         <div className="cardInfo">
           <div className={`flexRow`}>
             <h1 className="title flexGrow">
-              <b>{anime.title}</b>
+              <b>{anime.order}</b>
               <span style={{ color: "rgb(160, 160, 160)" }}> | </span>
               {seasonExternalLink ? (
                 <a
@@ -90,7 +90,7 @@ const AnimeCard = ({
             <button
               className="transparentButton"
               onClick={() => {
-                console.log("delete");
+                console.debug("deleting", anime);
                 LocalDB.Instance?.deleteAnime(anime, {
                   onSuccess: (_) => {
                     setToBeRemovedState(true);
