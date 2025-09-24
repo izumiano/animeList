@@ -70,7 +70,7 @@ const AnimeCard = ({
         <div className="cardInfo">
           <div className={`flexRow`}>
             <h1 className="title flexGrow">
-              <b>{anime.order}</b>
+              <b>{anime.title}</b>
               <span style={{ color: "rgb(160, 160, 160)" }}> | </span>
               {seasonExternalLink ? (
                 <a
