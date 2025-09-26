@@ -1,6 +1,9 @@
-import { useState } from "react";
-import type { AnimeFilterState } from "../../models/animeFilter";
-import { sleepFor } from "../../utils/utils";
+import {
+  SortByValues,
+  type AnimeFilterState,
+  type SortBy,
+} from "../../models/animeFilter";
+import { dialogifyKey, sleepFor } from "../../utils/utils";
 
 let searchQueryAbortController = new AbortController();
 
@@ -9,8 +12,6 @@ const AnimeFilterComponent = ({
 }: {
   animeFilterState: AnimeFilterState;
 }) => {
-  const [searchQuery, setSearchQueryState] = useState(animeFilter.searchQuery);
-
   return (
     <div>
       <label>
@@ -52,10 +53,8 @@ const AnimeFilterComponent = ({
 
       <input
         type="text"
-        value={searchQuery}
+        defaultValue={animeFilter.searchQuery}
         onChange={async (event) => {
-          setSearchQueryState(event.target.value);
-
           searchQueryAbortController.abort();
           searchQueryAbortController = new AbortController();
           if (
@@ -69,6 +68,21 @@ const AnimeFilterComponent = ({
           );
         }}
       ></input>
+
+      <select
+        defaultValue={animeFilter.sortBy}
+        onChange={(event) => {
+          setAnimeFilterState(
+            animeFilter.newWith("sortBy", event.target.value as SortBy)
+          );
+        }}
+      >
+        {SortByValues.map((option) => (
+          <option key={`sortBy:${option}`} value={option}>
+            {dialogifyKey(option)}
+          </option>
+        ))}
+      </select>
     </div>
   );
 };

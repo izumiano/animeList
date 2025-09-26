@@ -42,9 +42,7 @@ export default class LocalDB {
 
       const objectStore = db.createObjectStore(storeName);
 
-      objectStore.createIndex("title", "title", { unique: false });
       objectStore.createIndex("order", "order", { unique: true });
-      objectStore.createIndex("watched", "watched", { unique: true });
     };
 
     DBOpenRequest.onsuccess = (event) => {

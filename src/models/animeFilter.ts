@@ -3,6 +3,13 @@ export type AnimeFilterState = [
   React.Dispatch<React.SetStateAction<AnimeFilter>>
 ];
 
+export const SortByValues = [
+  "userOrder",
+  "dateStarted",
+  "dateFinished",
+] as const;
+export type SortBy = (typeof SortByValues)[number];
+
 const saveIgnoreProperties: (keyof AnimeFilter)[] = [] as const;
 
 export default class AnimeFilter {
@@ -12,21 +19,26 @@ export default class AnimeFilter {
 
   searchQuery: string;
 
+  sortBy: SortBy;
+
   constructor({
     showWatched,
     showWatching,
     showUnwatched,
     searchQuery,
+    sortBy,
   }: {
     showWatched?: boolean;
     showWatching?: boolean;
     showUnwatched?: boolean;
     searchQuery?: string;
+    sortBy?: SortBy;
   }) {
     this.showWatched = showWatched ?? true;
     this.showWatching = showWatching ?? true;
     this.showUnwatched = showUnwatched ?? true;
     this.searchQuery = searchQuery ?? "";
+    this.sortBy = sortBy ?? "userOrder";
   }
 
   static load() {
@@ -63,6 +75,7 @@ export default class AnimeFilter {
       showWatching: this.showWatching,
       showUnwatched: this.showUnwatched,
       searchQuery: this.searchQuery,
+      sortBy: this.sortBy,
     });
   }
 }

@@ -48,3 +48,53 @@ export function showError(ex: unknown) {
 export function clamp(value: number, params: { min: number; max: number }) {
   return Math.max(params.min, Math.min(value, params.max));
 }
+
+export function capitalizeFirstLetter(str: string) {
+  if (str.length === 0) {
+    return "";
+  }
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+export function isCapital(str: string) {
+  for (const c of str) {
+    if (c !== c.toUpperCase()) {
+      return false;
+    }
+  }
+  return true;
+}
+
+export function dialogifyKey(key: string) {
+  key = capitalizeFirstLetter(key);
+  const words = [];
+  let word = "";
+  for (const c of key) {
+    if (isCapital(c) && word !== "") {
+      words.push(word);
+      word = "";
+    }
+
+    word += c;
+  }
+  if (word !== "") {
+    words.push(word);
+  }
+  return words.reduce((prev, word) => prev + " " + word);
+}
+
+export function removeDiacritics(str: string) {
+  // Normalize the string to its canonical decomposition form (NFD).
+  // This separates base characters from their diacritical marks.
+  const normalizedStr = str.normalize("NFD");
+
+  // Use a regular expression to remove all Unicode diacritical marks.
+  // The Unicode range U+0300–U+036F covers most combining diacritical marks.
+  const withoutDiacritics = normalizedStr.replace(/[\u0300-\u036f]/g, "");
+
+  return withoutDiacritics;
+}
+
+export function removeNonAlphanumeric(str: string) {
+  return str.replace(/[^a-zA-Z0-9]/g, "");
+}

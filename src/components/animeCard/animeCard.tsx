@@ -10,6 +10,7 @@ import ExternalLink from "../../models/externalLink";
 import trashIcon from "../../assets/bin.png";
 import LocalDB from "../../indexedDb/indexedDb";
 import type AnimeFilter from "../../models/animeFilter";
+import { removeDiacritics, removeNonAlphanumeric } from "../../utils/utils";
 
 const justAddedAnimName = "justAdded";
 const toRemoveAnimName = "toRemoveAnim";
@@ -180,8 +181,12 @@ function searchQueryMatched(anime: Anime, searchQuery: string) {
     return true;
   }
 
-  searchQuery = searchQuery.replace(/ /g, "").toLowerCase();
-  const animeTitle = anime.title.replace(/ /g, "").toLowerCase();
+  searchQuery = removeNonAlphanumeric(
+    removeDiacritics(searchQuery.replace(/\s+/g, "").toLowerCase())
+  );
+  const animeTitle = removeNonAlphanumeric(
+    removeDiacritics(anime.title.replace(/\s+/g, "").toLowerCase())
+  );
 
   return animeTitle.includes(searchQuery);
 }
