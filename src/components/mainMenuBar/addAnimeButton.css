@@ -1,6 +1,6 @@
 .addAnimeButton {
-	width: 3.5rem;
-	height: 3.5rem;
+	width: var(--defaultItemWidth);
+	height: var(--defaultItemWidth);
 	display: flex;
 	justify-content: center;
 	align-items: center;

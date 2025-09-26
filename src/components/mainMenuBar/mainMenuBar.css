@@ -1,0 +1,20 @@
+#mainMenuBar {
+	display: flex;
+	position: sticky;
+	top: 0;
+	width: 100%;
+
+	z-index: 1;
+
+	box-sizing: border-box;
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+
+	background-color: rgb(from var(--colAccent) r g b / 0.2);
+
+	border-radius: 0 0 1rem 1rem;
+
+	padding: 1rem;
+
+	--defaultItemWidth: 3.5rem;
+}

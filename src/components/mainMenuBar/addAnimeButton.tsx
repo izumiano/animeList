@@ -1,4 +1,4 @@
-import plusIcon from "../assets/plus.png";
+import plusIcon from "../../assets/plus.png";
 import "./addAnimeButton.css";
 
 const AddAnimeButton = ({

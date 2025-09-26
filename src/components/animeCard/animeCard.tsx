@@ -15,10 +15,10 @@ const toRemoveAnimName = "toRemoveAnim";
 
 const AnimeCard = ({
   anime,
-  removeAnime,
+  reloadAnimes,
 }: {
   anime: Anime;
-  removeAnime: () => void;
+  reloadAnimes: () => void;
 }) => {
   const [index, setIndex] = useState(0);
   const [watched, setWatchedState] = useState(anime.watched);
@@ -55,7 +55,7 @@ const AnimeCard = ({
               anime.justAdded = false;
               break;
             case toRemoveAnimName:
-              removeAnime();
+              reloadAnimes();
               break;
 
             default:
@@ -89,6 +89,7 @@ const AnimeCard = ({
             </h1>
             <button
               className="transparentButton"
+              disabled={toBeRemoved}
               onClick={() => {
                 console.debug("deleting", anime);
                 LocalDB.Instance?.deleteAnime(anime, {

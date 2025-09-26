@@ -4,7 +4,7 @@ import "./animeCardList.css";
 
 const AnimeCardList = ({
   animes,
-  reloadAnimes: removeAnime,
+  reloadAnimes,
 }: {
   animes: Anime[];
   reloadAnimes: () => void;
@@ -12,7 +12,7 @@ const AnimeCardList = ({
   <ul className="animeCardList">
     {animes.map((anime) => (
       <li key={anime.getAnimeDbId()}>
-        <AnimeCard anime={anime} removeAnime={removeAnime} />
+        <AnimeCard anime={anime} reloadAnimes={reloadAnimes} />
       </li>
     ))}
   </ul>

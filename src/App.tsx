@@ -6,16 +6,16 @@ import { useEffect, useState } from "react";
 import AppData from "./appData";
 import AddAnimeMenu from "./components/addAnimeMenu/addAnimeMenu";
 import { ToastContainer } from "react-toastify";
-import AddAnimeButton from "./components/addAnimeButton";
+import MainMenuBar from "./components/mainMenuBar/mainMenuBar";
 
 function App() {
   const [animes, setAnimesState] = useState<Map<string, Anime>>(new Map());
   const [addAnimeMenuIsOpen, setAddAnimeMenuIsOpenState] = useState(false);
+  AppData.animes = animes;
 
   function addAnime(anime: Anime, params?: { doScroll: boolean }) {
     animes.set(anime.getAnimeDbId(), new Anime({ ...anime, autoSave: true }));
-    AppData.animes = new Map(animes);
-    setAnimesState(AppData.animes);
+    setAnimesState(new Map(animes));
 
     new Anime(anime);
 
@@ -35,7 +35,6 @@ function App() {
     setAnimesState(new Map(AppData.animes));
   }
 
-  AppData.animes = animes;
   // Delete all animes
   // LocalDB.Instance?.doTransaction(
   //   (store) => {
@@ -54,19 +53,19 @@ function App() {
   }, []);
 
   return (
-    <div>
+    <>
       <AddAnimeMenu
         addAnime={addAnime}
         isOpen={addAnimeMenuIsOpen}
         setIsOpenState={setAddAnimeMenuIsOpenState}
       />
-      <AddAnimeButton setIsOpenState={setAddAnimeMenuIsOpenState} />
+      <MainMenuBar setIsOpenState={setAddAnimeMenuIsOpenState} />
       <AnimeCardList
         animes={Array.from(animes.values())}
         reloadAnimes={reloadAnimes}
       />
       <ToastContainer position="bottom-left" className="leftAlignedToastBody" />
-    </div>
+    </>
   );
 }
 
