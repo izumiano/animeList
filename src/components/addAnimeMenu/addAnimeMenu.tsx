@@ -9,6 +9,11 @@ import fileIcon from "../../assets/file.png";
 import AnimeSearch from "../../external/search/animeSearch";
 import type { SeasonDetails } from "../../external/responses/SeasonDetails";
 import AnimeCardFactory from "../../external/factories/animeCardFactory";
+import BadResponse from "../../external/responses/badResponse";
+import { showError, sleepFor } from "../../utils/utils";
+import ProgressButton, {
+  type ProgressButtonState,
+} from "../generic/progressButton";
 
 const AddAnimeMenu = ({
   addAnime,
@@ -25,6 +30,8 @@ const AddAnimeMenu = ({
   const [selectedAnimeIndex, setSelectedAnimeIndexState] = useState<
     number | null
   >(null);
+  const [addAnimeProgressState, setAddAnimeProgressState] =
+    useState<ProgressButtonState>({ progress: 0, state: "enabled" });
 
   const isOpenClass = isOpen ? "open" : "";
 
@@ -53,7 +60,6 @@ const AddAnimeMenu = ({
               setSearchResultsState("loading");
               setSelectedAnimeIndexState(null);
               AnimeSearch.search(text, ({ seasons, externalType }) => {
-                console.debug(seasons);
                 switch (externalType) {
                   case "MAL":
                     setSearchResultsState(seasons);
@@ -112,7 +118,9 @@ const AddAnimeMenu = ({
             <img src={fileIcon}></img>
           </label>
         </div>
-        <button
+        <ProgressButton
+          state={addAnimeProgressState}
+          disabled={selectedAnimeIndex === null}
           onClick={() => {
             if (selectedAnimeIndex === null || searchResults === "loading") {
               toast.error("Nothing is selected");
@@ -143,11 +151,41 @@ const AddAnimeMenu = ({
               return;
             }
 
-            AnimeCardFactory.create({
-              animeExternalLink: selectedAnime.externalLink,
-              order: AppData.animes.size,
-              getSequels: true,
-              callback: (anime) => {
+            new Promise((resolve) => {
+              (async () => {
+                const createAnimeTask = AnimeCardFactory.create({
+                  animeExternalLink: selectedAnime.externalLink,
+                  order: AppData.animes.size,
+                  getSequels: true,
+                });
+
+                if (createAnimeTask instanceof BadResponse) {
+                  showError(createAnimeTask);
+                  resolve(null);
+                  return;
+                }
+
+                createAnimeTask.onProgressUpdate = ({
+                  progress,
+                  maxProgress,
+                }) => {
+                  setAddAnimeProgressState({
+                    progress: progress / (maxProgress - 1), // remove 1 from max so we can actually see progress bar reach the end
+                    state: "loading",
+                  });
+                };
+
+                const anime = await createAnimeTask.start();
+
+                if (anime instanceof BadResponse) {
+                  setAddAnimeProgressState({ progress: 0, state: "enabled" });
+                  showError(anime);
+                  resolve(null);
+                  return;
+                }
+
+                await sleepFor(500);
+
                 LocalDB.doTransaction(
                   (store, db) => {
                     return db.saveAnime(anime, store);
@@ -158,6 +196,10 @@ const AddAnimeMenu = ({
                         "addAnimeSearch"
                       ) as HTMLInputElement;
                       addAnimeSearchElement.value = "";
+                      setAddAnimeProgressState({
+                        progress: 0,
+                        state: "enabled",
+                      });
                       setSearchResultsState([]);
                       setSelectedAnimeIndexState(null);
                       setIsOpenState(false);
@@ -165,12 +207,13 @@ const AddAnimeMenu = ({
                     },
                   }
                 );
-              },
+                resolve(null);
+              })();
             });
           }}
         >
           Add
-        </button>
+        </ProgressButton>
 
         <SearchResults
           searchResults={searchResults}

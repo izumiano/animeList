@@ -5,8 +5,13 @@ type ActivityTaskType<T> = (params: {
 
 export default class ActivityTask<T> {
   label: string;
+  progress = 0;
   maxProgress: number;
   task: ActivityTaskType<T>;
+
+  onProgressUpdate:
+    | ((params: { progress: number; maxProgress: number }) => void)
+    | undefined;
 
   constructor(params: {
     label: string;
@@ -19,9 +24,28 @@ export default class ActivityTask<T> {
   }
 
   public async start() {
+    this.onProgressUpdate?.call(this, {
+      progress: this.progress,
+      maxProgress: this.maxProgress,
+    });
+
     return await this.task({
-      addProgress: (_count) => {},
-      addMaxProgress: (_count) => {},
+      addProgress: (count) => {
+        this.progress += count ?? 1;
+
+        this.onProgressUpdate?.call(this, {
+          progress: this.progress,
+          maxProgress: this.maxProgress,
+        });
+      },
+      addMaxProgress: (count) => {
+        this.maxProgress += count ?? 1;
+
+        this.onProgressUpdate?.call(this, {
+          progress: this.progress,
+          maxProgress: this.maxProgress,
+        });
+      },
     });
   }
 }

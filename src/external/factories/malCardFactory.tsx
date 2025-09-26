@@ -14,7 +14,7 @@ import MALSearch from "../search/malSearch";
 import React from "react";
 
 export default class MALCardFactory {
-  public static async create({
+  public static create({
     id,
     order,
     getSequels,
@@ -23,9 +23,9 @@ export default class MALCardFactory {
     order: number;
     getSequels: boolean;
   }) {
-    return await new ActivityTask({
+    return new ActivityTask({
       label: "Creating anime from [MAL] with id [(id)]",
-      maxProgress: 4,
+      maxProgress: 3,
       task: async ({ addProgress, addMaxProgress }) => {
         const animeData = await this.getAnimeData(id);
         if (animeData === undefined || animeData === null) {
@@ -39,16 +39,16 @@ export default class MALCardFactory {
         let seasonsData: MALSeasonDetails[] | BadResponse;
         if (getSequels) {
           seasonsData = await this.getSeasons(animeData);
-          addProgress();
         } else {
           seasonsData = [animeData];
         }
+        addProgress();
 
         if (seasonsData instanceof BadResponse) {
           return seasonsData;
         }
 
-        return await this.CreateAnimeCard({
+        return await this.createAnimeCard({
           seasonsData: seasonsData,
           order: order,
           id: id,
@@ -56,10 +56,10 @@ export default class MALCardFactory {
           addMaxProgress: addMaxProgress,
         });
       },
-    }).start();
+    });
   }
 
-  private static async CreateAnimeCard({
+  private static async createAnimeCard({
     seasonsData,
     order,
     id,
@@ -84,7 +84,7 @@ export default class MALCardFactory {
 
     const imageLink = seasonOne.images?.jpg?.large_image_url;
 
-    addMaxProgress(seasonsData.length - 1);
+    addMaxProgress(seasonsData.length);
 
     const seasons = [];
     for (const [index, seasonData] of seasonsData.entries()) {
@@ -147,6 +147,8 @@ export default class MALCardFactory {
 
       addProgress();
     }
+
+    addProgress();
 
     if (!title) {
       return new BadResponse(

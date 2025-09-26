@@ -1,38 +1,26 @@
-import type Anime from "../../models/anime";
 import type ExternalLink from "../../models/externalLink";
 import MALCardFactory from "./malCardFactory";
 import BadResponse from "../responses/badResponse";
-import { showError } from "../../utils/utils";
 
 export default class AnimeCardFactory {
-  public static async create(params: {
+  public static create(params: {
     animeExternalLink: ExternalLink | undefined;
     order: number;
     getSequels: boolean;
-    callback: (anime: Anime) => void;
   }) {
-    let animes;
     switch (params.animeExternalLink?.type) {
       case "MAL":
-        animes = await MALCardFactory.create({
+        return MALCardFactory.create({
           id: params.animeExternalLink.id,
           order: params.order,
           getSequels: params.getSequels,
         });
-        break;
-      case "TMDB":
-        // TMDBCardFactory.Create(id: externalLink?.id, order: order, callback: callback)
-        return;
+      // case "TMDB":
+      // return TMDBCardFactory.create(id: externalLink?.id, order: order, callback: callback)
       default:
-        showError("Cannot construct new anime, missing external link");
-        return;
+        return new BadResponse(
+          `Cannot construct new anime, invalid external link type ${params.animeExternalLink?.type}`
+        );
     }
-
-    if (animes instanceof BadResponse) {
-      showError(animes);
-      return;
-    }
-
-    params.callback(animes);
   }
 }

@@ -1,0 +1,29 @@
+.progressButton {
+	height: fit-content;
+	position: relative;
+	z-index: 0;
+	border-radius: var(--borderRadius);
+
+	--borderRadius: 0.5rem;
+
+	color: white;
+	transition: color 0.5s;
+}
+
+.progressButton:disabled {
+	color: var(--colAccent)
+}
+
+.progressButton > .progress {
+	overflow: hidden;
+	position: absolute;
+	display: block;
+	top: 0;
+	left: 0;
+	width: 0;
+	height: 100%;
+	z-index: -1;
+	background-color: var(--colSecondary);
+	border-radius: var(--borderRadius);
+	transition: width 0.5s;
+}
