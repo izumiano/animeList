@@ -12,13 +12,7 @@ import AnimeFilter from "./models/animeFilter";
 function App() {
   const [animes, setAnimesState] = useState<Map<string, Anime>>(new Map());
   const [addAnimeMenuIsOpen, setAddAnimeMenuIsOpenState] = useState(false);
-  const animeFilterState = useState(
-    new AnimeFilter({
-      showWatched: true,
-      showWatching: true,
-      showUnwatched: true,
-    })
-  );
+  const animeFilterState = useState(AnimeFilter.load());
   AppData.animes = animes;
 
   function addAnime(anime: Anime, params?: { doScroll: boolean }) {

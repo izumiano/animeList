@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { AnimeFilterState } from "../../models/animeFilter";
 import { sleepFor } from "../../utils/utils";
 
@@ -8,6 +9,8 @@ const AnimeFilterComponent = ({
 }: {
   animeFilterState: AnimeFilterState;
 }) => {
+  const [searchQuery, setSearchQueryState] = useState(animeFilter.searchQuery);
+
   return (
     <div>
       <label>
@@ -49,7 +52,10 @@ const AnimeFilterComponent = ({
 
       <input
         type="text"
+        value={searchQuery}
         onChange={async (event) => {
+          setSearchQueryState(event.target.value);
+
           searchQueryAbortController.abort();
           searchQueryAbortController = new AbortController();
           if (
