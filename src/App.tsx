@@ -65,7 +65,7 @@ function App() {
         animes={Array.from(animes.values())}
         reloadAnimes={reloadAnimes}
       />
-      <ToastContainer position="bottom-left" />
+      <ToastContainer position="bottom-left" className="leftAlignedToastBody" />
     </div>
   );
 }

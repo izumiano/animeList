@@ -42,9 +42,7 @@ export function showError(ex: unknown) {
     );
   }
 
-  toast.error(message, {
-    className: "leftAlignedToastBody",
-  });
+  toast.error(message);
 }
 
 export function clamp(value: number, params: { min: number; max: number }) {
