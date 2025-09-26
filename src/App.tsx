@@ -7,10 +7,18 @@ import AppData from "./appData";
 import AddAnimeMenu from "./components/addAnimeMenu/addAnimeMenu";
 import { ToastContainer } from "react-toastify";
 import MainMenuBar from "./components/mainMenuBar/mainMenuBar";
+import AnimeFilter from "./models/animeFilter";
 
 function App() {
   const [animes, setAnimesState] = useState<Map<string, Anime>>(new Map());
   const [addAnimeMenuIsOpen, setAddAnimeMenuIsOpenState] = useState(false);
+  const animeFilterState = useState(
+    new AnimeFilter({
+      showWatched: true,
+      showWatching: true,
+      showUnwatched: true,
+    })
+  );
   AppData.animes = animes;
 
   function addAnime(anime: Anime, params?: { doScroll: boolean }) {
@@ -59,10 +67,14 @@ function App() {
         isOpen={addAnimeMenuIsOpen}
         setIsOpenState={setAddAnimeMenuIsOpenState}
       />
-      <MainMenuBar setIsOpenState={setAddAnimeMenuIsOpenState} />
+      <MainMenuBar
+        setIsOpenState={setAddAnimeMenuIsOpenState}
+        animeFilterState={animeFilterState}
+      />
       <AnimeCardList
         animes={Array.from(animes.values())}
         reloadAnimes={reloadAnimes}
+        animeFilter={animeFilterState[0]}
       />
       <ToastContainer position="bottom-left" className="leftAlignedToastBody" />
     </>

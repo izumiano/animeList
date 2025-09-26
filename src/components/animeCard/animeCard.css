@@ -1,7 +1,6 @@
 .card {
 	display: flex;
 	padding: 1dvw;
-	gap: 1dvw;
 	align-items: flex-start;
 	border-radius: var(--cardBorderRadius);
 
@@ -29,17 +28,16 @@
 	padding-bottom: 0;
 	margin-top: 0;
 	margin-bottom: 0;
-	gap: 0;
 	opacity: 0;
 }
 
 @keyframes justAddedAnim {
 	100% {
 		height: var(--cardHeight);
-		padding: 1dvw;
+		padding-top: 1dvw;
+		padding-bottom: 1dvw;
 		margin-top: 1rem;
 		margin-bottom: 1rem;
-		gap: 1dvw;
 		opacity: 100;
 	}
 }
@@ -51,10 +49,10 @@
 @keyframes toRemoveAnim {
 	0% {
 		height: var(--cardHeight);
-		padding: 1dvw;
+		padding-top: 1dvw;
+		padding-bottom: 1dvw;
 		margin-top: 1rem;
 		margin-bottom: 1rem;
-		gap: 1dvw;
 		opacity: 100;
 	}
 
@@ -64,7 +62,6 @@
 		padding-bottom: 0;
 		margin-top: 0;
 		margin-bottom: 0;
-		gap: 0;
 		opacity: 0;
 	}
 }

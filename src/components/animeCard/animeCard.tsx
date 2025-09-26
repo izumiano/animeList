@@ -9,6 +9,7 @@ import tmdbLogo from "../../assets/tmdbLogo.png";
 import ExternalLink from "../../models/externalLink";
 import trashIcon from "../../assets/bin.png";
 import LocalDB from "../../indexedDb/indexedDb";
+import type AnimeFilter from "../../models/animeFilter";
 
 const justAddedAnimName = "justAdded";
 const toRemoveAnimName = "toRemoveAnim";
@@ -16,20 +17,26 @@ const toRemoveAnimName = "toRemoveAnim";
 const AnimeCard = ({
   anime,
   reloadAnimes,
+  animeFilter,
 }: {
   anime: Anime;
   reloadAnimes: () => void;
+  animeFilter: AnimeFilter;
 }) => {
   const [index, setIndex] = useState(0);
   const [watched, setWatchedState] = useState(anime.watched);
   const [justAdded, setJustAddedState] = useState(anime.justAdded);
   const [toBeRemoved, setToBeRemovedState] = useState(false);
+  const [animating, setAnimating] = useState(false);
 
   const selectedSeason = anime.seasons[index];
   const seasonExternalLink = selectedSeason.externalLink;
   const [selectedSeasonWatched, setSelectedSeasonWatchedState] = useState(
     selectedSeason.watched
   );
+
+  const shouldBeEnabled = checkShouldBeEnabled(anime, animeFilter);
+  const [visible, setVisibility] = useState(shouldBeEnabled);
 
   function updateWatchedState() {
     const watched = anime.checkWatchedAll();
@@ -38,11 +45,28 @@ const AnimeCard = ({
     setSelectedSeasonWatchedState(selectedSeason.watched);
 
     setWatchedState(watched);
+
+    const newEnabled = checkShouldBeEnabled(anime, animeFilter);
+    if (shouldBeEnabled !== newEnabled) {
+      setVisibility(newEnabled);
+      setAnimating(true);
+    }
+  }
+
+  if (shouldBeEnabled !== visible) {
+    setAnimating(true);
+    setVisibility(shouldBeEnabled);
+  }
+
+  if (!shouldBeEnabled && !animating) {
+    return null;
   }
 
   const isWatchedClass = watched ? "watched" : "";
-  const isToBeRemovedClass = toBeRemoved ? "toRemove" : "";
-  const isJustAddedClass = justAdded ? "justAdded" : "";
+  const isToBeRemovedClass =
+    toBeRemoved || (!visible && animating) ? "toRemove" : "";
+  const isJustAddedClass =
+    justAdded || (visible && animating) ? "justAdded" : "";
 
   return (
     <div>
@@ -51,10 +75,12 @@ const AnimeCard = ({
         onAnimationEnd={(event) => {
           switch (event.nativeEvent.animationName) {
             case justAddedAnimName:
+              setAnimating(false);
               setJustAddedState(false);
               anime.justAdded = false;
               break;
             case toRemoveAnimName:
+              setAnimating(false);
               reloadAnimes();
               break;
 
@@ -123,6 +149,42 @@ const AnimeCard = ({
     </div>
   );
 };
+
+function checkShouldBeEnabled(anime: Anime, animeFilter: AnimeFilter) {
+  if (!searchQueryMatched(anime, animeFilter.searchQuery)) {
+    return false;
+  }
+
+  if (animeFilter.showWatched && anime.watched) {
+    return true;
+  }
+
+  let isWatching: boolean;
+
+  return (
+    (animeFilter.showUnwatched && !anime.watched && !getIsWatching()) ||
+    (animeFilter.showWatching && getIsWatching())
+  );
+
+  function getIsWatching() {
+    if (isWatching === undefined) {
+      isWatching = anime.watching;
+    }
+
+    return isWatching;
+  }
+}
+
+function searchQueryMatched(anime: Anime, searchQuery: string) {
+  if (searchQuery === "") {
+    return true;
+  }
+
+  searchQuery = searchQuery.replace(/ /g, "").toLowerCase();
+  const animeTitle = anime.title.replace(/ /g, "").toLowerCase();
+
+  return animeTitle.includes(searchQuery);
+}
 
 function getUrl(
   externalLink: ExternalLink | null,

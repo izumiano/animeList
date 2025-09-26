@@ -29,6 +29,17 @@ export default class Anime {
 
   pauseAutoSave = false;
 
+  get watching() {
+    return (
+      !this.watched &&
+      this.seasons.some((season) => {
+        return (
+          season.watched || season.episodes.some((episode) => episode.watched)
+        );
+      })
+    );
+  }
+
   constructor(params: {
     title: string;
     seasons: AnimeSeason[];
