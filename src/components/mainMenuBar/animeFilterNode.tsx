@@ -3,10 +3,10 @@ import {
   type AnimeFilterState,
   type SortBy,
 } from "../../models/animeFilter";
-import { dialogifyKey, sleepFor } from "../../utils/utils";
+import { dialogifyKey } from "../../utils/utils";
+import Select from "../generic/select";
+import Toggle from "../generic/toggle";
 import "./animeFilterNode.css";
-
-let searchQueryAbortController = new AbortController();
 
 const AnimeFilterNode = ({
   animeFilterState: [animeFilter, setAnimeFilterState],
@@ -15,67 +15,40 @@ const AnimeFilterNode = ({
 }) => {
   return (
     <div className="animeFilterNode">
-      <label>
-        <input
-          type="checkbox"
-          checked={animeFilter.showWatched}
-          onChange={() =>
-            setAnimeFilterState(
-              animeFilter.newWith("showWatched", !animeFilter.showWatched)
-            )
-          }
-        />
-        <span>Show Watched</span>
-      </label>
-      <label>
-        <input
-          type="checkbox"
-          checked={animeFilter.showWatching}
-          onChange={() =>
-            setAnimeFilterState(
-              animeFilter.newWith("showWatching", !animeFilter.showWatching)
-            )
-          }
-        />
-        <span>Show Watching</span>
-      </label>
-      <label>
-        <input
-          type="checkbox"
-          checked={animeFilter.showUnwatched}
-          onChange={() =>
-            setAnimeFilterState(
-              animeFilter.newWith("showUnwatched", !animeFilter.showUnwatched)
-            )
-          }
-        />
-        <span>Show Unwatched</span>
-      </label>
-
-      <input
-        type="text"
-        defaultValue={animeFilter.searchQuery}
-        onChange={async (event) => {
-          searchQueryAbortController.abort();
-          searchQueryAbortController = new AbortController();
-          if (
-            (await sleepFor(500, searchQueryAbortController.signal)).wasAborted
-          ) {
-            return;
-          }
-
+      <Toggle
+        label="Show Watched"
+        checked={animeFilter.showWatched}
+        onChange={() =>
           setAnimeFilterState(
-            animeFilter.newWith("searchQuery", event.target.value)
-          );
-        }}
-      ></input>
+            animeFilter.newWith("showWatched", !animeFilter.showWatched)
+          )
+        }
+      />
+      <Toggle
+        label="Show Watching"
+        checked={animeFilter.showWatching}
+        onChange={() =>
+          setAnimeFilterState(
+            animeFilter.newWith("showWatching", !animeFilter.showWatching)
+          )
+        }
+      />
+      <Toggle
+        label="Show Unwatched"
+        checked={animeFilter.showUnwatched}
+        onChange={() =>
+          setAnimeFilterState(
+            animeFilter.newWith("showUnwatched", !animeFilter.showUnwatched)
+          )
+        }
+      />
 
-      <select
+      <hr />
+
+      <Select
         defaultValue={animeFilter.sortBy}
-        onChange={(event) => {
-          setAnimeFilterState(
-            animeFilter.newWith("sortBy", event.target.value as SortBy)
-          );
+        onChange={(value) => {
+          setAnimeFilterState(animeFilter.newWith("sortBy", value as SortBy));
         }}
       >
         {SortByValues.map((option) => (
@@ -83,7 +56,7 @@ const AnimeFilterNode = ({
             {dialogifyKey(option)}
           </option>
         ))}
-      </select>
+      </Select>
     </div>
   );
 };

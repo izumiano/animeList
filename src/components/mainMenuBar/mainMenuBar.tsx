@@ -1,13 +1,16 @@
 import type { AnimeFilterState } from "../../models/animeFilter";
+import { sleepFor } from "../../utils/utils";
 import Dropdown from "../generic/dropdown";
 import AddAnimeButton from "./addAnimeButton";
 import AnimeFilterButton from "./animeFilterButton";
 import AnimeFilterNode from "./animeFilterNode";
 import "./mainMenuBar.css";
 
+let searchQueryAbortController = new AbortController();
+
 const MainMenuBar = ({
   setIsOpenState,
-  animeFilterState,
+  animeFilterState: [animeFilter, setAnimeFilterState],
 }: {
   setIsOpenState: (isOpen: boolean) => void;
   animeFilterState: AnimeFilterState;
@@ -16,12 +19,27 @@ const MainMenuBar = ({
     <div id="mainMenuBar">
       <AddAnimeButton setIsOpenState={setIsOpenState} />
       <div className="flexGrow"></div>
-      <Dropdown
-        alignment="right"
-        backgroundColor="var(--colNeutral)"
-        dropdownButton={<AnimeFilterButton />}
-      >
-        <AnimeFilterNode animeFilterState={animeFilterState} />
+      <input
+        type="text"
+        defaultValue={animeFilter.searchQuery}
+        onChange={async (event) => {
+          searchQueryAbortController.abort();
+          searchQueryAbortController = new AbortController();
+          if (
+            (await sleepFor(500, searchQueryAbortController.signal)).wasAborted
+          ) {
+            return;
+          }
+
+          setAnimeFilterState(
+            animeFilter.newWith("searchQuery", event.target.value)
+          );
+        }}
+      ></input>
+      <Dropdown alignment="right" dropdownButton={<AnimeFilterButton />}>
+        <AnimeFilterNode
+          animeFilterState={[animeFilter, setAnimeFilterState]}
+        />
       </Dropdown>
     </div>
   );

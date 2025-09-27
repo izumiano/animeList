@@ -1,0 +1,12 @@
+.select {
+	padding: 1rem;
+}
+
+.select > * {
+	padding: 0.4rem;
+	transition: background-color 0.5s;
+}
+
+.select > *.selected {
+	background-color: var(--colSecondary);
+}

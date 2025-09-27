@@ -72,8 +72,12 @@ h2 {
 	font-weight: 600;
 }
 
-.leftAlignedToastBody {
+.leftAlignedText {
 	text-align: left;
+}
+
+.verticalCenterItems {
+	align-content: center;
 }
 
 .border {

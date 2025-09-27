@@ -70,7 +70,7 @@ function App() {
         reloadAnimes={reloadAnimes}
         animeFilter={animeFilterState[0]}
       />
-      <ToastContainer position="bottom-left" className="leftAlignedToastBody" />
+      <ToastContainer position="bottom-left" className="leftAlignedText" />
     </>
   );
 }

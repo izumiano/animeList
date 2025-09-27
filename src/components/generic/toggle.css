@@ -1,0 +1,53 @@
+.toggleContainer {
+	--borderColor: white;
+	cursor: pointer;
+	margin: 0.5rem;
+}
+
+.toggleContainer > input[type="checkbox"] {
+	display: none;
+}
+
+.toggle {
+	--width: 3.4rem;
+	--height: 2rem;
+	position: relative;
+	width: var(--width);
+	height: var(--height);
+	background-color: var(--colAccent);
+
+	border: 2px gray solid;
+
+	border-radius: 100vw;
+
+	transition: background-color 0.5s, border-color 0.2s;
+
+	--spacing: 6px;
+	--radius: calc(var(--height) - var(--spacing));
+	--position: calc(var(--spacing) / 2);
+}
+
+.toggle:hover {
+	border-color: var(--colSecondary);
+}
+
+.toggleContainer.checked > .toggle {
+	--position: calc(var(--width) - var(--radius) - var(--spacing) / 2);
+	background-color: var(--colSecondary);
+}
+
+.toggle::after {
+	top: calc(var(--spacing) / 2);
+	left: var(--position);
+
+	content: "";
+	position: absolute;
+	width: var(--radius);
+	height: var(--radius);
+	border-radius: var(--radius);
+	background-color: white;
+
+	box-shadow: calc(var(--radius) * -0.1) calc(var(--radius) * 0.3) calc(var(--radius) * 0.5) rgba(0, 0, 0, 0.3);
+
+	transition: left 0.5s;
+}

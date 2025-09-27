@@ -19,6 +19,7 @@ const Dropdown = ({
   const isOpenClass = isOpen ? "show" : "hide";
 
   alignment ??= "left";
+  backgroundColor ??= "var(--colNeutral)";
 
   return (
     <div
@@ -26,16 +27,18 @@ const Dropdown = ({
       className="dropdown"
     >
       <div onClick={() => setIsOpenState(!isOpen)}>{dropdownButton}</div>
-      <div className={`dropdownMenu ${isOpenClass} arrow`}>
-        <div>
-          <div
-            className={`${isOpenClass}`}
-            style={{ backgroundColor: backgroundColor }}
-          ></div>
+      <div className="arrowContainer">
+        <div className={`dropdownMenu ${isOpenClass}`}>
+          <div className="dropdownWrapper">
+            <div
+              className="arrow"
+              style={{ backgroundColor: backgroundColor }}
+            ></div>
+          </div>
         </div>
       </div>
       <div className={`dropdownMenu ${isOpenClass} ${alignment}Align`}>
-        <div>
+        <div className="dropdownWrapper">
           <div
             className="dropdownContent"
             style={{ backgroundColor: backgroundColor }}

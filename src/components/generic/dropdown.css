@@ -26,7 +26,13 @@
 	outline-color: var(--colAccent);
 }
 
-.dropdownMenu > * > * {
+.dropdownWrapper {
+	position: relative;
+	translate: 0 0;
+	transition: translate 0.5s;
+}
+
+.dropdownWrapper > * {
 	max-height: 0;
 	overflow: hidden;
 	outline: 2px solid;
@@ -35,23 +41,25 @@
 	transition: max-height 0.5s, outline-color 0.5s;
 }
 
-.dropdownMenu.show > * > .dropdownContent {
+.dropdownMenu.show > .dropdownWrapper:has(.dropdownContent) {
 	translate: 0 var(--arrowHeight);
 }
 
 .dropdownContent {
 	border-radius: 1rem;
-	transition: max-height 0.5s, outline-color 0.5s, translate 0.5s;
-	translate: 0 0;
 }
 
-.arrow {
-	width: 100%;
+.dropdownContent .dropdown {
+	position: static !important;
+}
+
+.arrowContainer {
+	position: relative;
 	display: flex;
 	justify-content: center;
 }
 
-.arrow > * > * {
+.arrow {
 	height: var(--arrowHeight);
 	width: var(--arrowHeight);
 	clip-path: polygon(50% 0%, 0% 100%, 100% 100%);

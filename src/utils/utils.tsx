@@ -65,8 +65,10 @@ export function isCapital(str: string) {
   return true;
 }
 
-export function dialogifyKey(key: string) {
-  key = capitalizeFirstLetter(key);
+export function dialogifyKey(
+  key: string | number | readonly string[] | undefined
+) {
+  key = capitalizeFirstLetter(String(key));
   const words = [];
   let word = "";
   for (const c of key) {
