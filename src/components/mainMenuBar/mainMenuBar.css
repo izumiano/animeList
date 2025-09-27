@@ -18,3 +18,17 @@
 
 	--defaultItemWidth: 3.5rem;
 }
+
+.menuBarButton {
+	width: var(--defaultItemWidth);
+	height: var(--defaultItemWidth);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: 100%;
+	background-color: var(--colAccent);
+}
+
+.menuBarButton > img {
+	width: 2rem;
+}

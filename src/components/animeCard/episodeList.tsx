@@ -1,6 +1,6 @@
 import Anime from "../../models/anime";
 import AnimeSeason from "../../models/animeSeason";
-import EpisodeComponent from "./episodeComponent";
+import EpisodeNode from "./episodeNode";
 import "./episodeList.css";
 
 const EpisodeList = ({
@@ -14,7 +14,7 @@ const EpisodeList = ({
 }) => (
   <ul className="episodeList">
     {season.episodes.map((episode) => (
-      <EpisodeComponent
+      <EpisodeNode
         episode={episode}
         onCompletionChange={onCompletionChange}
         key={`${anime.externalLink?.type ?? anime.title}${

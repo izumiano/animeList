@@ -1,8 +1,8 @@
 import { useState } from "react";
 import AnimeEpisode from "../../models/animeEpisode";
-import "./episodeComponent.css";
+import "./episodeNode.css";
 
-const EpisodeComponent = ({
+const EpisodeNode = ({
   episode,
   onCompletionChange,
 }: {
@@ -35,4 +35,4 @@ const EpisodeComponent = ({
   );
 };
 
-export default EpisodeComponent;
+export default EpisodeNode;

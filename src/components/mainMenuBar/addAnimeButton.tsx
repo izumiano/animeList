@@ -8,7 +8,7 @@ const AddAnimeButton = ({
 }) => {
   return (
     <button
-      className="addAnimeButton"
+      className="menuBarButton"
       onClick={() => {
         setIsOpenState(true);
       }}

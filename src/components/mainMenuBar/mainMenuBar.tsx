@@ -1,6 +1,8 @@
 import type { AnimeFilterState } from "../../models/animeFilter";
+import Dropdown from "../generic/dropdown";
 import AddAnimeButton from "./addAnimeButton";
-import AnimeFilterComponent from "./animeFilterComponent";
+import AnimeFilterButton from "./animeFilterButton";
+import AnimeFilterNode from "./animeFilterNode";
 import "./mainMenuBar.css";
 
 const MainMenuBar = ({
@@ -13,7 +15,14 @@ const MainMenuBar = ({
   return (
     <div id="mainMenuBar">
       <AddAnimeButton setIsOpenState={setIsOpenState} />
-      <AnimeFilterComponent animeFilterState={animeFilterState} />
+      <div className="flexGrow"></div>
+      <Dropdown
+        alignment="right"
+        backgroundColor="var(--colNeutral)"
+        dropdownButton={<AnimeFilterButton />}
+      >
+        <AnimeFilterNode animeFilterState={animeFilterState} />
+      </Dropdown>
     </div>
   );
 };

@@ -4,16 +4,17 @@ import {
   type SortBy,
 } from "../../models/animeFilter";
 import { dialogifyKey, sleepFor } from "../../utils/utils";
+import "./animeFilterNode.css";
 
 let searchQueryAbortController = new AbortController();
 
-const AnimeFilterComponent = ({
+const AnimeFilterNode = ({
   animeFilterState: [animeFilter, setAnimeFilterState],
 }: {
   animeFilterState: AnimeFilterState;
 }) => {
   return (
-    <div>
+    <div className="animeFilterNode">
       <label>
         <input
           type="checkbox"
@@ -87,4 +88,4 @@ const AnimeFilterComponent = ({
   );
 };
 
-export default AnimeFilterComponent;
+export default AnimeFilterNode;
