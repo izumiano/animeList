@@ -12,11 +12,12 @@
 .selectContent > * {
 	display: block;
 	margin: var(--smallMargin);
-	transition: background-color 0.5s;
+	outline: 2px solid transparent;
+	transition: all 0.5s;
 }
 
-.selectContent > *.selected {
-	/* background-color: var(--colSecondary); */
+.selectContent > *.defaultSelected {
+	background-color: var(--colSecondary);
 }
 
 .wrappedList {

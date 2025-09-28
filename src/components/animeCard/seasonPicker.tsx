@@ -28,6 +28,7 @@ const SeasonPicker = ({
         onChange={(value) => {
           onSelect(value);
         }}
+        optionSelectedClass="seasonOptionSelected"
       >
         {seasons.map((season) => (
           <option

@@ -4,6 +4,7 @@
 
 .seasonPicker {
 	transition: background-color 0.4s;
+	min-width: 13rem;
 }
 
 .seasonPicker.watched {
@@ -12,4 +13,8 @@
 
 .seasonOption.watched {
 	background-color: var(--colSecondary);
+}
+
+.seasonOptionSelected {
+	outline: 2px solid white;
 }

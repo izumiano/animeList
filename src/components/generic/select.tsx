@@ -21,6 +21,7 @@ function Select<T extends ValueType>({
   dropdownAlignment,
   className,
   listStyle,
+  optionSelectedClass,
   label,
   margin,
   children,
@@ -32,6 +33,7 @@ function Select<T extends ValueType>({
   dropdownAlignment?: Alignment;
   className?: string;
   listStyle?: "list" | "wrappedList";
+  optionSelectedClass?: string;
   margin?: Property.Margin;
   label?: ReactNode;
   children: ReactNode;
@@ -57,6 +59,7 @@ function Select<T extends ValueType>({
   dropdownAlignment ??= "left";
   listStyle ??= "list";
   margin ??= "var(--mediumMargin)";
+  optionSelectedClass ??= "defaultSelected";
 
   const childrenArr = Children.toArray(children);
 
@@ -78,7 +81,7 @@ function Select<T extends ValueType>({
         buttonClass={className}
         dropdownButton={
           <div className="flexRow verticalCenterItems">
-            <span className="selectValue">{dropdownTitle}</span>
+            <span className="selectValue flexGrow">{dropdownTitle}</span>
             <img src={dropdownIcon} className="smallIcon"></img>
           </div>
         }
@@ -96,7 +99,7 @@ function Select<T extends ValueType>({
 
             return (
               <button
-                className={`${isSelected ? "selected" : ""} padding ${
+                className={`${isSelected ? optionSelectedClass : ""} padding ${
                   option.className
                 }`}
                 key={child.key}
