@@ -7,6 +7,7 @@ import type { Property } from "csstype";
 
 type OptionProp<T extends ValueType> = {
   value?: T;
+  className?: string;
   children?: ReactNode;
 };
 
@@ -95,7 +96,9 @@ function Select<T extends ValueType>({
 
             return (
               <button
-                className={`${isSelected ? "selected" : ""} padding`}
+                className={`${isSelected ? "selected" : ""} padding ${
+                  option.className
+                }`}
                 key={child.key}
                 onClick={() => setValue(option.value as T, index)}
               >

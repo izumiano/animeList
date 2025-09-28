@@ -33,6 +33,7 @@ const SeasonPicker = ({
           <option
             key={`${animeTitle}${season.seasonNumber}`}
             value={season.seasonNumber}
+            className={`seasonOption ${season.watched ? "watched" : ""}`}
           >
             {season.title}
           </option>

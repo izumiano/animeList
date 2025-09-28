@@ -16,7 +16,7 @@
 }
 
 .selectContent > *.selected {
-	background-color: var(--colSecondary);
+	/* background-color: var(--colSecondary); */
 }
 
 .wrappedList {

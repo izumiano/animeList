@@ -9,3 +9,7 @@
 .seasonPicker.watched {
 	background-color: var(--colSecondaryTrans);
 }
+
+.seasonOption.watched {
+	background-color: var(--colSecondary);
+}
