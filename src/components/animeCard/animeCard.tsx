@@ -80,7 +80,6 @@ const AnimeCard = ({
           switch (event.animationName) {
             case justAddedAnimName:
               anime.justAdded = false;
-              console.warn("here");
               setAnimating(false);
               setJustAddedState(false);
               break;

@@ -28,6 +28,7 @@ const SeasonPicker = ({
         onChange={(value) => {
           onSelect(value);
         }}
+        autocloseOnChange={true}
         optionSelectedClass="seasonOptionSelected"
       >
         {seasons.map((season) => (

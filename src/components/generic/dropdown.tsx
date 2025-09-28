@@ -22,9 +22,10 @@ const Dropdown = ({
   dropdownButton: ReactNode;
   backgroundColor?: Property.BackgroundColor;
   onOpenChange?: (isOpen: boolean) => void;
-  getChildren?: (
-    setParentScrollEnabled: (enabled: boolean) => void
-  ) => ReactNode;
+  getChildren?: (params: {
+    setParentScrollEnabled: (enabled: boolean) => void;
+    closeDropdown: () => void;
+  }) => ReactNode;
   children?: ReactNode;
 }) => {
   const [isOpen, setIsOpenState] = useState(false);
@@ -154,7 +155,10 @@ const Dropdown = ({
               backgroundColor: backgroundColor,
             }}
           >
-            {getChildren?.call(this, setScrollEnabledState)}
+            {getChildren?.call(this, {
+              setParentScrollEnabled: setScrollEnabledState,
+              closeDropdown: () => setIsOpen(false),
+            })}
             {children}
           </div>
         </div>

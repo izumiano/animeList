@@ -86,31 +86,35 @@ function Select<T extends ValueType>({
           </div>
         }
         onOpenChange={onOpenChange}
-      >
-        <div className={`selectContent ${listStyle}`}>
-          {childrenArr.map((child, index) => {
-            if (!isValidElement(child)) {
-              return null;
-            }
+        getChildren={({ closeDropdown }) => (
+          <div className={`selectContent ${listStyle}`}>
+            {childrenArr.map((child, index) => {
+              if (!isValidElement(child)) {
+                return null;
+              }
 
-            const option = child.props as OptionProp<T>;
+              const option = child.props as OptionProp<T>;
 
-            const isSelected = index === current.index;
+              const isSelected = index === current.index;
 
-            return (
-              <button
-                className={`${isSelected ? optionSelectedClass : ""} padding ${
-                  option.className
-                }`}
-                key={child.key}
-                onClick={() => setValue(option.value as T, index)}
-              >
-                {option.children}
-              </button>
-            );
-          })}
-        </div>
-      </Dropdown>
+              return (
+                <button
+                  className={`${
+                    isSelected ? optionSelectedClass : ""
+                  } padding ${option.className}`}
+                  key={child.key}
+                  onClick={() => {
+                    if (autocloseOnChange) closeDropdown();
+                    setValue(option.value as T, index);
+                  }}
+                >
+                  {option.children}
+                </button>
+              );
+            })}
+          </div>
+        )}
+      />
     </div>
   );
 }
