@@ -1,12 +1,28 @@
-.select {
-	padding: 1rem;
+.selectValue {
+	margin-right: var(--mediumMargin);
 }
 
-.select > * {
-	padding: 0.4rem;
+.selectContent {
+	padding: 1rem;
+	display: block;
+	flex-wrap: wrap;
+	min-width: 9rem;
+}
+
+.selectContent > * {
+	display: block;
+	margin: var(--smallMargin);
 	transition: background-color 0.5s;
 }
 
-.select > *.selected {
+.selectContent > *.selected {
 	background-color: var(--colSecondary);
+}
+
+.wrappedList {
+	display: flex;
+}
+
+.list > * {
+	width: calc(100% - var(--smallMargin) * 2);
 }

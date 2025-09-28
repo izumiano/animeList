@@ -36,11 +36,17 @@ const MainMenuBar = ({
           );
         }}
       ></input>
-      <Dropdown alignment="right" dropdownButton={<AnimeFilterButton />}>
-        <AnimeFilterNode
-          animeFilterState={[animeFilter, setAnimeFilterState]}
-        />
-      </Dropdown>
+      <Dropdown
+        alignment="right"
+        useDefaultButtonStyle={false}
+        dropdownButton={<AnimeFilterButton />}
+        getChildren={(setParentScrollEnabled) => (
+          <AnimeFilterNode
+            animeFilterState={[animeFilter, setAnimeFilterState]}
+            setParentScrollEnabled={setParentScrollEnabled}
+          />
+        )}
+      />
     </div>
   );
 };

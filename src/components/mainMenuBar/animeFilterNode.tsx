@@ -10,11 +10,13 @@ import "./animeFilterNode.css";
 
 const AnimeFilterNode = ({
   animeFilterState: [animeFilter, setAnimeFilterState],
+  setParentScrollEnabled,
 }: {
   animeFilterState: AnimeFilterState;
+  setParentScrollEnabled: (enabled: boolean) => void;
 }) => {
   return (
-    <div className="animeFilterNode">
+    <div className="animeFilterNode margin">
       <Toggle
         label="Show Watched"
         checked={animeFilter.showWatched}
@@ -47,9 +49,12 @@ const AnimeFilterNode = ({
 
       <Select
         defaultValue={animeFilter.sortBy}
+        dropdownAlignment="right"
         onChange={(value) => {
           setAnimeFilterState(animeFilter.newWith("sortBy", value as SortBy));
         }}
+        onOpenChange={(isOpen) => setParentScrollEnabled(!isOpen)}
+        label={"Sort By"}
       >
         {SortByValues.map((option) => (
           <option key={`sortBy:${option}`} value={option}>

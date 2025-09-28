@@ -15,11 +15,22 @@ html {
 
 	--toastify-toast-width: 500px;
 
+	--largeIconWidth: 2rem;
+	--smallIconWidth: 0.7rem;
+
+	--padding: 0.8rem;
+
+	--mediumMargin: 0.5rem;
+	--smallMargin: 0.3rem;
+
 	background-color: var(--colBackground);
 }
 
 button {
 	box-sizing: border-box;
+	border-radius: 1rem;
+	color: white;
+	background-color: var(--colAccent);
 }
 
 #root {
@@ -39,6 +50,10 @@ button {
 }
 
 .flexGrow {
+	flex: 1 1 auto;
+}
+
+.flexGrowChildren > * {
 	flex: 1 1 auto;
 }
 
@@ -78,8 +93,33 @@ h2 {
 
 .verticalCenterItems {
 	align-content: center;
+	align-items: center;
 }
 
 .border {
 	border: 1px red solid;
+}
+
+.largeIcon {
+	width: var(--largeIconWidth);
+}
+
+.smallIcon {
+	width: var(--smallIconWidth);
+}
+
+.padding {
+	padding: var(--padding);
+}
+
+.margin {
+	margin: 1rem;
+}
+
+.mediumMargin {
+	margin: var(--mediumMargin);
+}
+
+.smallMargin {
+	margin: var(--smallMargin);
 }

@@ -1,31 +1,50 @@
 import { Children, isValidElement, useState, type ReactNode } from "react";
 import Dropdown from "./dropdown";
 import "./select.css";
-import { dialogifyKey } from "../../utils/utils";
+import { type Alignment } from "../../utils/utils";
+import dropdownIcon from "../../assets/dropdown.png";
+import type { Property } from "csstype";
 
-type OptionProp = {
-  value?: string | number | readonly string[];
+type OptionProp<T extends ValueType> = {
+  value?: T;
   children?: ReactNode;
 };
 
 type ValueType = string | number | readonly string[] | undefined;
 
-const Select = ({
+function Select<T extends ValueType>({
   defaultValue,
   onChange,
+  onOpenChange,
+  autocloseOnChange,
+  dropdownAlignment,
+  className,
+  listStyle,
+  label,
+  margin,
   children,
 }: {
-  defaultValue?: ValueType;
-  onChange: (value: ValueType) => void;
+  defaultValue?: T;
+  onChange: (value: T) => void;
+  onOpenChange?: (isOpen: boolean) => void;
+  autocloseOnChange?: boolean;
+  dropdownAlignment?: Alignment;
+  className?: string;
+  listStyle?: "list" | "wrappedList";
+  margin?: Property.Margin;
+  label?: ReactNode;
   children: ReactNode;
-}) => {
-  const [current, setCurrentState] = useState({
-    value: defaultValue,
-    index: getIndexOf(defaultValue, children),
-  });
+}) {
+  const [current, setCurrentState] = useState(
+    getInitialCurrentState(defaultValue, children)
+  );
 
-  function setValue(newValue: ValueType, index: number) {
-    if (newValue === current.value) {
+  function setValue(newValue: T | undefined, index: number | undefined) {
+    if (
+      newValue === current.value ||
+      newValue === undefined ||
+      index === undefined
+    ) {
       return;
     }
 
@@ -33,41 +52,92 @@ const Select = ({
     setCurrentState({ value: newValue, index: index });
   }
 
+  autocloseOnChange ??= false;
+  dropdownAlignment ??= "left";
+  listStyle ??= "list";
+  margin ??= "var(--mediumMargin)";
+
+  const childrenArr = Children.toArray(children);
+
+  const dropdownTitleOption = childrenArr[current.index ?? 0];
+  let dropdownTitle: ReactNode;
+  if (isValidElement(dropdownTitleOption)) {
+    dropdownTitle = (dropdownTitleOption.props as OptionProp<T>).children;
+  }
+
   return (
-    <Dropdown dropdownButton={dialogifyKey(current.value)}>
-      <div className="select">
-        {Children.map(children, (child, index) => {
-          if (!isValidElement(child)) {
-            return null;
-          }
+    <div className="flexRow" style={{ margin: margin }}>
+      {label ? (
+        <div className="flexGrow leftAlignedText verticalCenterItems">
+          {label}
+        </div>
+      ) : null}
+      <Dropdown
+        alignment={dropdownAlignment}
+        buttonClass={className}
+        dropdownButton={
+          <div className="flexRow verticalCenterItems">
+            <span className="selectValue">{dropdownTitle}</span>
+            <img src={dropdownIcon} className="smallIcon"></img>
+          </div>
+        }
+        onOpenChange={onOpenChange}
+      >
+        <div className={`selectContent ${listStyle}`}>
+          {childrenArr.map((child, index) => {
+            if (!isValidElement(child)) {
+              return null;
+            }
 
-          const option = child.props as OptionProp;
+            const option = child.props as OptionProp<T>;
 
-          const isSelected = index === current.index;
+            const isSelected = index === current.index;
 
-          return (
-            <div
-              className={`${isSelected ? "selected" : ""}`}
-              key={child.key}
-              onClick={() => setValue(option.value, index)}
-            >
-              {dialogifyKey(option.value)}
-            </div>
-          );
-        })}
-      </div>
-    </Dropdown>
+            return (
+              <button
+                className={`${isSelected ? "selected" : ""} padding`}
+                key={child.key}
+                onClick={() => setValue(option.value as T, index)}
+              >
+                {option.children}
+              </button>
+            );
+          })}
+        </div>
+      </Dropdown>
+    </div>
   );
-};
+}
 
-function getIndexOf(value: ValueType, children: ReactNode) {
+function getInitialCurrentState<T extends ValueType>(
+  defaultValue: T,
+  children: ReactNode
+) {
+  if (defaultValue === undefined) {
+    const child = Children.toArray(children)[0];
+
+    return {
+      value: isValidElement(child)
+        ? (child.props as OptionProp<T>).value
+        : undefined,
+      index: 0,
+    };
+  }
+
+  return {
+    value: defaultValue,
+    index: getIndexOf(defaultValue, children),
+  };
+}
+
+function getIndexOf<T extends ValueType>(value: T, children: ReactNode) {
   let retIndex: number | undefined;
   Children.forEach(children, (child, index) => {
     if (!isValidElement(child)) {
       return;
     }
 
-    const option = child.props as OptionProp;
+    const option = child.props as OptionProp<T>;
 
     if (option.value === value) {
       retIndex = index;

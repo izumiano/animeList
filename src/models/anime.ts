@@ -114,6 +114,15 @@ export default class Anime {
     );
   }
 
+  public getFirstSeasonNotWatched() {
+    for (const season of this.seasons) {
+      if (!season.watched) {
+        return season;
+      }
+    }
+    return this.seasons[0];
+  }
+
   public static getAnimeDbId(
     externalLinkType: ExternalLinkType | null | undefined,
     externalLinkId: number | null | undefined,

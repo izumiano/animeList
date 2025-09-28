@@ -30,5 +30,5 @@
 }
 
 .menuBarButton > img {
-	width: 2rem;
+	width: var(--largeIconWidth);
 }

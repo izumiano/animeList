@@ -1,15 +1,18 @@
 import AnimeSeason from "../../models/animeSeason";
+import Select from "../generic/select";
 import "./seasonPicker.css";
 
 const SeasonPicker = ({
   animeTitle,
   seasons,
-  selectedSeasonWatched,
+  selectedSeason,
+  watched,
   onSelect,
 }: {
   animeTitle: string;
   seasons: AnimeSeason[];
-  selectedSeasonWatched: boolean;
+  selectedSeason: AnimeSeason;
+  watched: boolean;
   onSelect: (seasonNumber: number) => undefined;
 }) => {
   if (seasons.length <= 1) {
@@ -18,12 +21,12 @@ const SeasonPicker = ({
 
   return (
     <div className="seasonPickerContainer">
-      <select
-        className={`seasonPicker ${selectedSeasonWatched ? "watched" : ""}`}
-        name="seasons"
-        id={`${animeTitle}seasons`}
-        onChange={(event) => {
-          onSelect(parseInt(event.target.value));
+      <Select
+        defaultValue={selectedSeason.seasonNumber}
+        className={`seasonPicker ${watched ? "watched" : ""}`}
+        margin={0}
+        onChange={(value) => {
+          onSelect(value);
         }}
       >
         {seasons.map((season) => (
@@ -34,7 +37,7 @@ const SeasonPicker = ({
             {season.title}
           </option>
         ))}
-      </select>
+      </Select>
     </div>
   );
 };

@@ -1,7 +1,6 @@
 .toggleContainer {
 	--borderColor: white;
 	cursor: pointer;
-	margin: 0.5rem;
 }
 
 .toggleContainer > input[type="checkbox"] {

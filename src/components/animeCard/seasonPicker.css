@@ -1,34 +1,11 @@
 .seasonPickerContainer {
-	width: 22dvw;
-
 	--colSecondaryTrans: rgb(from var(--colSecondary) r g b / 0.9);
 }
 
 .seasonPicker {
-	height: 3rem;
-	width: 100%;
-	border-radius: 2rem;
-	padding-left: 1.2rem;
-	cursor: pointer;
-
-	font-size: large;
-	color: white;
-	border: none;
-
-	background-color: var(--colAccent);
 	transition: background-color 0.4s;
 }
 
 .seasonPicker.watched {
 	background-color: var(--colSecondaryTrans);
-}
-
-select {
-	-webkit-appearance: none;
-	-moz-appearance: none;
-	appearance: none;
-}
-
-select::-ms-expand {
-	display: none;
 }

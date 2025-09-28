@@ -12,7 +12,7 @@ import LocalDB from "../../indexedDb/indexedDb";
 import type AnimeFilter from "../../models/animeFilter";
 import { removeDiacritics, removeNonAlphanumeric } from "../../utils/utils";
 
-const justAddedAnimName = "justAdded";
+const justAddedAnimName = "justAddedAnim";
 const toRemoveAnimName = "toRemoveAnim";
 
 const AnimeCard = ({
@@ -24,7 +24,9 @@ const AnimeCard = ({
   reloadAnimes: () => void;
   animeFilter: AnimeFilter;
 }) => {
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState(
+    anime.getFirstSeasonNotWatched().seasonNumber - 1
+  );
   const [watched, setWatchedState] = useState(anime.watched);
   const [justAdded, setJustAddedState] = useState(anime.justAdded);
   const [toBeRemoved, setToBeRemovedState] = useState(false);
@@ -74,11 +76,13 @@ const AnimeCard = ({
       <div
         className={`card ${isWatchedClass} ${isJustAddedClass} ${isToBeRemovedClass}`}
         onAnimationEnd={(event) => {
-          switch (event.nativeEvent.animationName) {
+          console.warn(event.animationName);
+          switch (event.animationName) {
             case justAddedAnimName:
+              anime.justAdded = false;
+              console.warn("here");
               setAnimating(false);
               setJustAddedState(false);
-              anime.justAdded = false;
               break;
             case toRemoveAnimName:
               setAnimating(false);
@@ -132,8 +136,10 @@ const AnimeCard = ({
           <SeasonPicker
             animeTitle={anime.title}
             seasons={anime.seasons}
-            selectedSeasonWatched={selectedSeasonWatched}
+            selectedSeason={selectedSeason}
+            watched={selectedSeasonWatched}
             onSelect={(seasonNumber) => {
+              console.log({ seasonNumber });
               setIndex(seasonNumber - 1);
               const newSelectedSeason = anime.seasons[seasonNumber - 1];
               newSelectedSeason.checkWatchedAll(newSelectedSeason);
