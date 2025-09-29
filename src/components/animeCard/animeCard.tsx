@@ -11,6 +11,8 @@ import trashIcon from "../../assets/bin.png";
 import LocalDB from "../../indexedDb/indexedDb";
 import type AnimeFilter from "../../models/animeFilter";
 import { removeDiacritics, removeNonAlphanumeric } from "../../utils/utils";
+import Dropdown from "../generic/dropdown";
+import ConfirmationDropdown from "../generic/confirmationDropdown";
 
 const justAddedAnimName = "justAddedAnim";
 const toRemoveAnimName = "toRemoveAnim";
@@ -116,20 +118,29 @@ const AnimeCard = ({
                 </a>
               ) : null}
             </h1>
-            <button
-              className="transparentButton"
-              disabled={toBeRemoved}
-              onClick={() => {
-                console.debug("deleting", anime);
-                LocalDB.Instance?.deleteAnime(anime, {
-                  onSuccess: () => {
-                    setToBeRemovedState(true);
-                  },
-                });
-              }}
-            >
-              <img src={trashIcon} width="25"></img>
-            </button>
+            <Dropdown
+              alignment="right"
+              buttonClass="transparentBackground"
+              useDefaultButtonStyle={true}
+              dropdownButton={<img src={trashIcon} width="25"></img>}
+              getChildren={({ closeDropdown }) => (
+                <ConfirmationDropdown
+                  title="Really Delete?"
+                  confirmMessage="Delete"
+                  confirmClass="deleteConfirm"
+                  dismissMessage="Don't"
+                  closeDropdown={closeDropdown}
+                  onConfirm={() => {
+                    console.log("deleting", anime);
+                    LocalDB.Instance?.deleteAnime(anime, {
+                      onSuccess: () => {
+                        setToBeRemovedState(true);
+                      },
+                    });
+                  }}
+                />
+              )}
+            />
           </div>
           <SeasonPicker
             animeTitle={anime.title}

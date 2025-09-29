@@ -18,6 +18,7 @@ html {
 	--largeIconWidth: 2rem;
 	--smallIconWidth: 0.7rem;
 
+	--largePadding: 1.7rem;
 	--padding: 0.8rem;
 
 	--mediumMargin: 0.5rem;
@@ -57,7 +58,21 @@ button {
 	flex: 1 1 auto;
 }
 
-.transparentButton {
+.equalRowItems {
+	display: flex;
+}
+
+.flexWrap {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.equalRowItems > * {
+	flex: 1 1 0;
+	width: 0;
+}
+
+.transparentBackground {
 	background-color: transparent;
 }
 
@@ -108,6 +123,10 @@ h2 {
 	width: var(--smallIconWidth);
 }
 
+.largePadding {
+	padding: var(--largePadding);
+}
+
 .padding {
 	padding: var(--padding);
 }
@@ -122,4 +141,8 @@ h2 {
 
 .smallMargin {
 	margin: var(--smallMargin);
+}
+
+.shimmerBackground {
+	box-shadow: inset 0 0 4rem rgba(146, 125, 125, 0.3);
 }

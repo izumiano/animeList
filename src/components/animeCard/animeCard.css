@@ -108,3 +108,7 @@
 
 	--marginTopBottom: 0.5rem;
 }
+
+.thing {
+	min-width: 16rem;
+}

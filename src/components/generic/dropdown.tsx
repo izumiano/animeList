@@ -148,7 +148,7 @@ const Dropdown = ({
         <div ref={dropdownWrapperRef} className="dropdownWrapper">
           <div
             ref={dropdownContentRef}
-            className={`dropdownContent ${
+            className={`dropdownContent shimmerBackground ${
               scrollEnabled && requiresScroll ? "scroll" : ""
             }`}
             style={{
