@@ -107,7 +107,7 @@ const Dropdown = ({
 
   dropdownContentRef.current?.style.setProperty(
     "--maxHeight",
-    dropdownMaxHeight > 0 ? `${dropdownMaxHeight}px` : "100%"
+    dropdownMaxHeight > 0 ? `${dropdownMaxHeight}px` : "0"
   );
 
   useDefaultButtonStyle ??= true;
