@@ -7,6 +7,7 @@ const dbName = "animesDB";
 const storeName = "animes";
 
 type TransactionResponseErrorTypes = DOMException | Error | null;
+type TransactionResponseReturnTypes = IDBRequest | null | (IDBRequest | null)[];
 
 interface TransactionResponse {
   onSuccess?: (result: unknown) => void;
@@ -64,12 +65,13 @@ export default class LocalDB {
   public static doTransaction(
     transaction: (
       store: IDBObjectStore,
-      instance: LocalDB
-    ) => IDBRequest | IDBRequest[] | null,
+      db: LocalDB
+    ) => TransactionResponseReturnTypes,
     params?: {
       mode?: IDBTransactionMode | undefined;
     } & TransactionResponse
   ) {
+    console.log("here");
     if (!this.Instance) {
       console.error("LocalDB instance undefined");
       new Promise((resolve) => {
@@ -91,9 +93,7 @@ export default class LocalDB {
   }
 
   public doTransaction(
-    transaction: (
-      store: IDBObjectStore
-    ) => IDBRequest | null | (IDBRequest | null)[],
+    transaction: (store: IDBObjectStore) => TransactionResponseReturnTypes,
     params?: {
       mode?: IDBTransactionMode | undefined;
     } & TransactionResponse
@@ -104,12 +104,12 @@ export default class LocalDB {
     );
 
     if (!transactionResult) {
-      params?.onSuccess?.call(null, null);
-      return;
+      params?.onError?.call(null, null);
+      return null;
     }
 
     if (Array.isArray(transactionResult)) {
-      const request = transactionResult.map((request) => {
+      const requests = transactionResult.map((request) => {
         return new Promise<any>((resolve, reject) => {
           if (!request) {
             resolve(null);
@@ -117,9 +117,11 @@ export default class LocalDB {
           }
 
           request.addEventListener("success", (event) => {
+            console.log("success");
             resolve((event.target as IDBRequest).result);
           });
           request.addEventListener("error", (event) => {
+            console.log("error");
             const request = event.target as IDBRequest;
             console.error(request.error);
             reject(request.error);
@@ -127,13 +129,13 @@ export default class LocalDB {
         });
       });
 
-      Promise.allSettled(request)
+      Promise.allSettled(requests)
         .then((result) => params?.onSuccess?.call(this, result))
         .catch((error: (DOMException | null)[]) => {
           params?.onError?.call(this, error);
         });
 
-      return;
+      return transactionResult;
     }
 
     transactionResult.addEventListener("success", (event) => {
@@ -144,6 +146,8 @@ export default class LocalDB {
       console.error(request.error);
       params?.onError?.call(this, request.error);
     });
+
+    return transactionResult;
   }
 
   public saveAnime(anime: Anime, store: IDBObjectStore) {
@@ -158,9 +162,9 @@ export default class LocalDB {
     return request;
   }
 
-  public async deleteAnime(anime: Anime, callbacks?: TransactionResponse) {
+  public deleteAnime(anime: Anime, callbacks?: TransactionResponse) {
     const key = anime.getAnimeDbId();
-    this.doTransaction(
+    return this.doTransaction(
       (store) => {
         return store.get(key);
       },

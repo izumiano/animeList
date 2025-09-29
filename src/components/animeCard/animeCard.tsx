@@ -132,11 +132,13 @@ const AnimeCard = ({
                   closeDropdown={closeDropdown}
                   onConfirm={() => {
                     console.log("deleting", anime);
-                    LocalDB.Instance?.deleteAnime(anime, {
-                      onSuccess: () => {
-                        setToBeRemovedState(true);
-                      },
-                    });
+                    LocalDB.doTransaction((_, db) =>
+                      db.deleteAnime(anime, {
+                        onSuccess: () => {
+                          setToBeRemovedState(true);
+                        },
+                      })
+                    );
                   }}
                 />
               )}
