@@ -4,7 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host",
+		"dev": "vite --host",
+    "typecheck": "tsc --watch --noEmit -p tsconfig.typecheck.json",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "npm run build && vite preview --host"
