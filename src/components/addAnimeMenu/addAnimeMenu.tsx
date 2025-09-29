@@ -134,7 +134,9 @@ const AddAnimeMenu = ({
         <ProgressButton
           state={addAnimeProgressState}
           disabled={selectedAnimeIndex === null}
-          className="addButton addButtonProps"
+          className={`addButton addButtonProps ${
+            addAnimeProgressState.state === "loading" ? "loading" : ""
+          }`}
           onClick={() => {
             if (selectedAnimeIndex === null || searchResults === "loading") {
               toast.error("Nothing is selected");

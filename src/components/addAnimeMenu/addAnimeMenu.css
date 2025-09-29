@@ -92,7 +92,7 @@
 	transition: background-color 0.5s, color 0.5s, translate 0.7s cubic-bezier(.47, 1.64, .41, .8);
 }
 
-.addButton:disabled {
+.addButton:not(.loading):disabled {
 	translate: 0 calc(var(--bottomSpacing) + var(--height) + 4rem);
 }
 
