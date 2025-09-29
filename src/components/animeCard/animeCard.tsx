@@ -76,7 +76,6 @@ const AnimeCard = ({
       <div
         className={`card ${isWatchedClass} ${isJustAddedClass} ${isToBeRemovedClass}`}
         onAnimationEnd={(event) => {
-          console.warn(event.animationName);
           switch (event.animationName) {
             case justAddedAnimName:
               anime.justAdded = false;

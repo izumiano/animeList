@@ -14,6 +14,8 @@
 	min-width: var(--minCardWidth);
 	transition: background-color 0.8s;
 
+	background-color: var(--colPrimary);
+
 	margin: 0;
 	padding: 0;
 
