@@ -1,7 +1,6 @@
 .searchResultsContainer {
 	display: grid;
 	margin: 1rem;
-	overflow-y: scroll;
 	grid-template-columns: repeat(auto-fit, minmax(var(--minCardWidth), 1fr));
 	gap: 10px;
 

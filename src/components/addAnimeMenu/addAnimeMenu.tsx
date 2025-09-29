@@ -36,7 +36,7 @@ const AddAnimeMenu = ({
   const isOpenClass = isOpen ? "open" : "";
 
   return (
-    <div>
+    <>
       <div
         id="thingToClose"
         className={`${isOpenClass}`}
@@ -53,7 +53,7 @@ const AddAnimeMenu = ({
         id="addAnimeMenu"
         className={`flexColumn shimmerBackground ${isOpenClass}`}
       >
-        <div id="addAnimeInputs" className="flexRow">
+        <div id="addAnimeInputs" className="flexRow margin">
           <input
             id="addAnimeSearch"
             type="text"
@@ -121,9 +121,20 @@ const AddAnimeMenu = ({
             <img src={fileIcon}></img>
           </label>
         </div>
+
+        <div className="scroll">
+          <SearchResults
+            searchResults={searchResults}
+            selectedAnimeIndex={selectedAnimeIndex}
+            setSelectedAnimeIndexState={setSelectedAnimeIndexState}
+          />
+          <div className="addButtonSpacer addButtonProps"></div>
+        </div>
+
         <ProgressButton
           state={addAnimeProgressState}
           disabled={selectedAnimeIndex === null}
+          className="addButton addButtonProps"
           onClick={() => {
             if (selectedAnimeIndex === null || searchResults === "loading") {
               toast.error("Nothing is selected");
@@ -217,14 +228,8 @@ const AddAnimeMenu = ({
         >
           Add
         </ProgressButton>
-
-        <SearchResults
-          searchResults={searchResults}
-          selectedAnimeIndex={selectedAnimeIndex}
-          setSelectedAnimeIndexState={setSelectedAnimeIndexState}
-        />
       </div>
-    </div>
+    </>
   );
 };
 

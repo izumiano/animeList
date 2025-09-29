@@ -11,18 +11,20 @@ export type ProgressButtonState = {
 const ProgressButton = ({
   state,
   disabled,
+  className,
   onClick,
   children,
 }: {
   state: ProgressButtonState;
   disabled: boolean;
+  className?: string;
   onClick: React.MouseEventHandler<HTMLButtonElement>;
   children: ReactNode;
 }) => {
   const progress = clamp(state.progress, { min: 0, max: 1 });
   return (
     <button
-      className="progressButton"
+      className={`progressButton ${className}`}
       disabled={disabled || state.state !== "enabled"}
       onClick={onClick}
     >

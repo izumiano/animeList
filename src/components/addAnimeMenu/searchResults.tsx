@@ -4,16 +4,18 @@ import LoadingSpinner from "../generic/loadingSpinner";
 import "./searchResults.css";
 
 const SearchResults = ({
+  className,
   searchResults,
   selectedAnimeIndex,
   setSelectedAnimeIndexState,
 }: {
+  className?: string;
   searchResults: SeasonDetails[] | "loading";
   selectedAnimeIndex: number | null;
   setSelectedAnimeIndexState: (index: number | null) => void;
 }) => {
   return (
-    <div className="searchResultsContainer">
+    <div className={`searchResultsContainer ${className}`}>
       {searchResults !== "loading" ? (
         searchResults.map((result, index) => {
           const isSelectedClass =
