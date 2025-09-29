@@ -49,7 +49,10 @@ const AddAnimeMenu = ({
           } 0.4s forwards`,
         }}
       ></div>
-      <div id="addAnimeMenu" className={`flexColumn ${isOpenClass}`}>
+      <div
+        id="addAnimeMenu"
+        className={`flexColumn shimmerBackground ${isOpenClass}`}
+      >
         <div id="addAnimeInputs" className="flexRow">
           <input
             id="addAnimeSearch"
