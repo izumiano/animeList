@@ -48,7 +48,6 @@ const Dropdown = ({
 
     const handleMove = () => {
       if (currentWrapper) {
-        // setDropdownWrapperYPos(currentWrapper.getBoundingClientRect().y);
         setDropdownMaxHeight(
           window.innerHeight - currentWrapper.getBoundingClientRect().y
         );
@@ -93,12 +92,6 @@ const Dropdown = ({
   }, []);
 
   const requiresScroll = isOpen && dropdownMaxHeight <= dropdownWrapperHeight;
-  // let maxHeight = -1;
-  // if (isOpen) {
-  //   // maxHeight = dropdownMaxHeight;
-
-  //   requiresScroll = dropdownMaxHeight <= dropdownWrapperHeight;
-  // }
 
   dropdownContentRef.current?.style.setProperty(
     "--offset",
