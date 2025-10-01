@@ -5,7 +5,6 @@
 	width: 100%;
 	height: var(--height);
 
-	--height: min(min(13dvh, 13dvw), 6rem);
 	z-index: 1;
 
 	align-items: center;

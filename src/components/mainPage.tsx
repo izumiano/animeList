@@ -28,7 +28,7 @@ const MainPage = ({
         ref={fullScreenScrollContainerRef}
         className="fullScreenScrollContainer"
       >
-        <div className="fakeMainMenuBar"></div>
+        <div className="mainMenuBarProps"></div>
         <AnimeCardList
           animes={Array.from(animes.values())}
           reloadAnimes={reloadAnimes}

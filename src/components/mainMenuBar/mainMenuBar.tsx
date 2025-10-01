@@ -16,7 +16,7 @@ const MainMenuBar = ({
   animeFilterState: AnimeFilterState;
 }) => {
   return (
-    <div id="mainMenuBar">
+    <div id="mainMenuBar" className="mainMenuBarProps">
       <AddAnimeButton setIsOpenState={setIsOpenState} />
       <div className="flexGrow"></div>
       <input
