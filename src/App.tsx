@@ -24,7 +24,6 @@ function App() {
     if (doScroll) {
       setTimeout(() => {
         fullScreenScrollContainerRef.current?.scrollTo({
-          left: 0,
           top: fullScreenScrollContainerRef.current.scrollHeight,
           behavior: "smooth",
         });

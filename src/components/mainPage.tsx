@@ -23,6 +23,7 @@ const MainPage = ({
       <MainMenuBar
         setIsOpenState={setIsOpenState}
         animeFilterState={animeFilterState}
+        fullScreenScrollContainerRef={fullScreenScrollContainerRef}
       />
       <div
         ref={fullScreenScrollContainerRef}

@@ -11,10 +11,19 @@ import "./animeFilterNode.css";
 const AnimeFilterNode = ({
   animeFilterState: [animeFilter, setAnimeFilterState],
   setParentScrollEnabled,
+  fullScreenScrollContainerRef,
 }: {
   animeFilterState: AnimeFilterState;
   setParentScrollEnabled: (enabled: boolean) => void;
+  fullScreenScrollContainerRef: React.RefObject<HTMLDivElement | null>;
 }) => {
+  function scrollToTop() {
+    fullScreenScrollContainerRef.current?.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }
+
   return (
     <div className="animeFilterNode margin">
       <Toggle
@@ -51,6 +60,7 @@ const AnimeFilterNode = ({
         defaultValue={animeFilter.sortBy}
         dropdownAlignment="right"
         onChange={(value) => {
+          scrollToTop();
           setAnimeFilterState(animeFilter.newWith("sortBy", value as SortBy));
         }}
         onOpenChange={(isOpen) => setParentScrollEnabled(!isOpen)}

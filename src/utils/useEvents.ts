@@ -45,7 +45,6 @@ export const useOtherElementEvent = <T extends HTMLElement>({
       for (const eventType of eventTypes) {
         if (eventType === "resize") {
           const resizeObserver = new ResizeObserver(() => {
-            console.log("size");
             callback();
           });
           resizeObserver.observe(currentElement);

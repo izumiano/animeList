@@ -11,9 +11,11 @@ let searchQueryAbortController = new AbortController();
 const MainMenuBar = ({
   setIsOpenState,
   animeFilterState: [animeFilter, setAnimeFilterState],
+  fullScreenScrollContainerRef,
 }: {
   setIsOpenState: (isOpen: boolean) => void;
   animeFilterState: AnimeFilterState;
+  fullScreenScrollContainerRef: React.RefObject<HTMLDivElement | null>;
 }) => {
   return (
     <div id="mainMenuBar" className="mainMenuBarProps">
@@ -44,6 +46,7 @@ const MainMenuBar = ({
           <AnimeFilterNode
             animeFilterState={[animeFilter, setAnimeFilterState]}
             setParentScrollEnabled={setParentScrollEnabled}
+            fullScreenScrollContainerRef={fullScreenScrollContainerRef}
           />
         )}
       />
