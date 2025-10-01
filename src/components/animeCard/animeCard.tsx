@@ -163,6 +163,8 @@ const AnimeCard = ({
                 buttonClass="transparentBackground"
                 useDefaultButtonStyle={true}
                 dropdownButton={<img src={trashIcon} width="25"></img>}
+                listRef={listRef}
+                scrollElementRef={scrollElementRef}
                 getChildren={({ closeDropdown }) => (
                   <ConfirmationDropdown
                     title="Really Delete?"
@@ -189,6 +191,8 @@ const AnimeCard = ({
               seasons={anime.seasons}
               selectedSeason={selectedSeason}
               watched={selectedSeasonWatched}
+              listRef={listRef}
+              scrollElementRef={scrollElementRef}
               onSelect={(seasonNumber) => {
                 console.log({ seasonNumber });
                 setIndex(seasonNumber - 1);

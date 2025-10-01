@@ -7,12 +7,16 @@ const SeasonPicker = ({
   seasons,
   selectedSeason,
   watched,
+  listRef,
+  scrollElementRef,
   onSelect,
 }: {
   animeTitle: string;
   seasons: AnimeSeason[];
   selectedSeason: AnimeSeason;
   watched: boolean;
+  listRef: React.RefObject<HTMLUListElement | null>;
+  scrollElementRef: React.RefObject<HTMLDivElement | null>;
   onSelect: (seasonNumber: number) => undefined;
 }) => {
   if (seasons.length <= 1) {
@@ -28,6 +32,8 @@ const SeasonPicker = ({
         onChange={(value) => {
           onSelect(value);
         }}
+        listRef={listRef}
+        scrollElementRef={scrollElementRef}
         autocloseOnChange={true}
         optionSelectedClass="seasonOptionSelected"
       >

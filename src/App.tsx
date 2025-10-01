@@ -1,18 +1,17 @@
 import "./App.css";
-import AnimeCardList from "./components/animeCard/animeCardList";
 import Anime from "./models/anime";
 import LocalDB from "./indexedDb/indexedDb";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import AppData from "./appData";
 import AddAnimeMenu from "./components/addAnimeMenu/addAnimeMenu";
 import { ToastContainer } from "react-toastify";
-import MainMenuBar from "./components/mainMenuBar/mainMenuBar";
-import AnimeFilter from "./models/animeFilter";
+import MainPage from "./components/mainPage";
 
 function App() {
   const [animes, setAnimesState] = useState<Map<string, Anime>>(new Map());
   const [addAnimeMenuIsOpen, setAddAnimeMenuIsOpenState] = useState(false);
-  const animeFilterState = useState(AnimeFilter.load());
+  const fullScreenScrollContainerRef = useRef<HTMLDivElement>(null);
+
   AppData.animes = animes;
 
   function addAnime(anime: Anime, params?: { doScroll: boolean }) {
@@ -24,9 +23,9 @@ function App() {
     const doScroll = !params ? true : false;
     if (doScroll) {
       setTimeout(() => {
-        window.scrollTo({
+        fullScreenScrollContainerRef.current?.scrollTo({
           left: 0,
-          top: document.body.scrollHeight,
+          top: fullScreenScrollContainerRef.current.scrollHeight,
           behavior: "smooth",
         });
       }, 500);
@@ -61,16 +60,14 @@ function App() {
         isOpen={addAnimeMenuIsOpen}
         setIsOpenState={setAddAnimeMenuIsOpenState}
       />
-      <MainMenuBar
-        setIsOpenState={setAddAnimeMenuIsOpenState}
-        animeFilterState={animeFilterState}
-      />
 
-      <AnimeCardList
+      <MainPage
         animes={Array.from(animes.values())}
         reloadAnimes={reloadAnimes}
-        animeFilter={animeFilterState[0]}
+        setIsOpenState={setAddAnimeMenuIsOpenState}
+        fullScreenScrollContainerRef={fullScreenScrollContainerRef}
       />
+
       <ToastContainer position="bottom-left" className="leftAlignedText" />
     </div>
   );

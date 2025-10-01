@@ -12,6 +12,8 @@ const Dropdown = ({
   dropdownButton,
   backgroundColor,
   onOpenChange,
+  listRef,
+  scrollElementRef,
   getChildren,
   children,
 }: {
@@ -22,6 +24,8 @@ const Dropdown = ({
   dropdownButton: ReactNode;
   backgroundColor?: Property.BackgroundColor;
   onOpenChange?: (isOpen: boolean) => void;
+  listRef?: React.RefObject<HTMLUListElement | null>;
+  scrollElementRef?: React.RefObject<HTMLDivElement | null>;
   getChildren?: (params: {
     setParentScrollEnabled: (enabled: boolean) => void;
     closeDropdown: () => void;
@@ -39,6 +43,8 @@ const Dropdown = ({
   useEffect(() => {
     const currentContent = dropdownContentRef.current;
     const currentWrapper = dropdownWrapperRef.current;
+    const currentList = listRef?.current;
+    const currentScrollElement = scrollElementRef?.current;
 
     const handleScroll = () => {
       if (currentContent) {
@@ -60,7 +66,7 @@ const Dropdown = ({
       }
     };
 
-    const sizeObserver = new ResizeObserver((entries) => {
+    const sizeObserverHandleSize = new ResizeObserver((entries) => {
       entries.forEach(() => {
         handleSize();
       });
@@ -70,10 +76,19 @@ const Dropdown = ({
       currentContent.addEventListener("scroll", handleScroll);
     }
     if (currentWrapper) {
-      sizeObserver.observe(currentWrapper);
+      sizeObserverHandleSize.observe(currentWrapper);
     }
-    document.addEventListener("scroll", handleMove);
-    window.addEventListener("resize", handleMove);
+    if (currentScrollElement) {
+      currentScrollElement.addEventListener("scroll", handleMove);
+    }
+    const sizeObserverHandleMove = new ResizeObserver((entries) => {
+      entries.forEach(() => {
+        handleMove();
+      });
+    });
+    if (currentList) {
+      sizeObserverHandleMove.observe(currentList);
+    }
 
     handleScroll();
     handleMove();
@@ -84,12 +99,16 @@ const Dropdown = ({
         currentContent.removeEventListener("scroll", handleScroll);
       }
       if (currentWrapper) {
-        sizeObserver.disconnect();
+        sizeObserverHandleSize.disconnect();
       }
-      document.removeEventListener("scroll", handleMove);
-      window.removeEventListener("resize", handleMove);
+      if (currentScrollElement) {
+        currentScrollElement.removeEventListener("scroll", handleMove);
+      }
+      if (currentList) {
+        sizeObserverHandleMove.disconnect();
+      }
     };
-  }, []);
+  }, [listRef, scrollElementRef]);
 
   const requiresScroll = isOpen && dropdownMaxHeight <= dropdownWrapperHeight;
 

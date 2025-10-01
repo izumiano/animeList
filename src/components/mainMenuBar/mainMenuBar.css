@@ -3,8 +3,12 @@
 	position: absolute;
 	top: 0;
 	width: 100%;
+	height: var(--height);
 
+	--height: min(min(13dvh, 13dvw), 6rem);
 	z-index: 1;
+
+	align-items: center;
 
 	box-sizing: border-box;
 	backdrop-filter: blur(10px);
@@ -16,7 +20,7 @@
 
 	padding: 1rem;
 
-	--defaultItemWidth: 3.5rem;
+	--defaultItemWidth: calc(var(--height)/13 * 8);
 }
 
 .menuBarButton {
@@ -30,5 +34,5 @@
 }
 
 .menuBarButton > img {
-	width: var(--largeIconWidth);
+	width: calc(var(--defaultItemWidth)*0.6);
 }

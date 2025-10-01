@@ -9,33 +9,29 @@ const AnimeCardList = ({
   animes,
   reloadAnimes,
   animeFilter,
+  parentRef,
 }: {
   animes: Anime[];
   reloadAnimes: () => void;
   animeFilter: AnimeFilter;
+  parentRef: React.RefObject<HTMLDivElement | null>;
 }) => {
-  const fullScreenScrollContainerRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
 
   return (
-    <div
-      ref={fullScreenScrollContainerRef}
-      className="fullScreenScrollContainer"
-    >
-      <ul ref={listRef} className="animeCardList">
-        {getAnimesSorted(animes, animeFilter.sortBy).map((anime) => (
-          <li key={anime.getAnimeDbId()}>
-            <AnimeCard
-              anime={anime}
-              reloadAnimes={reloadAnimes}
-              animeFilter={animeFilter}
-              listRef={listRef}
-              scrollElementRef={fullScreenScrollContainerRef}
-            />
-          </li>
-        ))}
-      </ul>
-    </div>
+    <ul ref={listRef} className="animeCardList">
+      {getAnimesSorted(animes, animeFilter.sortBy).map((anime) => (
+        <li key={anime.getAnimeDbId()}>
+          <AnimeCard
+            anime={anime}
+            reloadAnimes={reloadAnimes}
+            animeFilter={animeFilter}
+            listRef={listRef}
+            scrollElementRef={parentRef}
+          />
+        </li>
+      ))}
+    </ul>
   );
 };
 

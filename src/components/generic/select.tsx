@@ -17,6 +17,8 @@ function Select<T extends ValueType>({
   defaultValue,
   onChange,
   onOpenChange,
+  listRef,
+  scrollElementRef,
   autocloseOnChange,
   dropdownAlignment,
   className,
@@ -29,6 +31,8 @@ function Select<T extends ValueType>({
   defaultValue?: T;
   onChange: (value: T) => void;
   onOpenChange?: (isOpen: boolean) => void;
+  listRef?: React.RefObject<HTMLUListElement | null>;
+  scrollElementRef?: React.RefObject<HTMLDivElement | null>;
   autocloseOnChange?: boolean;
   dropdownAlignment?: Alignment;
   className?: string;
@@ -86,6 +90,8 @@ function Select<T extends ValueType>({
           </div>
         }
         onOpenChange={onOpenChange}
+        listRef={listRef}
+        scrollElementRef={scrollElementRef}
         getChildren={({ closeDropdown }) => (
           <div className={`selectContent ${listStyle}`}>
             {childrenArr.map((child, index) => {
