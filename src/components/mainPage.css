@@ -7,6 +7,6 @@
 }
 
 .mainMenuBarProps {
-	--height: min(13dvh, 13dvw, 6rem);
+	--height: max(min(13dvh, 13dvw, 6rem), 4rem);
 	height: var(--height);
 }

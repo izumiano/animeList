@@ -15,6 +15,7 @@ import {
   removeDiacritics,
   removeNonAlphanumeric,
   remToPx,
+  waitForNextFrame,
 } from "../../utils/utils";
 import Dropdown from "../generic/dropdown";
 import ConfirmationDropdown from "../generic/confirmationDropdown";
@@ -57,6 +58,7 @@ const AnimeCard = ({
   const [visible, setVisibility] = useState(shouldBeEnabled);
 
   const [isOnScreen, setIsOnScreen] = useState<boolean | null>(null);
+  const [animeSortBy, setAnimeSortByState] = useState(animeFilter.sortBy);
 
   function updateWatchedState() {
     const watched = anime.checkWatchedAll();
@@ -87,7 +89,7 @@ const AnimeCard = ({
 
   useOtherElementEvent({
     element: scrollElementRef,
-    eventTypes: ["scroll"],
+    eventTypes: ["scroll", "resize"],
     callback: checkIsOnScreen,
   });
 
@@ -96,6 +98,13 @@ const AnimeCard = ({
     eventTypes: ["resize"],
     callback: checkIsOnScreen,
   });
+
+  if (animeFilter.sortBy !== animeSortBy) {
+    waitForNextFrame().then(() => {
+      checkIsOnScreen();
+      setAnimeSortByState(animeFilter.sortBy);
+    });
+  }
 
   useEffect(checkIsOnScreen, [animating, isOnScreen]);
 
