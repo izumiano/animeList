@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import Anime from "../../models/anime";
 import type { SortBy } from "../../models/animeFilter";
 import type AnimeFilter from "../../models/animeFilter";
@@ -12,19 +13,31 @@ const AnimeCardList = ({
   animes: Anime[];
   reloadAnimes: () => void;
   animeFilter: AnimeFilter;
-}) => (
-  <ul className="animeCardList">
-    {getAnimesSorted(animes, animeFilter.sortBy).map((anime) => (
-      <li key={anime.getAnimeDbId()}>
-        <AnimeCard
-          anime={anime}
-          reloadAnimes={reloadAnimes}
-          animeFilter={animeFilter}
-        />
-      </li>
-    ))}
-  </ul>
-);
+}) => {
+  const fullScreenScrollContainerRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
+
+  return (
+    <div
+      ref={fullScreenScrollContainerRef}
+      className="fullScreenScrollContainer"
+    >
+      <ul ref={listRef} className="animeCardList">
+        {getAnimesSorted(animes, animeFilter.sortBy).map((anime) => (
+          <li key={anime.getAnimeDbId()}>
+            <AnimeCard
+              anime={anime}
+              reloadAnimes={reloadAnimes}
+              animeFilter={animeFilter}
+              listRef={listRef}
+              scrollElementRef={fullScreenScrollContainerRef}
+            />
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
 
 function getAnimesSorted(animes: Anime[], sortBy: SortBy) {
   switch (sortBy) {

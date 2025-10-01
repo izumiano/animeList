@@ -1,6 +1,6 @@
 #mainMenuBar {
 	display: flex;
-	position: sticky;
+	position: absolute;
 	top: 0;
 	width: 100%;
 

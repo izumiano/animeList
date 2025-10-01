@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import "./dropdown.css";
-import { useOutsideClick } from "../../utils/useOutsideClick";
+import { useOutsideClick } from "../../utils/useEvents";
 import type { Property } from "csstype";
 import type { Alignment } from "../../utils/utils";
 

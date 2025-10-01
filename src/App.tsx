@@ -55,7 +55,7 @@ function App() {
   }, []);
 
   return (
-    <>
+    <div>
       <AddAnimeMenu
         addAnime={addAnime}
         isOpen={addAnimeMenuIsOpen}
@@ -65,13 +65,14 @@ function App() {
         setIsOpenState={setAddAnimeMenuIsOpenState}
         animeFilterState={animeFilterState}
       />
+
       <AnimeCardList
         animes={Array.from(animes.values())}
         reloadAnimes={reloadAnimes}
         animeFilter={animeFilterState[0]}
       />
       <ToastContainer position="bottom-left" className="leftAlignedText" />
-    </>
+    </div>
   );
 }
 

@@ -15,6 +15,12 @@ export async function sleepFor(
   return { wasAborted: false };
 }
 
+export function waitForNextFrame() {
+  return new Promise((resolve) => {
+    requestAnimationFrame(resolve);
+  });
+}
+
 export function remToPx(remValue: number) {
   const rootFontSize = parseFloat(
     getComputedStyle(document.documentElement).fontSize
@@ -23,6 +29,14 @@ export function remToPx(remValue: number) {
   const pxValue = remValue * rootFontSize;
 
   return pxValue;
+}
+
+export function dvwToPx(dvwValue: number) {
+  const dynamicViewportWidth = window.innerWidth;
+
+  const pixelValue = (dvwValue / 100) * dynamicViewportWidth;
+
+  return pixelValue;
 }
 
 export function showError(ex: unknown) {
@@ -102,3 +116,16 @@ export function removeNonAlphanumeric(str: string) {
 }
 
 export type Alignment = "left" | "center" | "right";
+
+export function isElementInViewport(
+  element: HTMLElement,
+  tolerance: number = 0
+) {
+  const rect = element.getBoundingClientRect();
+  return (
+    rect.bottom >= -tolerance &&
+    rect.top <= window.innerHeight + tolerance &&
+    rect.right >= -tolerance &&
+    rect.left <= window.innerWidth + tolerance
+  );
+}
