@@ -43,8 +43,8 @@ const Dropdown = ({
   useEffect(() => {
     const currentContent = dropdownContentRef.current;
     const currentWrapper = dropdownWrapperRef.current;
-    const currentList = listRef?.current;
-    const currentScrollElement = scrollElementRef?.current;
+    const currentList = listRef?.current ?? window;
+    const currentScrollElement = scrollElementRef?.current ?? document;
 
     const handleScroll = () => {
       if (currentContent) {
@@ -87,7 +87,11 @@ const Dropdown = ({
       });
     });
     if (currentList) {
-      sizeObserverHandleMove.observe(currentList);
+      if (currentList instanceof Window) {
+        currentList.addEventListener("resize", handleMove);
+      } else {
+        sizeObserverHandleMove.observe(currentList);
+      }
     }
 
     handleScroll();
