@@ -367,8 +367,9 @@ export default class MALCardFactory {
     pageIndex: number;
   }) {
     return await WebUtil.ratelimitRetryFunc(async () => {
-      return (await WebUtil.get(
+      return (await WebUtil.fetch(
         `https://api.jikan.moe/v4/anime/${id}/episodes?page=${pageIndex}`,
+        "GET",
         {
           errorHandler: new JikanErrorHandler(
             "Failed getting paginated episodes"

@@ -82,7 +82,12 @@ export function isCapital(str: string) {
 export function dialogifyKey(
   key: string | number | readonly string[] | undefined
 ) {
-  key = capitalizeFirstLetter(String(key));
+  key =
+    String(key)
+      .replaceAll(/-|_/g, " ") // replace - and _ with spaces
+      .match(/\b\w+\b/g) // match words
+      ?.map((word) => capitalizeFirstLetter(word))
+      .join("") ?? "";
   const words = [];
   let word = "";
   for (const c of key) {

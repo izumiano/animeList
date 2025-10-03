@@ -99,7 +99,7 @@ export default class MALSearch {
   private static async MyAnimeListSearch(query: string, limit: number) {
     query = encodeURIComponent(query);
     const animeDataResponse: MALSearchResponse | BadResponse =
-      await WebUtil.get(
+      await WebUtil.fetch(
         `https://api.jikan.moe/v4/anime?q=${query}&limit=${limit}&sfw`
       );
 
@@ -116,9 +116,13 @@ export default class MALSearch {
 
   public static async GetAnimeDataRetry(id: number) {
     try {
-      return (await WebUtil.get(`https://api.jikan.moe/v4/anime/${id}/full`, {
-        errorHandler: new JikanErrorHandler("Failed getting anime data"),
-      })) as MALSeasonResponse | BadResponse;
+      return (await WebUtil.fetch(
+        `https://api.jikan.moe/v4/anime/${id}/full`,
+        "GET",
+        {
+          errorHandler: new JikanErrorHandler("Failed getting anime data"),
+        }
+      )) as MALSeasonResponse | BadResponse;
     } catch (ex) {
       if (ex instanceof BadResponse) {
         return ex;
