@@ -9,7 +9,7 @@ import { MALCryptography } from "./malCryptography";
 import { MALUserToken } from "./malUserToken";
 
 const clientId = "7fa754f6a6b5751453f15c715fc71039";
-const redirectUri = window.location.origin + "/animeList/malAuth";
+const redirectUri = window.location.origin + "/malAuth";
 
 let acquireUserTokenAbortController = new AbortController();
 let refreshTokenAbortController = new AbortController();
