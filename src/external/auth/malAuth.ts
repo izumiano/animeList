@@ -1,5 +1,5 @@
 import { toast } from "react-toastify";
-import ActivityTask from "../../utils/activityTask";
+import ActivityTask, { pushTask } from "../../utils/activityTask";
 import { showError, sleepFor } from "../../utils/utils";
 import WebUtil from "../../utils/webUtil";
 import MalErrorHandler from "../errorHandlers/malErrorHandler";
@@ -74,53 +74,55 @@ export class MALAuth {
       return;
     }
 
-    const task = new ActivityTask({
-      label: "Acquiring User Token",
-      task: async () => {
-        const url = "https://myanimelist.net/v1/oauth2/token";
-        const codeChallenge = localStorage.getItem("codeChallenge");
-        if (!codeChallenge) {
-          return new BadResponse(
-            "Tried acquiring user token, but no code challenge was saved."
+    const task = pushTask(
+      new ActivityTask({
+        label: "Acquiring User Token",
+        task: async () => {
+          const url = "https://myanimelist.net/v1/oauth2/token";
+          const codeChallenge = localStorage.getItem("codeChallenge");
+          if (!codeChallenge) {
+            return new BadResponse(
+              "Tried acquiring user token, but no code challenge was saved."
+            );
+          }
+          if (code === "") {
+            return new BadResponse(
+              "Tried acquiring user token, but no code was given."
+            );
+          }
+          const request = new Request(url);
+          request.headers.set(
+            "Content-Type",
+            "application/x-www-form-urlencoded"
           );
-        }
-        if (code === "") {
-          return new BadResponse(
-            "Tried acquiring user token, but no code was given."
-          );
-        }
-        const request = new Request(url);
-        request.headers.set(
-          "Content-Type",
-          "application/x-www-form-urlencoded"
-        );
 
-        const body = new URLSearchParams({
-          client_id: clientId,
-          code: code,
-          code_verifier: codeChallenge,
-          grant_type: "authorization_code",
-          redirect_uri: redirectUri,
-        });
+          const body = new URLSearchParams({
+            client_id: clientId,
+            code: code,
+            code_verifier: codeChallenge,
+            grant_type: "authorization_code",
+            redirect_uri: redirectUri,
+          });
 
-        const response = (await WebUtil.fetchProxy(request, "POST", {
-          body: body,
-          errorHandler: new MalErrorHandler("Failed acquiring user token"),
-        })) as MALUserTokenResponse | BadResponse;
-        if (response instanceof BadResponse) {
-          return response;
-        }
+          const response = (await WebUtil.fetchProxy(request, "POST", {
+            body: body,
+            errorHandler: new MalErrorHandler("Failed acquiring user token"),
+          })) as MALUserTokenResponse | BadResponse;
+          if (response instanceof BadResponse) {
+            return response;
+          }
 
-        const userToken = MALUserToken.create(response);
-        if (userToken instanceof BadResponse) {
+          const userToken = MALUserToken.create(response);
+          if (userToken instanceof BadResponse) {
+            return userToken;
+          }
+          localStorage.removeItem("codeChallenge");
+          history.replaceState(null, "", import.meta.env.BASE_URL);
+          this.userToken = userToken;
           return userToken;
-        }
-        localStorage.removeItem("codeChallenge");
-        history.replaceState(null, "", import.meta.env.BASE_URL);
-        this.userToken = userToken;
-        return userToken;
-      },
-    }).start();
+        },
+      })
+    );
 
     task.then(async (result) => {
       if (result instanceof BadResponse) {
@@ -133,25 +135,27 @@ export class MALAuth {
     return task;
   }
 
-  public refreshUserToken(refreshToken: string) {
-    new ActivityTask({
-      label: "Refreshing User Token",
-      task: async () => {
-        const result = await this.refreshUserTokenAsync(refreshToken);
-        if (result instanceof BadResponse) {
-          showError(result);
-        }
-      },
-    }).start();
-  }
-
-  public async refreshUserTokenAsync(refreshToken: string) {
+  public async refreshUserToken(refreshToken: string) {
     refreshTokenAbortController.abort();
     refreshTokenAbortController = new AbortController();
     if ((await sleepFor(1000, refreshTokenAbortController.signal)).wasAborted) {
       return;
     }
 
+    pushTask(
+      new ActivityTask({
+        label: "Refreshing User Token",
+        task: async () => {
+          const result = await this.refreshUserTokenAsync(refreshToken);
+          if (result instanceof BadResponse) {
+            showError(result);
+          }
+        },
+      })
+    );
+  }
+
+  public async refreshUserTokenAsync(refreshToken: string) {
     console.debug("refreshing user token");
     const url = "https://myanimelist.net/v1/oauth2/token";
     const request = new Request(url);

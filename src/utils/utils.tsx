@@ -1,6 +1,7 @@
 import { toast } from "react-toastify";
 import BadResponse from "../external/responses/badResponse";
 import "../App.css";
+import type { CSSProperties } from "react";
 
 export async function sleepFor(
   milliseconds: number,
@@ -59,8 +60,17 @@ export function showError(ex: unknown) {
   toast.error(message);
 }
 
-export function clamp(value: number, params: { min: number; max: number }) {
-  return Math.max(params.min, Math.min(value, params.max));
+export function clamp(
+  value: number,
+  params:
+    | { min: number; max: number }
+    | { min: number; max?: number }
+    | { min?: number; max: number }
+) {
+  return Math.max(
+    params.min ?? -Infinity,
+    Math.min(value, params.max ?? Infinity)
+  );
 }
 
 export function capitalizeFirstLetter(str: string) {
@@ -133,4 +143,10 @@ export function isElementInViewport(
     rect.right >= -tolerance &&
     rect.left <= window.innerWidth + tolerance
   );
+}
+
+export type UUIDType = `${string}-${string}-${string}-${string}-${string}`;
+
+export interface ProgressCSS extends CSSProperties {
+  "--progress": number;
 }

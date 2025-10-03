@@ -1,6 +1,7 @@
 import type { AnimeFilterState } from "../../models/animeFilter";
 import { sleepFor } from "../../utils/utils";
 import Dropdown from "../generic/dropdown";
+import ProgressNode from "../generic/progressNode";
 import AddAnimeButton from "./addAnimeButton";
 import AnimeFilterButton from "./animeFilterButton";
 import AnimeFilterNode from "./animeFilterNode";
@@ -20,6 +21,7 @@ const MainMenuBar = ({
   return (
     <div id="mainMenuBar" className="mainMenuBarProps">
       <AddAnimeButton setIsOpenState={setIsOpenState} />
+      <ProgressNode />
       <div className="flexGrow"></div>
       <input
         type="text"
@@ -42,14 +44,15 @@ const MainMenuBar = ({
         alignment="right"
         useDefaultButtonStyle={false}
         dropdownButton={<AnimeFilterButton />}
-        getChildren={({ setParentScrollEnabled }) => (
+      >
+        {({ setParentScrollEnabled }) => (
           <AnimeFilterNode
             animeFilterState={[animeFilter, setAnimeFilterState]}
             setParentScrollEnabled={setParentScrollEnabled}
             fullScreenScrollContainerRef={fullScreenScrollContainerRef}
           />
         )}
-      />
+      </Dropdown>
     </div>
   );
 };

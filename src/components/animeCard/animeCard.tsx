@@ -174,7 +174,8 @@ const AnimeCard = ({
                 dropdownButton={<img src={trashIcon} width="25"></img>}
                 listRef={listRef}
                 scrollElementRef={scrollElementRef}
-                getChildren={({ closeDropdown }) => (
+              >
+                {({ closeDropdown }) => (
                   <ConfirmationDropdown
                     title="Really Delete?"
                     confirmMessage="Delete"
@@ -193,7 +194,7 @@ const AnimeCard = ({
                     }}
                   />
                 )}
-              />
+              </Dropdown>
             </div>
             <SeasonPicker
               animeTitle={anime.title}

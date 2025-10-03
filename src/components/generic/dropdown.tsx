@@ -5,32 +5,34 @@ import type { Property } from "csstype";
 import type { Alignment } from "../../utils/utils";
 
 const Dropdown = ({
+  dropdownButton,
   alignment,
   className,
   buttonClass,
+  buttonProps,
   useDefaultButtonStyle,
-  dropdownButton,
   backgroundColor,
   onOpenChange,
   listRef,
   scrollElementRef,
-  getChildren,
   children,
 }: {
+  dropdownButton: ReactNode;
   alignment?: Alignment;
   className?: string;
   buttonClass?: string;
+  buttonProps?: React.ComponentProps<"button">;
   useDefaultButtonStyle?: boolean;
-  dropdownButton: ReactNode;
   backgroundColor?: Property.BackgroundColor;
   onOpenChange?: (isOpen: boolean) => void;
   listRef?: React.RefObject<HTMLUListElement | null>;
   scrollElementRef?: React.RefObject<HTMLDivElement | null>;
-  getChildren?: (params: {
-    setParentScrollEnabled: (enabled: boolean) => void;
-    closeDropdown: () => void;
-  }) => ReactNode;
-  children?: ReactNode;
+  children?:
+    | ReactNode
+    | ((params: {
+        setParentScrollEnabled: (enabled: boolean) => void;
+        closeDropdown: () => void;
+      }) => ReactNode);
 }) => {
   const [isOpen, setIsOpenState] = useState(false);
   const dropdownContentRef = useRef<HTMLDivElement>(null);
@@ -142,7 +144,11 @@ const Dropdown = ({
       className={`dropdown ${className}`}
     >
       {useDefaultButtonStyle ? (
-        <button className={buttonClass} onClick={() => setIsOpen(!isOpen)}>
+        <button
+          className={buttonClass}
+          onClick={() => setIsOpen(!isOpen)}
+          {...buttonProps}
+        >
           {dropdownButton}
         </button>
       ) : (
@@ -171,11 +177,14 @@ const Dropdown = ({
               backgroundColor: backgroundColor,
             }}
           >
-            {getChildren?.call(this, {
-              setParentScrollEnabled: setScrollEnabledState,
-              closeDropdown: () => setIsOpen(false),
-            })}
-            {children}
+            {typeof children === "function"
+              ? children?.call(this, {
+                  setParentScrollEnabled: setScrollEnabledState,
+                  closeDropdown: () => {
+                    if (isOpen) setIsOpen(false);
+                  },
+                })
+              : children}
           </div>
         </div>
       </div>

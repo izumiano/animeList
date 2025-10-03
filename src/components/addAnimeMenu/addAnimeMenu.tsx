@@ -193,7 +193,7 @@ const AddAnimeMenu = ({
 
                 const anime = await createAnimeTask.start();
 
-                if (anime instanceof BadResponse) {
+                if (anime instanceof BadResponse || !anime) {
                   setAddAnimeProgressState({ progress: 0, state: "enabled" });
                   showError(anime);
                   resolve(null);

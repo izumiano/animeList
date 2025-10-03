@@ -22,6 +22,7 @@ html {
 
 	--largePadding: 1.7rem;
 	--padding: 0.8rem;
+	--smallPadding: 0.3rem;
 
 	--largeMargin: 2rem;
 	--margin: 1rem;
@@ -135,6 +136,10 @@ h2 {
 	padding: var(--padding);
 }
 
+.smallPadding {
+	padding: var(--smallPadding);
+}
+
 .largeMargin {
 	margin: var(--largeMargin);
 }
@@ -157,4 +162,14 @@ h2 {
 
 .scroll {
 	overflow: scroll;
+}
+
+.invisibleDisable {
+	box-sizing: border-box;
+}
+
+.invisibleDisable:disabled {
+	border-color: transparent;
+	outline: none;
+	cursor: default;
 }

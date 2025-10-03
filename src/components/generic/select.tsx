@@ -92,7 +92,8 @@ function Select<T extends ValueType>({
         onOpenChange={onOpenChange}
         listRef={listRef}
         scrollElementRef={scrollElementRef}
-        getChildren={({ closeDropdown }) => (
+      >
+        {({ closeDropdown }) => (
           <div className={`selectContent ${listStyle}`}>
             {childrenArr.map((child, index) => {
               if (!isValidElement(child)) {
@@ -120,7 +121,7 @@ function Select<T extends ValueType>({
             })}
           </div>
         )}
-      />
+      </Dropdown>
     </div>
   );
 }

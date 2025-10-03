@@ -1,0 +1,23 @@
+.progressBar {
+	height: 0.7rem;
+	background: var(--colNeutral);
+	z-index: 0;
+	margin: 1rem;
+	overflow: hidden;
+
+	border-radius: 100vw;
+
+	align-content: center;
+}
+
+.progressBar > span {
+	display: block;
+	height: 100%;
+	width: calc(var(--progress) * 100% + 100vw);
+	translate: -100vw;
+	background-color: #e4c465;
+	overflow: hidden;
+	border-radius: 100vw;
+
+	transition: width 0.5s;
+}

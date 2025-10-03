@@ -1,0 +1,27 @@
+.circleProgress {
+	display: flex;
+	justify-content: center;
+	width: var(--defaultItemWidth);
+	height: var(--defaultItemWidth);
+}
+
+.circleProgress > svg > circle {
+	--strokeWidth: 0.7rem;
+	stroke-width: var(--strokeWidth);
+	r: calc(var(--defaultItemWidth) - var(--strokeWidth) * 1.4);
+	stroke: var(--colNeutral)
+}
+
+.circleProgress > svg > .progress {
+	stroke-dasharray: 100;
+	stroke-dashoffset: calc(100 - var(--progress));
+	stroke-linecap: round;
+	stroke-width: calc(var(--strokeWidth) + 2px);
+	stroke: var(--colSecondary);
+
+	transition: stroke-dashoffset 0.7s;
+}
+
+.circleProgress > svg {
+	transform: rotate(-90deg);
+}
