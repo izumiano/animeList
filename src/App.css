@@ -48,6 +48,10 @@ button {
 	height: 100vh;
 }
 
+pre {
+	margin: 0;
+}
+
 .flexRow {
 	display: flex;
 	flex-direction: row;
@@ -64,6 +68,16 @@ button {
 
 .flexGrowChildren > * {
 	flex: 1 1 auto;
+}
+
+.flexGrow0Width {
+	flex: 1 1 auto;
+	width: 0;
+}
+
+.flexGrow0Height {
+	flex: 1 1 auto;
+	height: 0;
 }
 
 .equalRowItems {
@@ -110,6 +124,21 @@ h2 {
 	font-weight: 600;
 }
 
+.smallText {
+	font-size: small;
+}
+
+.unimportantText {
+	font-size: small;
+	color: rgba(255, 255, 255, 0.6)
+}
+
+hr {
+	border-style: none;
+	background-color: var(--colNeutral);
+	height: 1px;
+}
+
 .leftAlignedText {
 	text-align: left;
 }
@@ -119,12 +148,20 @@ h2 {
 	align-items: center;
 }
 
+.verticalCenter {
+	align-self: center;
+}
+
 .spaceBetween {
 	justify-content: space-between;
 }
 
 .border {
 	border: 1px red solid;
+}
+
+.border2 {
+	border: 1px blue solid;
 }
 
 .largeIcon {

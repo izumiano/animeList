@@ -1,5 +1,8 @@
 .progressDropdown {
-	min-width: 15rem;
+	min-width: 25rem;
+	max-width: 50dvw;
+	display: flex;
+	flex-direction: column;
 	min-height: 4.2rem;
 	padding-top: 0.5rem;
 }

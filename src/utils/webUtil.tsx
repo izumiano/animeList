@@ -13,7 +13,7 @@ export default class WebUtil {
     TData extends IResponseDataType,
     TReturn extends IResponse<TData>,
     TErrorType,
-    TErrorHandler extends IErrorHandler<TErrorType>,
+    TErrorHandler extends IErrorHandler<TErrorType>
   >(
     request: Request,
     params?: {
@@ -38,7 +38,8 @@ export default class WebUtil {
               data as TErrorType
             ),
             statusCode: response.status,
-          })
+          }),
+          { data: data, statusCode: response.status }
         );
       }
 
@@ -90,7 +91,7 @@ export default class WebUtil {
     TData extends IResponseDataType,
     TReturn extends IResponse<TData>,
     TErrorType,
-    TErrorHandler extends IErrorHandler<TErrorType>,
+    TErrorHandler extends IErrorHandler<TErrorType>
   >(
     request: RequestInfo,
     method?: "GET" | "POST",
@@ -110,7 +111,7 @@ export default class WebUtil {
     TData extends IResponseDataType,
     TReturn extends IResponse<TData>,
     TErrorType,
-    TErrorHandler extends IErrorHandler<TErrorType>,
+    TErrorHandler extends IErrorHandler<TErrorType>
   >(
     request: Request | URL,
     method?: "GET" | "POST",
@@ -134,7 +135,7 @@ export default class WebUtil {
 
   public static async ratelimitRetryFunc<
     TData extends IResponseDataType,
-    TReturn extends IResponse<TData>,
+    TReturn extends IResponse<TData>
   >(callback: () => Promise<TReturn>) {
     let response = await doCallback();
     let i = 0;

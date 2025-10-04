@@ -1,10 +1,7 @@
 .progressBar {
 	height: 0.7rem;
 	background: var(--colNeutral);
-	z-index: 0;
 	overflow: hidden;
-	margin: var(--margin);
-	margin-top: 0;
 
 	border-radius: 100vw;
 
@@ -29,4 +26,9 @@
 
 .progressBar > span.fail {
 	background-color: #e4c465;
+}
+
+.progressPercentage {
+	margin-left: var(--margin);
+	margin-right: var(--margin);
 }

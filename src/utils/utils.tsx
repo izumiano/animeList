@@ -1,7 +1,7 @@
 import { toast } from "react-toastify";
 import BadResponse from "../external/responses/badResponse";
 import "../App.css";
-import type { CSSProperties } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 export async function sleepFor(
   milliseconds: number,
@@ -40,13 +40,46 @@ export function dvwToPx(dvwValue: number) {
   return pixelValue;
 }
 
-export function parseError(ex: unknown) {
+export function parseError(
+  ex: unknown,
+  params?: { title?: ReactNode; showDetails?: boolean }
+) {
   if (typeof ex === "string") {
     return ex;
   } else if (ex instanceof BadResponse) {
-    return ex.displayMessage;
+    if (!params?.showDetails) {
+      return ex.displayMessage;
+    }
+
+    const data = ex.data?.data ?? ex.data;
+
+    return (
+      <div className="flexColumn" style={{ height: "100%" }}>
+        {params.title ? <span>{params.title}</span> : null}
+        <span>{ex.displayMessage}</span>
+        {data ? (
+          <pre className="unimportantText scroll">
+            <i>{JSON.stringify(data, null, 2)}</i>
+          </pre>
+        ) : null}
+      </div>
+    );
   } else if (ex instanceof Error) {
-    return ex.message;
+    if (!params?.showDetails) {
+      return ex.message;
+    }
+
+    return (
+      <div className="flexColumn">
+        <span>
+          <b>{ex.message}</b>
+        </span>
+        <span className="smallText">
+          <i>{ex.stack}</i>
+        </span>
+        <br />
+      </div>
+    );
   } else {
     return (
       <span>

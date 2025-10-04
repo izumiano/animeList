@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type BadResponse from "../external/responses/badResponse";
 import { type UUIDType } from "./utils";
 import { v4 as uuid } from "uuid";
@@ -45,7 +46,7 @@ type ActivityTaskType<T> = (params: {
 export default class ActivityTask<T> {
   id: UUIDType;
 
-  label: string;
+  label: ReactNode;
   progress = 0;
   maxProgress: number;
   task: ActivityTaskType<T>;
@@ -59,7 +60,7 @@ export default class ActivityTask<T> {
     | undefined;
 
   constructor(params: {
-    label: string;
+    label: ReactNode;
     maxProgress?: number;
     task: ActivityTaskType<T>;
   }) {

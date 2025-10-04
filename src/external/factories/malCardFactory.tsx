@@ -24,17 +24,21 @@ export default class MALCardFactory {
     getSequels: boolean;
   }) {
     return new ActivityTask({
-      label: "Creating anime from [MAL] with id [(id)]",
+      label: (
+        <span>
+          Creating anime from <b>MAL</b> with id: <b>{id}</b>
+        </span>
+      ),
       maxProgress: 3,
       task: async ({ addProgress, addMaxProgress }) => {
         const animeData = await this.getAnimeData(id);
+        addProgress();
         if (animeData === undefined || animeData === null) {
           return new BadResponse("animeData was null or undefined");
         }
         if (animeData instanceof BadResponse) {
           return animeData;
         }
-        addProgress();
 
         let seasonsData: MALSeasonDetails[] | BadResponse;
         if (getSequels) {
@@ -207,7 +211,7 @@ export default class MALCardFactory {
   }
 
   private static async getSequel(season: MALSeasonDetails) {
-    const sequelId = await this.getSequelId(season);
+    const sequelId = this.getSequelId(season);
     if (!sequelId) {
       console.debug("no sequel");
       return null;
@@ -215,9 +219,7 @@ export default class MALCardFactory {
     return await this.getAnimeData(sequelId);
   }
 
-  private static async getSequelId(
-    season: MALSeasonDetails
-  ): Promise<number | null> {
+  private static getSequelId(season: MALSeasonDetails): number | null {
     const relations = season.relations;
     if (!relations) {
       console.warn("did not find relations");
