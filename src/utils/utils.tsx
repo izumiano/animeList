@@ -40,24 +40,24 @@ export function dvwToPx(dvwValue: number) {
   return pixelValue;
 }
 
-export function showError(ex: unknown) {
-  let message: React.ReactNode;
-
+export function parseError(ex: unknown) {
   if (typeof ex === "string") {
-    message = ex;
+    return ex;
   } else if (ex instanceof BadResponse) {
-    message = ex.displayMessage;
+    return ex.displayMessage;
   } else if (ex instanceof Error) {
-    message = ex.message;
+    return ex.message;
   } else {
-    message = (
+    return (
       <span>
         Unknown Error <b>{ex as any}</b>
       </span>
     );
   }
+}
 
-  toast.error(message);
+export function showError(ex: unknown) {
+  toast.error(parseError(ex));
 }
 
 export function clamp(

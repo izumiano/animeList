@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import ProgressCircle from "./progressCircle";
-import ActivityTask, { activityTaskListener } from "../../utils/activityTask";
-import { clamp, type UUIDType } from "../../utils/utils";
-import Dropdown from "./dropdown";
+import ActivityTask, {
+  activityTaskListener,
+} from "../../../utils/activityTask";
+import { clamp, type UUIDType } from "../../../utils/utils";
+import Dropdown from "../dropdown";
 import "./progressNode.css";
-import ProgressBar from "./progressBar";
+import ProgressTask from "./progressTask";
 
 const ProgressNode = () => {
   const [progress, setProgressState] = useState<number | undefined>();
@@ -29,9 +31,11 @@ const ProgressNode = () => {
 
       const newTasks = Array.from(newTasksMap.values());
 
-      const progresses = newTasks.map(
-        (item) => item.progress / item.maxProgress
-      );
+      const progresses = newTasks.map((item) => {
+        if (item.result?.failed === true) return 1;
+
+        return item.progress / item.maxProgress;
+      });
       const progress =
         progresses.length > 0
           ? progresses.reduce((prev, curr) => prev + curr) / progresses.length
@@ -58,7 +62,9 @@ const ProgressNode = () => {
         <ProgressCircle
           progress={clamp(progress ?? 1, { min: 0.03 })}
           className={showHideClass}
-          progressIndicatorStyle={progress === 0 ? { transition: "none" } : {}}
+          progressIndicatorStyle={
+            progress === 0 && tasks.size <= 1 ? { transition: "none" } : {}
+          }
         />
       }
       buttonClass="transparentBackground smallPadding invisibleDisable"
@@ -72,31 +78,18 @@ const ProgressNode = () => {
         return (
           <div>
             <div className="progressDropdown">
-              {Array.from(tasks.values()).map((task) => (
-                <div
-                  key={task.id}
-                  className={`progressTask ${
-                    task.progress / task.maxProgress === 1 ? "hide" : "show"
-                  }`}
-                  onAnimationEnd={(event) => {
-                    if (event.animationName === "progressTask_hideAnim") {
-                      tasks.delete(task.id);
+              {Array.from(tasks.values()).map((task) => {
+                return (
+                  <ProgressTask
+                    key={task.id}
+                    task={task}
+                    onDelete={(id) => {
+                      tasks.delete(id);
                       setTasksState(new Map(tasks));
-                    }
-                  }}
-                >
-                  <div>
-                    <p>{task.label}</p>
-                    <ProgressBar
-                      progress={
-                        clamp(task.progress, {
-                          min: task.maxProgress * 0.1,
-                        }) / task.maxProgress
-                      }
-                    />
-                  </div>
-                </div>
-              ))}
+                    }}
+                  />
+                );
+              })}
             </div>
           </div>
         );

@@ -1,5 +1,6 @@
-import type { UUIDType } from "./utils";
-import { v4 } from "uuid";
+import type BadResponse from "../external/responses/badResponse";
+import { type UUIDType } from "./utils";
+import { v4 as uuid } from "uuid";
 
 export type ActivityTaskQueueType = Map<UUIDType, ActivityTask<unknown>>;
 const taskQueue: ActivityTaskQueueType = new Map();
@@ -34,10 +35,12 @@ class ActivityTaskListener {
 }
 export const activityTaskListener = new ActivityTaskListener();
 
+type ActivityTaskReturnType<T> = T | BadResponse | Error | undefined | null;
+
 type ActivityTaskType<T> = (params: {
   addProgress: (count?: number) => void;
   addMaxProgress: (count?: number) => void;
-}) => Promise<T>;
+}) => Promise<ActivityTaskReturnType<T>>;
 
 export default class ActivityTask<T> {
   id: UUIDType;
@@ -46,6 +49,8 @@ export default class ActivityTask<T> {
   progress = 0;
   maxProgress: number;
   task: ActivityTaskType<T>;
+
+  result: { value: ActivityTaskReturnType<T>; failed: boolean } | undefined;
 
   private started = false;
 
@@ -58,7 +63,7 @@ export default class ActivityTask<T> {
     maxProgress?: number;
     task: ActivityTaskType<T>;
   }) {
-    this.id = v4() as UUIDType;
+    this.id = uuid() as UUIDType;
     this.label = params.label;
     this.maxProgress = params.maxProgress ?? 1;
     this.task = params.task;
@@ -85,26 +90,38 @@ export default class ActivityTask<T> {
       maxProgress: this.maxProgress,
     });
 
-    const taskResult = await this.task({
-      addProgress: (count) => {
-        this.progress += count ?? 1;
+    let taskResult;
+    let failed = false;
+    try {
+      taskResult = await this.task({
+        addProgress: (count) => {
+          this.progress += count ?? 1;
 
-        this._onProgressUpdate({
-          progress: this.progress,
-          maxProgress: this.maxProgress,
-        });
-      },
-      addMaxProgress: (count) => {
-        this.maxProgress += count ?? 1;
+          this._onProgressUpdate({
+            progress: this.progress,
+            maxProgress: this.maxProgress,
+          });
+        },
+        addMaxProgress: (count) => {
+          this.maxProgress += count ?? 1;
 
-        this._onProgressUpdate({
-          progress: this.progress,
-          maxProgress: this.maxProgress,
-        });
-      },
-    });
+          this._onProgressUpdate({
+            progress: this.progress,
+            maxProgress: this.maxProgress,
+          });
+        },
+      });
+    } catch (ex) {
+      taskResult = ex as Error;
+      failed = true;
+    }
 
-    this.progress = this.maxProgress;
+    if (taskResult instanceof Error) {
+      failed = true;
+    } else {
+      this.progress = this.maxProgress;
+    }
+    this.result = { value: taskResult, failed: failed };
     this._onProgressUpdate({
       progress: this.progress,
       maxProgress: this.maxProgress,

@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import "./progressCircle.css";
-import { clamp, type ProgressCSS } from "../../utils/utils";
+import { clamp, type ProgressCSS } from "../../../utils/utils";
 
 const ProgressCircle = ({
   progress,

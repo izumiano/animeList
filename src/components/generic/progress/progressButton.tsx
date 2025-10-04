@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import "./progressButton.css";
-import { clamp } from "../../utils/utils";
-import LoadingSpinner from "./loadingSpinner";
+import { clamp } from "../../../utils/utils";
+import LoadingSpinner from "../loadingSpinner";
 
 export type ProgressButtonState = {
   progress: number;

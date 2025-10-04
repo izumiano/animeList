@@ -1,0 +1,60 @@
+.progressTask {
+	max-height: 100vh;
+
+	margin-bottom: 0.5rem;
+	margin-left: 0.5rem;
+	margin-right: 0.5rem;
+
+	overflow: hidden;
+	border-radius: 1rem;
+
+	transition: max-height 1s, background-color 1s;
+}
+
+.progressTask[data-disabled=true]:hover {
+	filter: brightness(90%);
+	cursor: pointer;
+}
+
+.progressTask.show {
+	max-height: 0;
+	animation: progressTask_showAnim 1s forwards;
+}
+
+.progressTask.hide {
+	animation: progressTask_hideAnim 1s forwards;
+}
+
+.progressTask.failed {
+	background-color: var(--colFail);
+}
+
+@keyframes progressTask_hideAnim {
+	100% {
+		opacity: 0;
+		max-height: 0;
+		margin-bottom: 0;
+	}
+}
+
+@keyframes progressTask_showAnim {
+	100% {
+		max-height: 100vh;
+		margin: 0.5rem;
+	}
+}
+
+.progressTask > .label {
+	margin-left: var(--margin);
+	margin-right: var(--margin);
+	margin-bottom: 0;
+	text-align: left;
+}
+
+.progressTask.failed > .label {
+	font-weight: bold;
+}
+
+.progressTask > .label > * {
+	margin: 0;
+}

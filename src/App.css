@@ -14,6 +14,7 @@ html {
 	--colAccent: rgba(170, 170, 170, 0.4);
 	--colBackground: rgb(30, 10, 20);
 	--colNeutral: rgb(26, 29, 36);
+	--colFail: rgb(236, 73, 61);
 
 	--toastify-toast-width: 500px;
 

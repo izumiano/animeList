@@ -2,12 +2,13 @@
 	height: 0.7rem;
 	background: var(--colNeutral);
 	z-index: 0;
-	margin: 1rem;
 	overflow: hidden;
+	margin: var(--margin);
+	margin-top: 0;
 
 	border-radius: 100vw;
 
-	align-content: center;
+	align-items: center;
 }
 
 .progressBar > span {
@@ -15,9 +16,17 @@
 	height: 100%;
 	width: calc(var(--progress) * 100% + 100vw);
 	translate: -100vw;
-	background-color: #e4c465;
 	overflow: hidden;
 	border-radius: 100vw;
 
-	transition: width 0.5s;
+	transition: width 0.5s, background-color 1s;
+	font-weight: 1000;
+}
+
+.progressBar > span.default {
+	background-color: var(--colSecondary);
+}
+
+.progressBar > span.fail {
+	background-color: #e4c465;
 }

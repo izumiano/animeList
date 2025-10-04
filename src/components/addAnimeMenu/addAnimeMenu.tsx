@@ -13,7 +13,7 @@ import BadResponse from "../../external/responses/badResponse";
 import { showError, sleepFor } from "../../utils/utils";
 import ProgressButton, {
   type ProgressButtonState,
-} from "../generic/progressButton";
+} from "../generic/progress/progressButton";
 
 const AddAnimeMenu = ({
   addAnime,
@@ -193,7 +193,7 @@ const AddAnimeMenu = ({
 
                 const anime = await createAnimeTask.start();
 
-                if (anime instanceof BadResponse || !anime) {
+                if (anime instanceof Error || !anime) {
                   setAddAnimeProgressState({ progress: 0, state: "enabled" });
                   showError(anime);
                   resolve(null);

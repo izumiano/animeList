@@ -1,0 +1,33 @@
+.progressDropdown {
+	min-width: 15rem;
+	min-height: 2rem;
+}
+
+.circleProgress.show {
+	opacity: 0;
+	animation: circleProgress_showAnim 0.8s forwards;
+}
+
+@keyframes circleProgress_showAnim {
+	to {
+		opacity: 1;
+	}
+}
+
+.circleProgress.hide {
+	animation: circleProgress_hideAnim 1s forwards;
+}
+
+@keyframes circleProgress_hideAnim {
+	60% {
+		opacity: 1;
+	}
+
+	100% {
+		opacity: 0;
+	}
+}
+
+.circleProgress.preHidden {
+	opacity: 0;
+}

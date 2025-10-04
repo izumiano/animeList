@@ -1,7 +1,7 @@
 import type { AnimeFilterState } from "../../models/animeFilter";
 import { sleepFor } from "../../utils/utils";
 import Dropdown from "../generic/dropdown";
-import ProgressNode from "../generic/progressNode";
+import ProgressNode from "../generic/progress/progressNode";
 import AddAnimeButton from "./addAnimeButton";
 import AnimeFilterButton from "./animeFilterButton";
 import AnimeFilterNode from "./animeFilterNode";
