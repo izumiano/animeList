@@ -11,6 +11,9 @@ const ProgressCircle = ({
   className?: string;
   progressIndicatorStyle?: CSSProperties;
 }) => {
+  progressIndicatorStyle ??= {};
+  progressIndicatorStyle.stroke ??= "var(--colSecondary)";
+
   return (
     <div
       className={`circleProgress ${className}`}

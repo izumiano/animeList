@@ -7,6 +7,7 @@ import { clamp, type UUIDType } from "../../../utils/utils";
 import Dropdown from "../dropdown";
 import "./progressNode.css";
 import ProgressTask from "./progressTask";
+import warnIcon from "../../../assets/warningYellow.png";
 
 const ProgressNode = () => {
   const [progress, setProgressState] = useState<number | undefined>();
@@ -56,16 +57,31 @@ const ProgressNode = () => {
   const showHideClass =
     progress !== undefined ? (isFinished ? "hide" : "show") : "preHidden";
 
+  const tasksArr = Array.from(tasks.values());
+
+  const hasFailure = tasksArr.some((task) => task.result?.failed === true);
+
   return (
     <Dropdown
       dropdownButton={
-        <ProgressCircle
-          progress={clamp(progress ?? 1, { min: 0.03 })}
-          className={showHideClass}
-          progressIndicatorStyle={
-            progress === 0 && tasks.size <= 1 ? { transition: "none" } : {}
-          }
-        />
+        <div className="relative">
+          <ProgressCircle
+            progress={clamp(progress ?? 1, { min: 0.03 })}
+            className={showHideClass}
+            progressIndicatorStyle={{
+              ...(progress === 0 && tasks.size <= 1
+                ? {
+                    transition: "none",
+                  }
+                : {}),
+              ...{ stroke: hasFailure ? "var(--colWarn)" : undefined },
+            }}
+          />
+          <img
+            src={warnIcon}
+            className={`largeIcon warnIcon ${hasFailure ? "show" : "hide"}`}
+          ></img>
+        </div>
       }
       buttonClass="transparentBackground smallPadding invisibleDisable"
       buttonProps={{ disabled: isFinished }}
@@ -76,21 +92,19 @@ const ProgressNode = () => {
         }
 
         return (
-          <div>
-            <div className="progressDropdown">
-              {Array.from(tasks.values()).map((task) => {
-                return (
-                  <ProgressTask
-                    key={task.id}
-                    task={task}
-                    onDelete={(id) => {
-                      tasks.delete(id);
-                      setTasksState(new Map(tasks));
-                    }}
-                  />
-                );
-              })}
-            </div>
+          <div className="progressDropdown">
+            {tasksArr.map((task) => {
+              return (
+                <ProgressTask
+                  key={task.id}
+                  task={task}
+                  onDelete={(id) => {
+                    tasks.delete(id);
+                    setTasksState(new Map(tasks));
+                  }}
+                />
+              );
+            })}
           </div>
         );
       }}

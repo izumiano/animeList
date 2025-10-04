@@ -40,21 +40,21 @@
 @keyframes progressTask_showAnim {
 	100% {
 		max-height: 100vh;
-		margin: 0.5rem;
+		margin-bottom: 0.5rem;
 	}
 }
 
-.progressTask > .label {
+.progressTask > .progressLabel {
 	margin-left: var(--margin);
 	margin-right: var(--margin);
 	margin-bottom: 0;
 	text-align: left;
 }
 
-.progressTask.failed > .label {
+.progressTask.failed > .progressLabel {
 	font-weight: bold;
 }
 
-.progressTask > .label > * {
+.progressTask > .progressLabel > * {
 	margin: 0;
 }

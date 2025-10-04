@@ -3,6 +3,7 @@ import type ActivityTask from "../../../utils/activityTask";
 import { clamp, parseError, type UUIDType } from "../../../utils/utils";
 import ProgressBar from "./progressBar";
 import "./progressTask.css";
+import warnIcon from "../../../assets/warning.png";
 
 const ProgressTask = ({
   task,
@@ -34,8 +35,9 @@ const ProgressTask = ({
         setForceCloseState(true);
       }}
     >
-      <div className="label">
-        {failed ? parseError(task.result!.value) : task.label}
+      <div className="progressLabel flexRow verticalCenterItems spaceBetween">
+        <span>{failed ? parseError(task.result!.value) : task.label}</span>
+        {failed ? <img src={warnIcon} className="mediumIcon"></img> : null}
       </div>
       <ProgressBar
         progress={

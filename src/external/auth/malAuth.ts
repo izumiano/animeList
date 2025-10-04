@@ -128,7 +128,7 @@ export class MALAuth {
       if (result instanceof BadResponse) {
         showError(result);
       } else {
-        toast.info("Successfully acquired MAL user token");
+        toast.info("Successfully connected to MAL.");
       }
     });
 
@@ -150,6 +150,7 @@ export class MALAuth {
           if (result instanceof BadResponse) {
             showError(result);
           }
+          return result;
         },
       })
     );

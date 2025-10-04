@@ -15,10 +15,12 @@ html {
 	--colBackground: rgb(30, 10, 20);
 	--colNeutral: rgb(26, 29, 36);
 	--colFail: rgb(236, 73, 61);
+	--colWarn: rgb(224, 236, 61);
 
 	--toastify-toast-width: 500px;
 
 	--largeIconWidth: 2rem;
+	--mediumIconWidth: 1.1rem;
 	--smallIconWidth: 0.7rem;
 
 	--largePadding: 1.7rem;
@@ -117,16 +119,27 @@ h2 {
 	align-items: center;
 }
 
+.spaceBetween {
+	justify-content: space-between;
+}
+
 .border {
 	border: 1px red solid;
 }
 
 .largeIcon {
 	width: var(--largeIconWidth);
+	height: var(--largeIconWidth);
+}
+
+.mediumIcon {
+	width: var(--mediumIconWidth);
+	height: var(--mediumIconWidth);
 }
 
 .smallIcon {
 	width: var(--smallIconWidth);
+	height: var(--smallIconWidth);
 }
 
 .largePadding {
@@ -173,4 +186,15 @@ h2 {
 	border-color: transparent;
 	outline: none;
 	cursor: default;
+}
+
+.relative {
+	position: relative;
+}
+
+.absoluteCentered {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
 }
