@@ -216,3 +216,35 @@ export function formatDate(date: Date, formatString: string) {
     .replaceAll("MM", month)
     .replaceAll("dd", day);
 }
+
+export function allSuccess<TIn, TOut>(
+  arr: TIn[],
+  {
+    forEach,
+    successMessage,
+    failMessage,
+  }: {
+    forEach: (item: TIn) => Promise<TOut>;
+    successMessage: ReactNode | ((items: TOut[]) => ReactNode);
+    failMessage: ReactNode;
+  }
+) {
+  const promises = arr.map((item) => forEach(item));
+
+  Promise.all(promises)
+    .then((responses) => {
+      const errors = responses.filter((response) => response instanceof Error);
+      if (errors.length > 0) {
+        showError(errors, failMessage);
+        return;
+      }
+      toast.info(
+        typeof successMessage === "function"
+          ? successMessage(responses)
+          : successMessage
+      );
+    })
+    .catch((ex) => {
+      showError(ex, failMessage);
+    });
+}

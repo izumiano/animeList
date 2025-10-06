@@ -6,7 +6,7 @@ import type {
 } from "../external/responses/IResponse";
 import { sleepFor } from "./utils";
 
-export type RequestMethod = "GET" | "POST" | "PUT";
+export type RequestMethod = "GET" | "POST" | "PUT" | "DELETE";
 
 const MAX_RATELIMIT_ITERATIONS = 40;
 
@@ -21,12 +21,13 @@ export default class WebUtil {
     params?: {
       acceptStatusCodes?: number[];
       errorHandler?: TErrorHandler;
+      requestInit?: RequestInit;
     }
   ) {
     const acceptedStatusCodes = params?.acceptStatusCodes ?? [200, 429, 401];
 
     try {
-      const response = await fetch(request);
+      const response = await fetch(request, params?.requestInit);
       const data: TReturn | TErrorType = await response.json();
 
       if (
@@ -101,6 +102,7 @@ export default class WebUtil {
       body?: BodyInit;
       acceptStatusCodes?: number[];
       errorHandler?: TErrorHandler;
+      requestInit?: RequestInit;
     }
   ) {
     return await this.doRequest<TData, TReturn, TErrorType, TErrorHandler>(
@@ -121,8 +123,11 @@ export default class WebUtil {
       body?: BodyInit;
       acceptStatusCodes?: number[];
       errorHandler?: TErrorHandler;
+      requestInit?: RequestInit;
     }
   ) {
+    params ??= {};
+    params.requestInit ??= { cache: "no-store" };
     const url = request instanceof URL ? request : request.url;
 
     return await this.fetch<TData, TReturn, TErrorType, TErrorHandler>(

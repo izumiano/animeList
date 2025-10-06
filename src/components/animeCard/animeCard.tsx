@@ -10,6 +10,7 @@ import trashIcon from "../../assets/bin.png";
 import LocalDB from "../../indexedDb/indexedDb";
 import type AnimeFilter from "../../models/animeFilter";
 import {
+  allSuccess,
   isElementInViewport,
   removeDiacritics,
   removeNonAlphanumeric,
@@ -20,6 +21,7 @@ import Dropdown from "../generic/dropdown";
 import ConfirmationDropdown from "../generic/confirmationDropdown";
 import { useOtherElementEvent } from "../../utils/useEvents";
 import type { ExternalLink } from "../../models/externalLink";
+import ExternalRequest from "../../external/externalRequest";
 
 const isOnScreenTolerance = remToPx(17);
 
@@ -180,10 +182,30 @@ const AnimeCard = ({
                     dismissMessage="Don't"
                     closeDropdown={closeDropdown}
                     onConfirm={() => {
-                      console.log("deleting", anime);
                       LocalDB.doTransaction((_, db) =>
                         db.deleteAnime(anime, {
                           onSuccess: () => {
+                            allSuccess(anime.seasons, {
+                              forEach: async (season) =>
+                                ExternalRequest.deleteAnimeSeason(
+                                  season,
+                                  anime.title,
+                                  {
+                                    showToastOnSuccess: false,
+                                  }
+                                ),
+                              successMessage: (
+                                <span>
+                                  Successfully deleted <b>{anime.title}</b> from
+                                  MAL
+                                </span>
+                              ),
+                              failMessage: (
+                                <span>
+                                  Failed deleting <b>{anime.title}</b> from MAL
+                                </span>
+                              ),
+                            });
                             setToBeRemovedState(true);
                           },
                         })

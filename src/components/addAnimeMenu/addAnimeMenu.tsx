@@ -10,7 +10,7 @@ import AnimeSearch from "../../external/search/animeSearch";
 import type { SeasonDetails } from "../../external/responses/SeasonDetails";
 import AnimeCardFactory from "../../external/factories/animeCardFactory";
 import BadResponse from "../../external/responses/badResponse";
-import { showError, sleepFor } from "../../utils/utils";
+import { allSuccess, showError, sleepFor } from "../../utils/utils";
 import ProgressButton, {
   type ProgressButtonState,
 } from "../generic/progress/progressButton";
@@ -229,42 +229,24 @@ const AddAnimeMenu = ({
                       setIsOpenState(false);
                       addAnime(anime);
 
-                      const updates = anime.seasons.map((season) =>
-                        ExternalRequest.updateAnimeSeasonStatus(
-                          season,
-                          anime.title,
-                          { showToastOnSuccess: false, allowAbort: false }
-                        )
-                      );
-
-                      Promise.all(updates)
-                        .then((responses) => {
-                          const errors = responses.filter(
-                            (response) => response instanceof Error
-                          );
-                          if (errors.length > 0) {
-                            showError(
-                              errors,
-                              <span>
-                                Failed adding <b>{anime.title}</b> to MAL
-                              </span>
-                            );
-                            return;
-                          }
-                          toast.info(
-                            <span>
-                              Successfully added <b>{anime.title}</b> to MAL
-                            </span>
-                          );
-                        })
-                        .catch((ex) => {
-                          showError(
-                            ex,
-                            <span>
-                              Failed adding <b>{anime.title}</b> to MAL
-                            </span>
-                          );
-                        });
+                      allSuccess(anime.seasons, {
+                        forEach: async (season) =>
+                          ExternalRequest.updateAnimeSeasonStatus(
+                            season,
+                            anime.title,
+                            { showToastOnSuccess: false, allowAbort: false }
+                          ),
+                        successMessage: (
+                          <span>
+                            Successfully added <b>{anime.title}</b> to MAL
+                          </span>
+                        ),
+                        failMessage: (
+                          <span>
+                            Failed adding <b>{anime.title}</b> to MAL
+                          </span>
+                        ),
+                      });
                     },
                   }
                 );

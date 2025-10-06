@@ -67,4 +67,55 @@ export default class ExternalRequest {
       })
     );
   }
+
+  public static async deleteAnimeSeason(
+    season: AnimeSeason,
+    title: string | undefined,
+    params?: { showToastOnSuccess?: boolean }
+  ) {
+    params ??= {};
+    params.showToastOnSuccess ??= true;
+
+    return await pushTask(
+      new ActivityTask({
+        label: (
+          <span>
+            Updating{" "}
+            <b>
+              {title} <i>[{season.title}]</i>
+            </b>
+          </span>
+        ),
+        task: async () => {
+          const id = `${season.externalLink.type}${season.externalLink.id}`;
+          abortControllers.get(id)?.abort();
+          abortControllers.delete(id);
+
+          try {
+            switch (season.externalLink.type) {
+              case "MAL":
+                return await MALAuth.instance.userToken?.deleteSeason(
+                  season,
+                  title
+                );
+
+              default:
+                break;
+            }
+          } finally {
+            if (params.showToastOnSuccess) {
+              toast.info(
+                <span>
+                  Successfully Deleted{" "}
+                  <b>
+                    {title} <i>[{season.title}]</i>
+                  </b>
+                </span>
+              );
+            }
+          }
+        },
+      })
+    );
+  }
 }

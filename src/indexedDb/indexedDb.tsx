@@ -177,7 +177,7 @@ export default class LocalDB {
               return store.delete(key);
             },
             {
-              onSuccess: (result) => {
+              onSuccess: () => {
                 AppData.animes.delete(anime.getAnimeDbId());
                 this.doTransaction(
                   (store) => {
@@ -198,8 +198,6 @@ export default class LocalDB {
                     onError: (error) => onError(error),
                   }
                 );
-                return callbacks?.onSuccess?.call(this, result);
-                // return callbacks?.onSuccess?.call(this, result);
               },
               onError: (error) => onError(error),
             }

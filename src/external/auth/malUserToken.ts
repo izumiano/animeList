@@ -3,8 +3,10 @@ import ActivityTask from "../../utils/activityTask";
 import { formatDate } from "../../utils/utils";
 import WebUtil from "../../utils/webUtil";
 import MalErrorHandler from "../errorHandlers/malErrorHandler";
+import type { MALUpdateMyListStatuses } from "../requests/malUpdateMyListStatus";
 import type MALUpdateMyListStatus from "../requests/malUpdateMyListStatus";
 import BadResponse from "../responses/badResponse";
+import type MALDeleteResponse from "../responses/malDeleteResponse";
 import type { MALMyListStatus } from "../responses/malMyListStatusResponse";
 import type MALMyListStatusResponse from "../responses/malMyListStatusResponse";
 import type MALUserTokenResponse from "../responses/MALUserTokenResponse";
@@ -159,7 +161,7 @@ export class MALUserToken {
     if (!statusCode) {
       return new BadResponse("Failed without a status code!", response);
     }
-    if (statusCode == 401) {
+    if (statusCode === 401) {
       const newToken = await MALAuth.instance.refreshUserTokenAsync(
         this.refreshToken
       );
@@ -175,7 +177,7 @@ export class MALUserToken {
         data: data,
       });
     }
-    if (statusCode != 200) {
+    if (statusCode !== 200) {
       return new BadResponse(`Failed with statusCode: [${statusCode}]`);
     }
   }
@@ -206,7 +208,7 @@ export class MALUserToken {
         `${title}(${season.title}) failed without a status code!`
       );
     }
-    if (statusCode == 401) {
+    if (statusCode === 401) {
       const newToken = await MALAuth.instance.refreshUserTokenAsync();
       if (newToken instanceof BadResponse) {
         return newToken;
@@ -217,7 +219,7 @@ export class MALUserToken {
       }
       return await newToken.getListStatus(season, title);
     }
-    if (statusCode != 200) {
+    if (statusCode !== 200) {
       return new BadResponse(`Failed with status code: [${statusCode}]`);
     }
 
@@ -227,5 +229,91 @@ export class MALUserToken {
     }
 
     return myListStatus;
+  }
+
+  public async deleteSeason(
+    season: AnimeSeason,
+    title: string | undefined
+  ): Promise<
+    BadResponse | { status: MALUpdateMyListStatuses | "deleted" } | undefined
+  > {
+    if (this.isExpired()) {
+      const newToken = await MALAuth.instance.refreshUserTokenAsync(
+        this.refreshToken
+      );
+      if (newToken instanceof BadResponse) {
+        return newToken;
+      }
+      if (!newToken) {
+        return;
+      }
+      return newToken.deleteSeason(season, title);
+    }
+
+    const malId = season.externalLink?.id;
+    if (!malId) {
+      return new BadResponse("malId was undefined");
+    }
+
+    const episodesWatched = season.episodes.filter(
+      (episode) => episode.watched
+    ).length;
+
+    if (
+      episodesWatched === season.episodes.length &&
+      season.episodes.length > 0
+    ) {
+      return new BadResponse(
+        `${title}(${season.title}) has already been watched fully`
+      );
+    }
+    if (episodesWatched === 0) {
+      return await this.doDeleteSeason(season, title);
+    }
+
+    const response = await this.doUpdateAnimeSeasonStatus({
+      season: season,
+      data: { status: "dropped" },
+    });
+    if (response instanceof BadResponse) {
+      return response;
+    }
+    return { status: "dropped" };
+  }
+
+  private async doDeleteSeason(
+    season: AnimeSeason,
+    title: string | undefined
+  ): Promise<BadResponse | { status: "deleted" } | undefined> {
+    const request = new Request(
+      `https://api.myanimelist.net/v2/anime/${season.externalLink.id}/my_list_status`
+    );
+    request.headers.set("Authorization", `Bearer ${this.accessToken}`);
+
+    const response = (await WebUtil.fetchProxy(request, "DELETE")) as
+      | MALDeleteResponse
+      | BadResponse;
+    const statusCode = response.statusCode;
+    if (!statusCode) {
+      return new BadResponse(
+        `${title}(${season.title}) failed without a status code!`
+      );
+    }
+    if (statusCode === 401) {
+      const newToken = await MALAuth.instance.refreshUserTokenAsync();
+      if (newToken instanceof BadResponse) {
+        return newToken;
+      }
+      if (!newToken) {
+        MALAuth.instance.authorize();
+        return;
+      }
+      return await newToken.doDeleteSeason(season, title);
+    }
+    if (statusCode !== 200) {
+      return new BadResponse(`Failed with status code: [${statusCode}]`);
+    }
+
+    return { status: "deleted" };
   }
 }
