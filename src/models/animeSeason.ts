@@ -1,7 +1,7 @@
 import AppData from "../appData";
 import type { MediaType } from "./anime";
 import AnimeEpisode from "./animeEpisode";
-import ExternalLink from "./externalLink";
+import type { ExternalLink } from "./externalLink";
 
 export default class AnimeSeason {
   title: string;
@@ -9,7 +9,7 @@ export default class AnimeSeason {
   watched: boolean;
   seasonNumber: number;
   mediaType: MediaType;
-  externalLink: ExternalLink | null;
+  externalLink: ExternalLink;
   dateStarted: Date | null;
   dateFinished: Date | null;
 
@@ -20,7 +20,7 @@ export default class AnimeSeason {
     watched: boolean;
     seasonNumber: number;
     mediaType: MediaType;
-    externalLink: ExternalLink | null;
+    externalLink: ExternalLink;
     dateStarted: Date | number | null;
     dateFinished: Date | number | null;
   }) {
@@ -94,10 +94,6 @@ export default class AnimeSeason {
             episodes.push(episode.toIndexedDBObj());
           }
           objCopy[key] = episodes;
-          continue;
-        }
-        if (key === "externalLink") {
-          objCopy[key] = this.externalLink?.toIndexedDBObj();
           continue;
         }
 

@@ -1,7 +1,7 @@
 import Anime from "../../models/anime";
 import AnimeEpisode from "../../models/animeEpisode";
 import AnimeSeason from "../../models/animeSeason";
-import ExternalLink from "../../models/externalLink";
+import { newExternalLink } from "../../models/externalLink";
 import ActivityTask from "../../utils/activityTask";
 import WebUtil from "../../utils/webUtil";
 import JikanErrorHandler from "../errorHandlers/jikanErrorHandler";
@@ -142,7 +142,7 @@ export default class MALCardFactory {
           seasonNumber: index + 1,
           episodes: episodes,
           watched: false,
-          externalLink: new ExternalLink({ type: "MAL", id: seasonId }),
+          externalLink: newExternalLink({ type: "MAL", id: seasonId }),
           mediaType: seasonData.type ?? "tv",
           dateStarted: null,
           dateFinished: null,
@@ -169,7 +169,7 @@ export default class MALCardFactory {
       seasons: seasons,
       watched: false,
       imageLink: imageLink,
-      externalLink: new ExternalLink({ type: "MAL", id: id }),
+      externalLink: newExternalLink({ type: "MAL", id: id }),
       order: order,
       dateStarted: null,
       dateFinished: null,

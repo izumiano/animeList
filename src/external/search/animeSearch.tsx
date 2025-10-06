@@ -1,8 +1,11 @@
-import type { ExternalLinkType } from "../../models/externalLink";
-import { SeasonDetails } from "../responses/SeasonDetails";
+import {
+  SeasonDetails,
+  type MALSeasonDetailsRequireId,
+} from "../responses/SeasonDetails";
 import MALSearch from "./malSearch";
 import BadResponse from "../responses/badResponse";
 import { showError, sleepFor } from "../../utils/utils";
+import type { ExternalLinkType } from "../../models/externalLink";
 
 let abortController = new AbortController();
 
@@ -41,8 +44,16 @@ export default class AnimeSearch {
         return;
       }
 
+      if (results.some((result) => result.mal_id === undefined)) {
+        showError(new BadResponse("One of the seasons are missing an id"));
+        callback({ seasons: [], externalType: "MAL" });
+        return;
+      }
+
       callback({
-        seasons: results.map((result) => SeasonDetails.create(result)),
+        seasons: results.map((result) =>
+          SeasonDetails.create(result as MALSeasonDetailsRequireId)
+        ),
         externalType: "MAL",
       });
     });

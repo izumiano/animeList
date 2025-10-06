@@ -1,7 +1,7 @@
 import LocalDB from "../indexedDb/indexedDb";
 import AnimeEpisode from "./animeEpisode";
 import AnimeSeason from "./animeSeason";
-import ExternalLink, { type ExternalLinkType } from "./externalLink";
+import { newExternalLink, type ExternalLink } from "./externalLink";
 
 export const MediaTypeValues = [
   "tv",
@@ -19,7 +19,7 @@ export default class Anime {
   seasons: AnimeSeason[];
   watched: boolean;
   imageLink: string | null;
-  externalLink: ExternalLink | null;
+  externalLink: ExternalLink;
   order: number;
 
   justAdded: boolean;
@@ -45,7 +45,7 @@ export default class Anime {
     seasons: AnimeSeason[];
     watched: boolean;
     imageLink: string | null | undefined;
-    externalLink: ExternalLink | null;
+    externalLink: ExternalLink;
     order: number;
     dateStarted: Date | number | null;
     dateFinished: Date | number | null;
@@ -107,11 +107,7 @@ export default class Anime {
   }
 
   public getAnimeDbId() {
-    return Anime.getAnimeDbId(
-      this.externalLink?.type,
-      this.externalLink?.id,
-      this.title
-    );
+    return Anime.getAnimeDbId(this.externalLink, this.title);
   }
 
   public getFirstSeasonNotWatched() {
@@ -123,12 +119,8 @@ export default class Anime {
     return this.seasons[0];
   }
 
-  public static getAnimeDbId(
-    externalLinkType: ExternalLinkType | null | undefined,
-    externalLinkId: number | null | undefined,
-    title: string
-  ) {
-    return `${externalLinkType ?? "NONE"}${externalLinkId ?? title}`;
+  public static getAnimeDbId(externalLink: ExternalLink, title: string) {
+    return `${externalLink?.type ?? "NONE"}${externalLink?.id ?? title}`;
   }
 
   public static Load({
@@ -142,11 +134,7 @@ export default class Anime {
   }) {
     const seasons: AnimeSeason[] = [];
     const animeDbId = autoSave
-      ? this.getAnimeDbId(
-          animeData.externalLink ? animeData.externalLink.type : null,
-          animeData.externalLink ? animeData.externalLink.id : null,
-          animeData.title
-        )
+      ? this.getAnimeDbId(animeData.externalLink, animeData.title)
       : undefined;
 
     for (const season of animeData.seasons) {
@@ -178,13 +166,11 @@ export default class Anime {
           watched: season.watched,
           seasonNumber: season.seasonNumber,
           mediaType: season.mediaType,
-          externalLink: season.externalLink
-            ? new ExternalLink({
-                animeDbId: animeDbId,
-                id: season.externalLink.id,
-                type: season.externalLink.type,
-              })
-            : null,
+          externalLink: newExternalLink({
+            type: season.externalLink?.type,
+            id: season.externalLink?.id,
+            seasonId: season.externalLink?.seasonId,
+          }),
           dateStarted: season.dateStarted,
           dateFinished: season.dateFinished,
         })
@@ -203,13 +189,10 @@ export default class Anime {
       seasons: seasons,
       watched: animeData.watched,
       imageLink: animeData.imageLink,
-      externalLink: animeData.externalLink
-        ? new ExternalLink({
-            animeDbId: animeDbId,
-            id: animeData.externalLink.id,
-            type: animeData.externalLink.type,
-          })
-        : null,
+      externalLink: newExternalLink({
+        type: animeData.externalLink?.type,
+        id: animeData.externalLink?.id,
+      }),
       order: animeData.order,
       dateStarted: animeData.dateStarted,
       dateFinished: animeData.dateFinished,
@@ -239,10 +222,6 @@ export default class Anime {
             seasons.push(season.toIndexedDBObj());
           }
           objCopy[key] = seasons;
-          continue;
-        }
-        if (key === "externalLink") {
-          objCopy[key] = this.externalLink?.toIndexedDBObj();
           continue;
         }
 

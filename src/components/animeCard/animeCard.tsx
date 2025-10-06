@@ -6,7 +6,6 @@ import SeasonPicker from "./seasonPicker";
 import { useEffect, useRef, useState } from "react";
 import malLogo from "../../assets/malLogo.png";
 import tmdbLogo from "../../assets/tmdbLogo.png";
-import ExternalLink from "../../models/externalLink";
 import trashIcon from "../../assets/bin.png";
 import LocalDB from "../../indexedDb/indexedDb";
 import type AnimeFilter from "../../models/animeFilter";
@@ -20,6 +19,7 @@ import {
 import Dropdown from "../generic/dropdown";
 import ConfirmationDropdown from "../generic/confirmationDropdown";
 import { useOtherElementEvent } from "../../utils/useEvents";
+import type { ExternalLink } from "../../models/externalLink";
 
 const isOnScreenTolerance = remToPx(17);
 
@@ -152,10 +152,7 @@ const AnimeCard = ({
                 <span style={{ color: "rgb(160, 160, 160)" }}> | </span>
                 {seasonExternalLink ? (
                   <a
-                    href={
-                      getUrl(seasonExternalLink, anime.externalLink) ??
-                      "javascript:undefined"
-                    }
+                    href={getUrl(seasonExternalLink) ?? "javascript:undefined"}
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -263,16 +260,9 @@ function searchQueryMatched(anime: Anime, searchQuery: string) {
   return animeTitle.includes(searchQuery);
 }
 
-function getUrl(
-  externalLink: ExternalLink | null,
-  animeExternalLink: ExternalLink | null = null
-): string | null {
-  if (!externalLink) {
+function getUrl(externalLink: ExternalLink) {
+  if (externalLink.type === undefined) {
     return null;
-  }
-
-  if (animeExternalLink !== null && externalLink.type === "TMDB") {
-    return getUrl(animeExternalLink);
   }
 
   switch (externalLink.type) {

@@ -1,7 +1,10 @@
 import { MediaTypeValues, type MediaType } from "../../models/anime";
-import type { ExternalLinkType } from "../../models/externalLink";
-import ExternalLink from "../../models/externalLink";
+import type { ExternalLink } from "../../models/externalLink";
 import { MALSeasonDetails } from "./MALSeasonDetails";
+
+export type MALSeasonDetailsRequireId = Omit<MALSeasonDetails, "mal_id"> & {
+  mal_id: number;
+};
 
 export class SeasonDetails {
   externalLink?: ExternalLink;
@@ -16,17 +19,16 @@ export class SeasonDetails {
   airedDate?: Date;
 
   constructor(params: {
-    synopsis: string | undefined;
-    id: number | undefined;
-    externalLinkType: ExternalLinkType | undefined;
-    approved: boolean | undefined;
-    images: SeasonImages | undefined;
-    popularity: number | undefined;
-    title: string | undefined;
-    episodes: number | undefined;
-    status: string | undefined;
-    media_type: string | undefined;
-    started_date: Date | undefined;
+    synopsis?: string;
+    externalLink?: ExternalLink;
+    approved?: boolean;
+    images?: SeasonImages;
+    popularity?: number;
+    title?: string;
+    episodes?: number;
+    status?: string;
+    media_type?: string;
+    started_date?: Date;
   }) {
     this.synopsis = params.synopsis;
 
@@ -39,13 +41,14 @@ export class SeasonDetails {
     this.mediaType = SeasonDetails.getTypeName(params.media_type);
     this.airedDate = params.started_date;
 
-    if (params.id && params.externalLinkType) {
-      this.externalLink = new ExternalLink({
-        id: params.id,
-        animeDbId: "",
-        type: params.externalLinkType,
-      });
-    }
+    this.externalLink = params.externalLink;
+    // if (params.id && params.externalLinkType) {
+    //   this.externalLink = new ExternalLink({
+    //     id: params.id,
+    //     animeDbId: "",
+    //     type: params.externalLinkType,
+    //   });
+    // }
   }
 
   public static getTypeName(
@@ -79,11 +82,10 @@ export class SeasonDetails {
     return title;
   }
 
-  public static create(malSeasonDetails: MALSeasonDetails) {
+  public static create(malSeasonDetails: MALSeasonDetailsRequireId) {
     return new SeasonDetails({
       synopsis: malSeasonDetails.synopsis,
-      id: malSeasonDetails.mal_id,
-      externalLinkType: "MAL",
+      externalLink: { type: "MAL", id: malSeasonDetails.mal_id },
       approved: malSeasonDetails.approved,
       images: malSeasonDetails.images,
       popularity: malSeasonDetails.popularity,

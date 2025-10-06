@@ -14,6 +14,7 @@ import { showError, sleepFor } from "../../utils/utils";
 import ProgressButton, {
   type ProgressButtonState,
 } from "../generic/progress/progressButton";
+import { newExternalLink } from "../../models/externalLink";
 
 const AddAnimeMenu = ({
   addAnime,
@@ -102,6 +103,11 @@ const AddAnimeMenu = ({
 
                     LocalDB.doTransaction((store, db) => {
                       objs.forEach((anime: any) => {
+                        anime.seasons.forEach((season: any) => {
+                          season.externalLink.seasonId =
+                            season.externalLink?.id;
+                          season.externalLink.id = anime.externalLink?.id;
+                        });
                         const newAnime = Anime.Load({
                           animeData: anime,
                           justAdded: false,
@@ -151,8 +157,7 @@ const AddAnimeMenu = ({
             }
             const alreadyExistingAnime = AppData.animes.get(
               Anime.getAnimeDbId(
-                selectedAnime.externalLink?.type,
-                selectedAnime.externalLink?.id,
+                newExternalLink(selectedAnime.externalLink),
                 selectedAnime.title
               )
             );
@@ -170,7 +175,9 @@ const AddAnimeMenu = ({
             new Promise((resolve) => {
               (async () => {
                 const createAnimeTask = AnimeCardFactory.create({
-                  animeExternalLink: selectedAnime.externalLink,
+                  animeExternalLink: newExternalLink(
+                    selectedAnime.externalLink
+                  ),
                   order: AppData.animes.size,
                   getSequels: true,
                 });

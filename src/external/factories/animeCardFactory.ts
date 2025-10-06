@@ -1,10 +1,10 @@
-import type ExternalLink from "../../models/externalLink";
 import MALCardFactory from "./malCardFactory";
 import BadResponse from "../responses/badResponse";
+import type { ExternalLink } from "../../models/externalLink";
 
 export default class AnimeCardFactory {
   public static create(params: {
-    animeExternalLink: ExternalLink | undefined;
+    animeExternalLink: ExternalLink;
     order: number;
     getSequels: boolean;
   }) {
