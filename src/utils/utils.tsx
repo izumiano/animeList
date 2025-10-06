@@ -2,6 +2,7 @@ import { toast } from "react-toastify";
 import BadResponse from "../external/responses/badResponse";
 import "../App.css";
 import type { CSSProperties, ReactNode } from "react";
+import { v4 as uuid } from "uuid";
 
 export async function sleepFor(
   milliseconds: number,
@@ -40,10 +41,7 @@ export function dvwToPx(dvwValue: number) {
   return pixelValue;
 }
 
-export function parseError(
-  ex: unknown,
-  params?: { title?: ReactNode; showDetails?: boolean }
-) {
+function _parseError(ex: unknown, params?: { showDetails?: boolean }) {
   if (typeof ex === "string") {
     return ex;
   } else if (ex instanceof BadResponse) {
@@ -54,15 +52,14 @@ export function parseError(
     const data = ex.data?.data ?? ex.data;
 
     return (
-      <div className="flexColumn" style={{ height: "100%" }}>
-        {params.title ? <span>{params.title}</span> : null}
+      <>
         <span>{ex.displayMessage}</span>
         {data ? (
           <pre className="unimportantText scroll">
             <i>{JSON.stringify(data, null, 2)}</i>
           </pre>
         ) : null}
-      </div>
+      </>
     );
   } else if (ex instanceof Error) {
     if (!params?.showDetails) {
@@ -70,16 +67,20 @@ export function parseError(
     }
 
     return (
-      <div className="flexColumn">
-        <span>
-          <b>{ex.message}</b>
-        </span>
-        <span className="smallText">
+      <>
+        <span>{ex.message}</span>
+        <pre className="unimportantText scroll">
           <i>{ex.stack}</i>
-        </span>
-        <br />
-      </div>
+        </pre>
+      </>
     );
+  } else if (Array.isArray(ex)) {
+    return ex.map((ex) => (
+      <span key={uuid()} className="flexGrow">
+        <hr />
+        {_parseError(ex, params)}
+      </span>
+    ));
   } else {
     return (
       <span>
@@ -89,20 +90,32 @@ export function parseError(
   }
 }
 
-export function showError(ex: unknown) {
-  toast.error(parseError(ex));
+export function parseError(
+  ex: unknown,
+  params?: { title?: ReactNode; showDetails?: boolean }
+) {
+  return (
+    <div className="flexColumn breakWord" style={{ height: "100%" }}>
+      {params?.title ? <span>{params.title}</span> : null}
+      {_parseError(ex, params)}
+    </div>
+  );
 }
 
-export function clamp(
-  value: number,
-  params:
-    | { min: number; max: number }
-    | { min: number; max?: number }
-    | { min?: number; max: number }
-) {
+export function showError(ex: unknown, title?: ReactNode) {
+  toast.error(parseError(ex, { title: title }));
+}
+
+export type MinMaxType =
+  | { min: number; max: number }
+  | { min: number; max?: number }
+  | { min?: number; max: number }
+  | undefined;
+
+export function clamp(value: number, params: MinMaxType) {
   return Math.max(
-    params.min ?? -Infinity,
-    Math.min(value, params.max ?? Infinity)
+    params?.min ?? -Infinity,
+    Math.min(value, params?.max ?? Infinity)
   );
 }
 
@@ -182,4 +195,24 @@ export type UUIDType = `${string}-${string}-${string}-${string}-${string}`;
 
 export interface ProgressCSS extends CSSProperties {
   "--progress": number;
+}
+
+/**
+ *
+ * @param date
+ * @param formatString
+ * yyyy - year,
+ * MM - month value,
+ * dd - day value
+ * @returns
+ */
+export function formatDate(date: Date, formatString: string) {
+  const year = String(date.getFullYear());
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // Month is 0-indexed, so add 1
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return formatString
+    .replaceAll("yyyy", year)
+    .replaceAll("MM", month)
+    .replaceAll("dd", day);
 }

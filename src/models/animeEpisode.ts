@@ -1,21 +1,30 @@
 import AppData from "../appData";
+import ExternalRequest from "../external/externalRequest";
+import type AnimeSeason from "./animeSeason";
 
 export default class AnimeEpisode {
   title: string;
   episodeNumber: number;
   watched: boolean;
 
-  constructor(params: {
+  constructor({
+    animeDbId,
+    title,
+    episodeNumber,
+    watched,
+    seasonInfo,
+  }: {
     animeDbId?: string;
     title: string;
     episodeNumber: number;
     watched: boolean;
+    seasonInfo?: { season: AnimeSeason; animeTitle?: string };
   }) {
-    this.title = params.title;
-    this.episodeNumber = params.episodeNumber;
-    this.watched = params.watched;
+    this.title = title;
+    this.episodeNumber = episodeNumber;
+    this.watched = watched;
 
-    if (params.animeDbId) {
+    if (animeDbId) {
       return new Proxy(this, {
         set: function (
           target: AnimeEpisode,
@@ -24,13 +33,20 @@ export default class AnimeEpisode {
         ) {
           if (target[property] !== value) {
             console.debug(
-              `AnimeEpisode Property in '${params.title}' '${property}' changed from'`,
+              `AnimeEpisode Property in '${title}' '${property}' changed from'`,
               target[property],
               "to",
               value
             );
             Reflect.set(target, property, value);
-            AppData.animes.get(params.animeDbId!)?.saveToDb();
+            AppData.animes.get(animeDbId!)?.saveToDb();
+
+            if (property === "watched" && seasonInfo) {
+              ExternalRequest.updateAnimeSeasonStatus(
+                seasonInfo.season,
+                seasonInfo.animeTitle
+              );
+            }
           }
           return true;
         },

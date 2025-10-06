@@ -6,6 +6,8 @@ import type {
 } from "../external/responses/IResponse";
 import { sleepFor } from "./utils";
 
+export type RequestMethod = "GET" | "POST" | "PUT";
+
 const MAX_RATELIMIT_ITERATIONS = 40;
 
 export default class WebUtil {
@@ -94,7 +96,7 @@ export default class WebUtil {
     TErrorHandler extends IErrorHandler<TErrorType>
   >(
     request: RequestInfo,
-    method?: "GET" | "POST",
+    method?: RequestMethod,
     params?: {
       body?: BodyInit;
       acceptStatusCodes?: number[];
@@ -114,7 +116,7 @@ export default class WebUtil {
     TErrorHandler extends IErrorHandler<TErrorType>
   >(
     request: Request | URL,
-    method?: "GET" | "POST",
+    method?: RequestMethod,
     params?: {
       body?: BodyInit;
       acceptStatusCodes?: number[];

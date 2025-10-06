@@ -11,7 +11,7 @@ type ActivityTaskObserver = (args: {
   isDeletion: boolean;
 }) => void;
 
-export function pushTask(task: ActivityTask<unknown>) {
+export function pushTask<T>(task: ActivityTask<T>) {
   taskQueue.set(task.id, task);
   return task.start();
 }

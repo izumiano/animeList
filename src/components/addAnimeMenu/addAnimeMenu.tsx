@@ -15,6 +15,7 @@ import ProgressButton, {
   type ProgressButtonState,
 } from "../generic/progress/progressButton";
 import { newExternalLink } from "../../models/externalLink";
+import ExternalRequest from "../../external/externalRequest";
 
 const AddAnimeMenu = ({
   addAnime,
@@ -227,6 +228,43 @@ const AddAnimeMenu = ({
                       setSelectedAnimeIndexState(null);
                       setIsOpenState(false);
                       addAnime(anime);
+
+                      const updates = anime.seasons.map((season) =>
+                        ExternalRequest.updateAnimeSeasonStatus(
+                          season,
+                          anime.title,
+                          { showToastOnSuccess: false, allowAbort: false }
+                        )
+                      );
+
+                      Promise.all(updates)
+                        .then((responses) => {
+                          const errors = responses.filter(
+                            (response) => response instanceof Error
+                          );
+                          if (errors.length > 0) {
+                            showError(
+                              errors,
+                              <span>
+                                Failed adding <b>{anime.title}</b> to MAL
+                              </span>
+                            );
+                            return;
+                          }
+                          toast.info(
+                            <span>
+                              Successfully added <b>{anime.title}</b> to MAL
+                            </span>
+                          );
+                        })
+                        .catch((ex) => {
+                          showError(
+                            ex,
+                            <span>
+                              Failed adding <b>{anime.title}</b> to MAL
+                            </span>
+                          );
+                        });
                     },
                   }
                 );

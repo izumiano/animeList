@@ -71,7 +71,6 @@ export default class LocalDB {
       mode?: IDBTransactionMode | undefined;
     } & TransactionResponse
   ) {
-    console.log("here");
     if (!this.Instance) {
       console.error("LocalDB instance undefined");
       new Promise((resolve) => {
@@ -117,11 +116,9 @@ export default class LocalDB {
           }
 
           request.addEventListener("success", (event) => {
-            console.log("success");
             resolve((event.target as IDBRequest).result);
           });
           request.addEventListener("error", (event) => {
-            console.log("error");
             const request = event.target as IDBRequest;
             console.error(request.error);
             reject(request.error);

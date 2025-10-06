@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type ActivityTask from "../../../utils/activityTask";
-import { clamp, parseError, type UUIDType } from "../../../utils/utils";
+import { parseError, type UUIDType } from "../../../utils/utils";
 import ProgressBar from "./progressBar";
 import "./progressTask.css";
 import warnIcon from "../../../assets/warning.png";
@@ -48,11 +48,8 @@ const ProgressTask = ({
           ) : null}
         </div>
         <ProgressBar
-          progress={
-            clamp(task.progress, {
-              min: task.maxProgress * 0.07,
-            }) / task.maxProgress
-          }
+          progress={task.progress / task.maxProgress}
+          clamping={{ min: task.maxProgress * 0.07 }}
           showPercentage={true}
           className="progressTaskBar"
           progressClassName={failed ? "fail" : undefined}

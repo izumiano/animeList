@@ -133,7 +133,11 @@ export default class MALCardFactory {
           );
         }
         episodes.push(
-          new AnimeEpisode({ episodeNumber: 0, title: title, watched: false })
+          new AnimeEpisode({
+            episodeNumber: 0,
+            title: title,
+            watched: false,
+          })
         );
       }
 

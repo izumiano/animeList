@@ -70,7 +70,10 @@ export default class Anime {
     this.seasons = params.seasons.map((season) => {
       return new AnimeSeason({
         ...season,
-        ...{ animeDbId: params.autoSave ? this.getAnimeDbId() : undefined },
+        ...{
+          animeDbId: params.autoSave ? this.getAnimeDbId() : undefined,
+          anime: this,
+        },
       });
     });
 
@@ -138,6 +141,12 @@ export default class Anime {
       : undefined;
 
     for (const season of animeData.seasons) {
+      const seasonExternalLink = newExternalLink({
+        type: season.externalLink?.type,
+        id: season.externalLink?.id,
+        seasonId: season.externalLink?.seasonId,
+      });
+
       const episodes: AnimeEpisode[] = [];
 
       for (const episode of season.episodes) {
@@ -166,11 +175,7 @@ export default class Anime {
           watched: season.watched,
           seasonNumber: season.seasonNumber,
           mediaType: season.mediaType,
-          externalLink: newExternalLink({
-            type: season.externalLink?.type,
-            id: season.externalLink?.id,
-            seasonId: season.externalLink?.seasonId,
-          }),
+          externalLink: seasonExternalLink,
           dateStarted: season.dateStarted,
           dateFinished: season.dateFinished,
         })

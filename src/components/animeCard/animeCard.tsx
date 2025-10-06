@@ -201,7 +201,6 @@ const AnimeCard = ({
               listRef={listRef}
               scrollElementRef={scrollElementRef}
               onSelect={(seasonNumber) => {
-                console.log({ seasonNumber });
                 setIndex(seasonNumber - 1);
                 const newSelectedSeason = anime.seasons[seasonNumber - 1];
                 newSelectedSeason.checkWatchedAll(newSelectedSeason);

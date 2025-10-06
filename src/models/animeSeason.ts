@@ -1,4 +1,5 @@
 import AppData from "../appData";
+import type Anime from "./anime";
 import type { MediaType } from "./anime";
 import AnimeEpisode from "./animeEpisode";
 import type { ExternalLink } from "./externalLink";
@@ -23,18 +24,22 @@ export default class AnimeSeason {
     externalLink: ExternalLink;
     dateStarted: Date | number | null;
     dateFinished: Date | number | null;
+    anime?: Anime;
   }) {
     this.title = params.title ?? `Season ${params.seasonNumber}`;
+    this.externalLink = params.externalLink;
     this.episodes = params.episodes.map((episode) => {
       return new AnimeEpisode({
         ...episode,
-        ...{ animeDbId: params.animeDbId },
+        ...{
+          animeDbId: params.animeDbId,
+          seasonInfo: { season: this, animeTitle: params.anime?.title },
+        },
       });
     });
     this.watched = params.watched;
     this.seasonNumber = params.seasonNumber;
     this.mediaType = params.mediaType;
-    this.externalLink = params.externalLink;
 
     this.dateStarted = !params.dateStarted
       ? null

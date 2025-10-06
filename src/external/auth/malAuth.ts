@@ -16,6 +16,9 @@ let refreshTokenAbortController = new AbortController();
 
 export class MALAuth {
   public static readonly instance = new MALAuth();
+  public static get accessToken() {
+    return this.instance.userToken?.accessToken;
+  }
 
   private readonly cryptography: MALCryptography = new MALCryptography();
   public userToken: MALUserToken | undefined;
@@ -156,16 +159,21 @@ export class MALAuth {
     );
   }
 
-  public async refreshUserTokenAsync(refreshToken: string) {
+  public async refreshUserTokenAsync(refreshToken?: string) {
     console.debug("refreshing user token");
     const url = "https://myanimelist.net/v1/oauth2/token";
     const request = new Request(url);
     request.headers.set("Content-Type", "application/x-www-form-urlencoded");
 
+    refreshToken = refreshToken ?? this.userToken?.refreshToken;
+    if (!refreshToken) {
+      return new BadResponse("Refresh token was undefined");
+    }
+
     const body = new URLSearchParams({
       client_id: clientId,
       grant_type: "refresh_token",
-      refresh_token: refreshToken,
+      refresh_token: refreshToken ?? this.userToken?.refreshToken,
       redirect_uri: redirectUri,
     });
 

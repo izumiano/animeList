@@ -15,7 +15,6 @@ export default class MalErrorHandler extends IErrorHandler<MalErrorResponse> {
   }
 
   public getFailureMessage(_url: string, data: MalErrorResponse) {
-    console.log(data);
     return (
       <span>
         {this.message}
