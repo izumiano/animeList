@@ -12,6 +12,8 @@
 	margin-top: 1rem;
 	margin-bottom: 1rem;
 
+	overflow-y: hidden;
+
 	--cardHeight: 16.5rem;
 	--cardBorderRadius: max(5px, 3dvw);
 	--colSecondaryTrans: rgb(from var(--colSecondary) r g b / 0.6);
