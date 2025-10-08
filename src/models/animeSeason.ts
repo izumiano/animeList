@@ -14,6 +14,8 @@ export default class AnimeSeason {
   dateStarted: Date | null;
   dateFinished: Date | null;
 
+  private anime: Anime | undefined;
+
   constructor(params: {
     animeDbId?: string;
     title?: string;
@@ -26,6 +28,8 @@ export default class AnimeSeason {
     dateFinished: Date | number | null;
     anime?: Anime;
   }) {
+    this.anime = params.anime;
+
     this.title = params.title ?? `Season ${params.seasonNumber}`;
     this.externalLink = params.externalLink;
     this.episodes = params.episodes.map((episode) => {
@@ -87,11 +91,35 @@ export default class AnimeSeason {
     return true;
   }
 
+  public updateDate() {
+    const watchedEpisodes = this.episodes.filter(
+      (episode) => episode.watched
+    ).length;
+
+    if (watchedEpisodes === 0) {
+      return;
+    }
+
+    let updateAnimeDate = false;
+    if (watchedEpisodes === 1 && !this.dateStarted) {
+      this.dateStarted = new Date();
+      updateAnimeDate = true;
+    }
+    if (watchedEpisodes === this.episodes.length && !this.dateFinished) {
+      this.dateFinished = new Date();
+      updateAnimeDate = true;
+    }
+
+    if (updateAnimeDate) {
+      this.anime?.updateDate();
+    }
+  }
+
   public toIndexedDBObj() {
     const objCopy: { [key: string]: any } = {};
     for (const key in this) {
       if (Object.prototype.hasOwnProperty.call(this, key)) {
-        if (key === "animeDbId") continue;
+        if (key === "animeDbId" || key === "anime") continue;
 
         if (key === "episodes") {
           const episodes = [];

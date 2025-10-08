@@ -206,7 +206,14 @@ export interface ProgressCSS extends CSSProperties {
  * dd - day value
  * @returns
  */
-export function formatDate(date: Date, formatString: string) {
+export function formatDate(
+  date: Date | undefined | null,
+  formatString: string
+) {
+  if (!date) {
+    return "Unknown Date";
+  }
+
   const year = String(date.getFullYear());
   const month = String(date.getMonth() + 1).padStart(2, "0"); // Month is 0-indexed, so add 1
   const day = String(date.getDate()).padStart(2, "0");

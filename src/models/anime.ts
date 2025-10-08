@@ -122,6 +122,17 @@ export default class Anime {
     return this.seasons[0];
   }
 
+  public updateDate() {
+    const firstSeason = this.seasons.at(0);
+    if (!this.dateStarted && firstSeason && firstSeason.dateStarted) {
+      this.dateStarted = firstSeason.dateStarted;
+    }
+    const lastSeason = this.seasons.at(-1);
+    if (!this.dateFinished && lastSeason && lastSeason.dateFinished) {
+      this.dateFinished = lastSeason.dateFinished;
+    }
+  }
+
   public static getAnimeDbId(externalLink: ExternalLink, title: string) {
     return `${externalLink?.type ?? "NONE"}${externalLink?.id ?? title}`;
   }

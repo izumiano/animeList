@@ -42,6 +42,7 @@ export default class AnimeEpisode {
             AppData.animes.get(animeDbId!)?.saveToDb();
 
             if (property === "watched" && seasonInfo) {
+              seasonInfo.season.updateDate();
               ExternalSync.updateAnimeSeasonStatus(
                 seasonInfo.season,
                 seasonInfo.animeTitle
