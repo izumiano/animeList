@@ -16,6 +16,7 @@ import ProgressButton, {
 } from "../generic/progress/progressButton";
 import { newExternalLink } from "../../models/externalLink";
 import ExternalSync from "../../external/externalSync";
+import { importAnimes } from "./animeImport";
 
 const AddAnimeMenu = ({
   addAnime,
@@ -77,52 +78,9 @@ const AddAnimeMenu = ({
             <input
               type="file"
               onChange={(event) => {
-                const files = event.target.files;
-                if (!files) {
-                  return;
-                }
-
-                const objs: any[] = [];
-
-                new Promise((resolve) => {
-                  (async () => {
-                    for (const file of files) {
-                      const obj = JSON.parse(await file.text());
-                      for (const o of obj) {
-                        objs.push(o);
-                      }
-                    }
-
-                    objs.sort((lhs, rhs) => {
-                      if (lhs.order < rhs.order) return -1;
-                      return 1;
-                    });
-
-                    objs.forEach((obj, index) => {
-                      obj.order = index;
-                    });
-
-                    LocalDB.doTransaction((store, db) => {
-                      objs.forEach((anime: any) => {
-                        anime.seasons.forEach((season: any) => {
-                          season.externalLink.seasonId =
-                            season.externalLink?.id;
-                          season.externalLink.id = anime.externalLink?.id;
-                        });
-                        const newAnime = Anime.Load({
-                          animeData: anime,
-                          justAdded: false,
-                        });
-                        db.saveAnime(newAnime, store).onsuccess = () => {
-                          addAnime(newAnime, { doScroll: false });
-                        };
-                      });
-
-                      return null;
-                    });
-                    resolve(null);
-                  })();
-                });
+                importAnimes(event.target.files, (anime) =>
+                  addAnime(anime, { doScroll: false })
+                );
               }}
             />
             <img src={fileIcon}></img>
