@@ -6,7 +6,7 @@ import { MALAuth } from "./auth/malAuth";
 
 const abortControllers: Map<string, AbortController> = new Map();
 
-export default class ExternalRequest {
+export default class ExternalSync {
   public static async updateAnimeSeasonStatus(
     season: AnimeSeason,
     title: string | undefined,
