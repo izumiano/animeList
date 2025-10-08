@@ -15,7 +15,7 @@ import ProgressButton, {
   type ProgressButtonState,
 } from "../generic/progress/progressButton";
 import { newExternalLink } from "../../models/externalLink";
-import ExternalRequest from "../../external/externalRequest";
+import ExternalSync from "../../external/externalSync";
 
 const AddAnimeMenu = ({
   addAnime,
@@ -231,19 +231,21 @@ const AddAnimeMenu = ({
 
                       allSuccess(anime.seasons, {
                         forEach: async (season) =>
-                          ExternalRequest.updateAnimeSeasonStatus(
+                          ExternalSync.updateAnimeSeasonStatus(
                             season,
                             anime.title,
                             { showToastOnSuccess: false, allowAbort: false }
                           ),
                         successMessage: (
                           <span>
-                            Successfully added <b>{anime.title}</b> to MAL
+                            Successfully added <b>{anime.title}</b> to{" "}
+                            {anime.externalLink.type}.
                           </span>
                         ),
                         failMessage: (
                           <span>
-                            Failed adding <b>{anime.title}</b> to MAL
+                            Failed adding <b>{anime.title}</b> to{" "}
+                            {anime.externalLink.type}.
                           </span>
                         ),
                       });

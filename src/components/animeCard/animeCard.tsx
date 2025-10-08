@@ -21,7 +21,7 @@ import Dropdown from "../generic/dropdown";
 import ConfirmationDropdown from "../generic/confirmationDropdown";
 import { useOtherElementEvent } from "../../utils/useEvents";
 import type { ExternalLink } from "../../models/externalLink";
-import ExternalRequest from "../../external/externalRequest";
+import ExternalSync from "../../external/externalSync";
 
 const isOnScreenTolerance = remToPx(17);
 
@@ -187,7 +187,7 @@ const AnimeCard = ({
                           onSuccess: () => {
                             allSuccess(anime.seasons, {
                               forEach: async (season) =>
-                                ExternalRequest.deleteAnimeSeason(
+                                ExternalSync.deleteAnimeSeason(
                                   season,
                                   anime.title,
                                   {
@@ -196,13 +196,14 @@ const AnimeCard = ({
                                 ),
                               successMessage: (
                                 <span>
-                                  Successfully deleted <b>{anime.title}</b> from
-                                  MAL
+                                  Successfully deleted <b>{anime.title}</b> from{" "}
+                                  {anime.externalLink.type}.
                                 </span>
                               ),
                               failMessage: (
                                 <span>
-                                  Failed deleting <b>{anime.title}</b> from MAL
+                                  Failed deleting <b>{anime.title}</b> from{" "}
+                                  {anime.externalLink.type}.
                                 </span>
                               ),
                             });

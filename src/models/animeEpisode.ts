@@ -1,5 +1,5 @@
 import AppData from "../appData";
-import ExternalRequest from "../external/externalRequest";
+import ExternalSync from "../external/externalSync";
 import type AnimeSeason from "./animeSeason";
 
 export default class AnimeEpisode {
@@ -42,7 +42,7 @@ export default class AnimeEpisode {
             AppData.animes.get(animeDbId!)?.saveToDb();
 
             if (property === "watched" && seasonInfo) {
-              ExternalRequest.updateAnimeSeasonStatus(
+              ExternalSync.updateAnimeSeasonStatus(
                 seasonInfo.season,
                 seasonInfo.animeTitle
               );

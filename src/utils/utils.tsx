@@ -223,21 +223,35 @@ export function allSuccess<TIn, TOut>(
     forEach,
     successMessage,
     failMessage,
+    treatUndefinedAs,
   }: {
     forEach: (item: TIn) => Promise<TOut>;
     successMessage: ReactNode | ((items: TOut[]) => ReactNode);
     failMessage: ReactNode;
+    treatUndefinedAs?: "success" | "error" | "ignore";
   }
 ) {
+  treatUndefinedAs ??= "ignore";
+
   const promises = arr.map((item) => forEach(item));
 
   Promise.all(promises)
     .then((responses) => {
-      const errors = responses.filter((response) => response instanceof Error);
+      const errors = responses.filter(
+        (response) =>
+          response instanceof Error ||
+          (treatUndefinedAs === "error" && response === undefined)
+      );
       if (errors.length > 0) {
         showError(errors, failMessage);
         return;
       }
+      if (
+        treatUndefinedAs !== "success" &&
+        responses.every((response) => response === undefined)
+      )
+        return;
+
       toast.info(
         typeof successMessage === "function"
           ? successMessage(responses)

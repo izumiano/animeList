@@ -120,7 +120,7 @@ export class MALUserToken {
   }: {
     season: AnimeSeason;
     data: MALUpdateMyListStatus;
-  }): Promise<undefined | BadResponse> {
+  }): Promise<undefined | BadResponse | { success: true }> {
     if (this.isExpired()) {
       const newToken = await MALAuth.instance.refreshUserTokenAsync(
         this.refreshToken
@@ -180,6 +180,7 @@ export class MALUserToken {
     if (statusCode !== 200) {
       return new BadResponse(`Failed with statusCode: [${statusCode}]`);
     }
+    return { success: true };
   }
 
   private async getListStatus(

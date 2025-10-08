@@ -3,6 +3,7 @@ import type AnimeSeason from "../models/animeSeason";
 import ActivityTask, { pushTask } from "../utils/activityTask";
 import { sleepFor } from "../utils/utils";
 import { MALAuth } from "./auth/malAuth";
+import { externalSyncEnabled } from "../appData";
 
 const abortControllers: Map<string, AbortController> = new Map();
 
@@ -12,6 +13,8 @@ export default class ExternalSync {
     title: string | undefined,
     params?: { showToastOnSuccess?: boolean; allowAbort?: boolean }
   ) {
+    if (!externalSyncEnabled) return;
+
     params ??= {};
     params.showToastOnSuccess ??= true;
     params.allowAbort ??= true;
@@ -73,6 +76,8 @@ export default class ExternalSync {
     title: string | undefined,
     params?: { showToastOnSuccess?: boolean }
   ) {
+    if (!externalSyncEnabled) return;
+
     params ??= {};
     params.showToastOnSuccess ??= true;
 
