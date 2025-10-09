@@ -42,8 +42,10 @@ export function importAnimes(
             season.dateFinished = thirdMilleniumSecondsToUnixMilli(
               season.dateFinished
             );
-            season.externalLink.seasonId = season.externalLink?.id;
-            season.externalLink.id = anime.externalLink?.id;
+            if (season.externalLink.type === "TMDB") {
+              season.externalLink.seasonId = season.externalLink?.id;
+              season.externalLink.id = anime.externalLink?.id;
+            }
           });
           const newAnime = Anime.Load({
             animeData: anime,
