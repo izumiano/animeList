@@ -15,8 +15,8 @@ const SeasonPicker = ({
   seasons: AnimeSeason[];
   selectedSeason: AnimeSeason;
   watched: boolean;
-  listRef: React.RefObject<HTMLUListElement | null>;
-  scrollElementRef: React.RefObject<HTMLDivElement | null>;
+  listRef?: React.RefObject<HTMLUListElement | null>;
+  scrollElementRef?: React.RefObject<HTMLDivElement | null>;
   onSelect: (seasonNumber: number) => undefined;
 }) => {
   if (seasons.length <= 1) {

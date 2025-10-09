@@ -1,10 +1,8 @@
-.card {
+.cardBase {
 	display: flex;
 	padding: 1dvw;
 	align-items: flex-start;
 	border-radius: var(--cardBorderRadius);
-
-	height: var(--cardHeight);
 
 	background-color: var(--colPrimary);
 	transition: background-color 0.4s;
@@ -15,6 +13,10 @@
 	--cardHeight: 16.5rem;
 	--cardBorderRadius: max(5px, 3dvw);
 	--colSecondaryTrans: rgb(from var(--colSecondary) r g b / 0.6);
+}
+
+.card {
+	height: var(--cardHeight);
 }
 
 .card.watched {
@@ -80,7 +82,7 @@
 .title {
 	text-align: left;
 	width: 100%;
-	margin: 0;
+	margin: 0.3rem 0 0.3rem 0
 }
 
 .title > a > img {
@@ -109,4 +111,29 @@
 
 .thing {
 	min-width: 16rem;
+}
+
+.titleHover.watched:hover {
+	background-color: var(--colSecondary);
+}
+
+@media (pointer: fine) {
+	.titleHover:hover {
+		background-color: hsl(from var(--colPrimary) h s calc(l + 20));
+	}
+
+
+	.titleHover:active {
+		background-color: hsl(from var(--colPrimary) h s calc(l - 5));
+	}
+
+	.titleHover.watched:active {
+		background-color: hsl(from var(--colSecondary) h s calc(l - 20));
+	}
+}
+
+@media (pointer: coarse) {
+	.titleHover:hover {
+		background-color: hsl(from var(--colPrimary) h s calc(l + 20%));
+	}
 }

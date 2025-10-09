@@ -1,0 +1,20 @@
+.detailedCard {
+	min-height: var(--cardHeight);
+}
+
+.detailedCardInfo {
+	max-height: calc(var(--cardHeight));
+	transition: max-height 1s;
+}
+
+.detailedCardInfo.expanded {
+	max-height: 100vh;
+}
+
+.animeSummary {
+	padding: 1rem;
+	padding-bottom: 0;
+	border-radius: 2rem;
+	border: 2px solid gray;
+	background-color: var(--colNeutral);
+}

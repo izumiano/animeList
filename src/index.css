@@ -17,15 +17,15 @@ html {
 	-moz-osx-font-smoothing: grayscale;
 }
 
-a {
+/* a:not(.reset) {
 	font-weight: 500;
 	color: #646cff;
 	text-decoration: inherit;
 }
 
-a:hover {
+a:not(.reset):hover {
 	color: #535bf2;
-}
+} */
 
 body {
 	margin: 0;

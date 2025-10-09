@@ -20,8 +20,9 @@ import {
 import Dropdown from "../generic/dropdown";
 import ConfirmationDropdown from "../generic/confirmationDropdown";
 import { useOtherElementEvent } from "../../utils/useEvents";
-import type { ExternalLink } from "../../models/externalLink";
+import { getUrlFromExternalLink } from "../../models/externalLink";
 import ExternalSync from "../../external/externalSync";
+import type { Page } from "../../Home";
 
 const isOnScreenTolerance = remToPx(17);
 
@@ -34,12 +35,14 @@ const AnimeCard = ({
   animeFilter,
   listRef,
   scrollElementRef,
+  setCurrentPageState,
 }: {
   anime: Anime;
   reloadAnimes: () => void;
   animeFilter: AnimeFilter;
   listRef: React.RefObject<HTMLUListElement | null>;
   scrollElementRef: React.RefObject<HTMLDivElement | null>;
+  setCurrentPageState: (page: Page) => void;
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(
@@ -123,7 +126,7 @@ const AnimeCard = ({
   return (
     <div
       ref={cardRef}
-      className={`card ${isWatchedClass} ${isJustAddedClass} ${isToBeRemovedClass}`}
+      className={`cardBase card ${isWatchedClass} ${isJustAddedClass} ${isToBeRemovedClass}`}
       onAnimationEnd={(event) => {
         switch (event.animationName) {
           case justAddedAnimName:
@@ -150,11 +153,28 @@ const AnimeCard = ({
           <div className="cardInfo">
             <div className={`flexRow`}>
               <h1 className="title flexGrow">
-                <b>{anime.title}</b>
+                <a
+                  className={`reset hoverableText titleHover ${
+                    watched ? "watched" : ""
+                  }`}
+                  onClick={() => {
+                    history.pushState(
+                      null,
+                      "",
+                      `/details/${anime.getAnimeDbId()}/`
+                    );
+                    setCurrentPageState("details");
+                  }}
+                >
+                  <b>{anime.title}</b>
+                </a>
                 <span style={{ color: "rgb(160, 160, 160)" }}> | </span>
                 {seasonExternalLink ? (
                   <a
-                    href={getUrl(seasonExternalLink) ?? "javascript:undefined"}
+                    href={
+                      getUrlFromExternalLink(seasonExternalLink) ??
+                      "javascript:undefined"
+                    }
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -280,19 +300,6 @@ function searchQueryMatched(anime: Anime, searchQuery: string) {
   );
 
   return animeTitle.includes(searchQuery);
-}
-
-function getUrl(externalLink: ExternalLink) {
-  if (externalLink.type === undefined) {
-    return null;
-  }
-
-  switch (externalLink.type) {
-    case "MAL":
-      return `https://myanimelist.net/anime/${externalLink.id}`;
-    case "TMDB":
-      return `https://www.themoviedb.org/tv/${externalLink.id}`;
-  }
 }
 
 export default AnimeCard;

@@ -12,6 +12,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
       { path: "malAuth", element: <Home /> },
+      { path: "details/*", element: <Home startPage="details" /> },
     ],
   },
 ]);

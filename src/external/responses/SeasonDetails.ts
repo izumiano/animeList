@@ -82,7 +82,9 @@ export class SeasonDetails {
     return title;
   }
 
-  public static create(malSeasonDetails: MALSeasonDetailsRequireId) {
+  public static create(
+    malSeasonDetails: Omit<MALSeasonDetailsRequireId, "statusCode">
+  ) {
     return new SeasonDetails({
       synopsis: malSeasonDetails.synopsis,
       externalLink: { type: "MAL", id: malSeasonDetails.mal_id },

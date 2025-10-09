@@ -6,6 +6,7 @@ export class MALSeasonDetails implements IResponseData {
   statusCode: number | undefined;
   synopsis?: string;
   mal_id?: number;
+  id?: number;
   approved?: boolean;
   images?: SeasonImages;
   popularity?: number;
@@ -16,6 +17,7 @@ export class MALSeasonDetails implements IResponseData {
   relations?: SeasonRelation[];
   type?: MediaType;
   aired?: { from: Date };
+  start_date?: string;
 }
 
 interface SeasonRelation {

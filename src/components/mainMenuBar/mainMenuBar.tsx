@@ -21,7 +21,7 @@ const MainMenuBar = ({
   return (
     <div id="mainMenuBar" className="mainMenuBarProps">
       <AddAnimeButton setIsOpenState={setIsOpenState} />
-      <ProgressNode />
+      <ProgressNode size={"var(--defaultItemWidth)"} />
       <div className="flexGrow"></div>
       <input
         type="text"

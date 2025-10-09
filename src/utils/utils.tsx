@@ -269,3 +269,14 @@ export function allSuccess<TIn, TOut>(
       showError(ex, failMessage);
     });
 }
+
+export function checkElementOverflow(element: HTMLElement) {
+  const isHorizontallyOverflowing = element.scrollWidth > element.clientWidth;
+  const isVerticallyOverflowing = element.scrollHeight > element.clientHeight;
+
+  return {
+    isHorizontallyOverflowing,
+    isVerticallyOverflowing,
+    isOverflowing: isHorizontallyOverflowing || isVerticallyOverflowing,
+  };
+}

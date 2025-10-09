@@ -79,6 +79,11 @@ export default class AnimeSeason {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     season ??= this;
 
+    if (season.episodes.length === 0) {
+      season.watched = false;
+      return false;
+    }
+
     for (const episode of season.episodes) {
       if (!episode.watched) {
         season.watched = false;

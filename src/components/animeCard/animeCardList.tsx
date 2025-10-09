@@ -4,17 +4,20 @@ import type { SortBy } from "../../models/animeFilter";
 import type AnimeFilter from "../../models/animeFilter";
 import AnimeCard from "./animeCard";
 import "./animeCardList.css";
+import type { Page } from "../../Home";
 
 const AnimeCardList = ({
   animes,
   reloadAnimes,
   animeFilter,
   parentRef,
+  setCurrentPageState,
 }: {
   animes: Anime[];
   reloadAnimes: () => void;
   animeFilter: AnimeFilter;
   parentRef: React.RefObject<HTMLDivElement | null>;
+  setCurrentPageState: (page: Page) => void;
 }) => {
   const listRef = useRef<HTMLUListElement>(null);
 
@@ -28,6 +31,7 @@ const AnimeCardList = ({
             animeFilter={animeFilter}
             listRef={listRef}
             scrollElementRef={parentRef}
+            setCurrentPageState={setCurrentPageState}
           />
         </li>
       ))}

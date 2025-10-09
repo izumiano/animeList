@@ -3,13 +3,21 @@ import ProgressCircle from "./progressCircle";
 import ActivityTask, {
   activityTaskListener,
 } from "../../../utils/activityTask";
-import { clamp, type UUIDType } from "../../../utils/utils";
+import { clamp, type Alignment, type UUIDType } from "../../../utils/utils";
 import Dropdown from "../dropdown";
 import "./progressNode.css";
 import ProgressTask from "./progressTask";
 import warnIcon from "../../../assets/warningYellow.png";
 
-const ProgressNode = () => {
+const ProgressNode = ({
+  size,
+  className,
+  alignment,
+}: {
+  size?: string;
+  className?: string;
+  alignment?: Alignment;
+}) => {
   const [progress, setProgressState] = useState<number | undefined>();
   const [tasks, setTasksState] = useState<Map<UUIDType, ActivityTask<unknown>>>(
     new Map()
@@ -52,6 +60,8 @@ const ProgressNode = () => {
     };
   }, [tasks]);
 
+  alignment ??= "left";
+
   const isFinished = tasks.size === 0;
 
   const showHideClass =
@@ -63,10 +73,12 @@ const ProgressNode = () => {
 
   return (
     <Dropdown
+      className={className}
       dropdownButton={
         <div className="relative">
           <ProgressCircle
             progress={clamp(progress ?? 1, { min: 0.03 })}
+            size={size}
             className={showHideClass}
             progressIndicatorStyle={{
               ...(progress === 0 && tasks.size <= 1
@@ -85,6 +97,7 @@ const ProgressNode = () => {
       }
       buttonClass="transparentBackground smallPadding invisibleDisable"
       buttonProps={{ disabled: isFinished }}
+      alignment={alignment}
     >
       {({ closeDropdown }) => {
         if (isFinished) {

@@ -2,13 +2,17 @@ import type { CSSProperties } from "react";
 import "./progressCircle.css";
 import { clamp, type ProgressCSS } from "../../../utils/utils";
 
+type ProgressCircleCSS = ProgressCSS & { "--circleSize": string };
+
 const ProgressCircle = ({
   progress,
   className,
+  size,
   progressIndicatorStyle,
 }: {
   progress: number;
   className?: string;
+  size?: string;
   progressIndicatorStyle?: CSSProperties;
 }) => {
   progressIndicatorStyle ??= {};
@@ -20,7 +24,8 @@ const ProgressCircle = ({
       style={
         {
           "--progress": clamp(progress, { min: 0, max: 1 }) * 100,
-        } as ProgressCSS
+          "--circleSize": size ?? "3rem",
+        } as ProgressCircleCSS
       }
     >
       <svg viewBox="0 0 100 100">

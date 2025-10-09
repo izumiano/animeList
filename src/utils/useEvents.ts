@@ -56,4 +56,6 @@ export const useOtherElementEvent = <T extends HTMLElement>({
       setIsAdded(true);
     }
   }, [callback, isAdded, element, eventTypes]);
+
+  return element;
 };

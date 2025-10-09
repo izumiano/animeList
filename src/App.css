@@ -143,6 +143,14 @@ hr {
 	text-align: left;
 }
 
+.rightAlignedText {
+	text-align: right;
+}
+
+.horizontalCenterItems {
+	justify-content: center;
+}
+
 .verticalCenterItems {
 	align-content: center;
 	align-items: center;
@@ -215,6 +223,10 @@ hr {
 	overflow: scroll;
 }
 
+.overflowHidden {
+	overflow: hidden;
+}
+
 .invisibleDisable {
 	box-sizing: border-box;
 }
@@ -238,4 +250,25 @@ hr {
 
 .breakWord {
 	overflow-wrap: break-word;
+}
+
+.hoverableText {
+	background-color: transparent;
+	cursor: pointer;
+	transition: background-color 0.2s;
+}
+
+.hoverableText:hover {
+	background-color: gray;
+}
+
+.hoverableText:active {
+	background-color: black;
+}
+
+.truncateText {
+	white-space: wrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	max-width: 400px;
 }
