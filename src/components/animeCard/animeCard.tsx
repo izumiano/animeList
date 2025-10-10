@@ -11,6 +11,7 @@ import LocalDB from "../../indexedDb/indexedDb";
 import type AnimeFilter from "../../models/animeFilter";
 import {
   allSuccess,
+  dvwToPx,
   isElementInViewport,
   removeDiacritics,
   removeNonAlphanumeric,
@@ -87,8 +88,11 @@ const AnimeCard = ({
 
   function checkIsOnScreen() {
     const card = cardRef.current;
+    console.log(remToPx(16.5) + dvwToPx(1));
     setIsOnScreen(
-      (card && isElementInViewport(card, isOnScreenTolerance)) === true
+      (card && isElementInViewport(card, isOnScreenTolerance)) === true &&
+        (cardRef.current?.getBoundingClientRect().height ?? 0) >
+          (remToPx(16.5) + dvwToPx(1)) * 0.3 // (anime card height + padding) * 0.3
     );
   }
 
