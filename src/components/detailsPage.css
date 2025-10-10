@@ -1,7 +1,7 @@
 .detailsPage {
 	position: relative;
 	width: 100dvw;
-	height: 100dvh;
+	height: 100vh;
 	overflow-y: scroll;
 	background-color: var(--colBackground);
 	top: 0;
@@ -16,6 +16,10 @@
 
 .detailsPage.hide {
 	left: 100dvw;
+}
+
+.detailsPage.disableTransition {
+	transition: none;
 }
 
 .detailedCard {

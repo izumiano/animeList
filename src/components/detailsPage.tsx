@@ -13,6 +13,8 @@ import ProgressNode from "./generic/progress/progressNode";
 import "./detailsPage.css";
 import ExpandableText from "./generic/expandableText";
 import { toast } from "react-toastify";
+import useTouch from "../utils/useTouch";
+import { dvwToPx } from "../utils/utils";
 
 const DetailsPage = ({
   animes,
@@ -25,33 +27,32 @@ const DetailsPage = ({
 }) => {
   const anime = useRef<Anime>(null);
 
-  function setCurrentAnime() {
-    function handleWrongInputs(errorMessage?: ReactNode) {
-      if (errorMessage) {
-        toast.error(errorMessage);
-        history.pushState(null, "", "/");
-
-        if (currentPage === "details") {
-          setCurrentPageState("main");
-        }
-      }
+  function goToMain(errorMessage?: ReactNode) {
+    if (errorMessage) {
+      toast.error(errorMessage);
     }
 
+    if (currentPage === "details") {
+      history.pushState(null, "", "/");
+      setCurrentPageState("main");
+    }
+  }
+
+  function setCurrentAnime() {
     if (!window.location.pathname.startsWith("/details/")) {
-      handleWrongInputs();
       return false;
     }
 
     const id = /\/details\/(?<id>[^/?#]+)/g.exec(window.location.pathname)
       ?.groups?.id;
     if (!id) {
-      handleWrongInputs(<span>Missing id in url</span>);
+      goToMain(<span>Missing id in url</span>);
       return false;
     }
 
     const currentAnime = animes.get(id);
     if (!currentAnime) {
-      handleWrongInputs(
+      goToMain(
         <span>
           Invalid id <b>{id}</b> in url
         </span>
@@ -66,11 +67,37 @@ const DetailsPage = ({
 
   const didUpdateAnime = setCurrentAnime();
 
+  const [touchOffset, setTouchOffsetState] = useState<number | null>(null);
+
   return (
     <div
       className={`detailsPage ${
         currentPage === "details" && didUpdateAnime ? "show" : "hide"
-      }`}
+      } ${touchOffset === null ? "" : "disableTransition"}`}
+      style={
+        touchOffset
+          ? {
+              left: `${touchOffset && touchOffset > 0 ? touchOffset : 0}px`,
+            }
+          : {}
+      }
+      ref={useTouch({
+        onMove: ({ totalMove }) => {
+          setTouchOffsetState(totalMove.x);
+        },
+        onEnd: ({ currentTouches, speed }) => {
+          if (currentTouches.size === 0) {
+            setTouchOffsetState(null);
+            const fullWidth = dvwToPx(100);
+            if (
+              (touchOffset && touchOffset > fullWidth / 2) ||
+              speed.x > fullWidth / 900
+            ) {
+              goToMain();
+            }
+          }
+        },
+      })}
     >
       {anime.current ? (
         <InternalDetailsPage anime={anime.current}></InternalDetailsPage>
