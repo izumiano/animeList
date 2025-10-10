@@ -1,7 +1,6 @@
 .circleProgress {
 	display: flex;
 	justify-content: center;
-	/* width: var(--defaultItemWidth); */
 	width: var(--circleSize);
 	height: var(--circleSize);
 }
@@ -13,9 +12,9 @@
 	stroke: var(--colNeutral);
 }
 
-.circleProgress > svg > .progress {
+.circleProgress > svg > circle.progress {
 	stroke-dasharray: 100;
-	stroke-dashoffset: calc(100 - var(--progress));
+	stroke-dashoffset: calc(100px - var(--progress));
 	stroke-linecap: round;
 	stroke-width: calc(var(--strokeWidth) + 2px);
 

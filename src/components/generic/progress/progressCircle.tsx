@@ -23,7 +23,7 @@ const ProgressCircle = ({
       className={`circleProgress ${className}`}
       style={
         {
-          "--progress": clamp(progress, { min: 0, max: 1 }) * 100,
+          "--progress": clamp(progress, { min: 0, max: 1 }) * 100 + "px",
           "--circleSize": size ?? "3rem",
         } as ProgressCircleCSS
       }

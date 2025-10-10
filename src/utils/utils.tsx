@@ -194,7 +194,7 @@ export function isElementInViewport(
 export type UUIDType = `${string}-${string}-${string}-${string}-${string}`;
 
 export interface ProgressCSS extends CSSProperties {
-  "--progress": number;
+  "--progress": string | number;
 }
 
 /**
