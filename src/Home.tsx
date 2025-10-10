@@ -78,64 +78,28 @@ function Home({ startPage }: { startPage?: Page }) {
 
   AppData.animes = animes;
 
-  switch (currentPage) {
-    case "main":
-      return (
-        <div>
-          <AddAnimeMenu
-            addAnime={addAnime}
-            isOpen={addAnimeMenuIsOpen}
-            setIsOpenState={setAddAnimeMenuIsOpenState}
-          />
-
-          <MainPage
-            animes={Array.from(animes.values())}
-            reloadAnimes={reloadAnimes}
-            setIsOpenState={setAddAnimeMenuIsOpenState}
-            fullScreenScrollContainerRef={fullScreenScrollContainerRef}
-            setCurrentPageState={setCurrentPageState}
-          />
-        </div>
-      );
-    case "details":
-      return conditionalDetailsPage(animes, setCurrentPageState);
-  }
-}
-
-function conditionalDetailsPage(
-  animes: Map<string, Anime>,
-  setCurrentPageState: (page: Page) => void
-) {
-  if (!window.location.pathname.startsWith("/details/")) {
-    setCurrentPageState("main");
-    return null;
-  }
-
-  const id = /\/details\/(?<id>.+)\//g.exec(window.location.pathname)?.groups
-    ?.id;
-  if (!id) {
-    toast.error(<span>Missing id in url</span>);
-    setCurrentPageState("main");
-    return null;
-  }
-
-  const anime = animes.get(id);
-  if (!anime) {
-    toast.error(
-      <span>
-        Invalid id <b>{id}</b> in url
-      </span>
-    );
-    history.pushState(null, "", "/");
-    setCurrentPageState("main");
-    return null;
-  }
-
   return (
-    <DetailsPage
-      anime={anime}
-      setCurrentPageState={setCurrentPageState}
-    ></DetailsPage>
+    <div>
+      <DetailsPage
+        animes={animes}
+        currentPage={currentPage}
+        setCurrentPageState={setCurrentPageState}
+      />
+
+      <AddAnimeMenu
+        addAnime={addAnime}
+        isOpen={addAnimeMenuIsOpen}
+        setIsOpenState={setAddAnimeMenuIsOpenState}
+      />
+
+      <MainPage
+        animes={Array.from(animes.values())}
+        reloadAnimes={reloadAnimes}
+        setIsOpenState={setAddAnimeMenuIsOpenState}
+        fullScreenScrollContainerRef={fullScreenScrollContainerRef}
+        setCurrentPageState={setCurrentPageState}
+      />
+    </div>
   );
 }
 
@@ -146,7 +110,7 @@ function useHandlePageState(
   useEffect(() => {
     const checkPath = () => {
       if (
-        /\/details\/(?<id>.+)\//g.exec(window.location.pathname)?.groups?.id
+        /\/details\/(?<id>[^/?#]+)/g.exec(window.location.pathname)?.groups?.id
       ) {
         if (currentPage !== "details") {
           setCurrentPageState("details");

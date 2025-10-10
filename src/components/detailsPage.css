@@ -1,3 +1,23 @@
+.detailsPage {
+	position: relative;
+	width: 100dvw;
+	height: 100dvh;
+	overflow-y: scroll;
+	background-color: var(--colBackground);
+	top: 0;
+	z-index: 4;
+
+	transition: left 1s;
+}
+
+.detailsPage.show {
+	left: 0;
+}
+
+.detailsPage.hide {
+	left: 100dvw;
+}
+
 .detailedCard {
 	min-height: var(--cardHeight);
 }

@@ -2,13 +2,11 @@
 	display: flex;
 	padding: 1dvw;
 	align-items: flex-start;
+
 	border-radius: var(--cardBorderRadius);
 
 	background-color: var(--colPrimary);
 	transition: background-color 0.4s;
-
-	margin-top: 1rem;
-	margin-bottom: 1rem;
 
 	--cardHeight: 16.5rem;
 	--cardBorderRadius: max(5px, 3dvw);
@@ -17,6 +15,9 @@
 
 .card {
 	height: var(--cardHeight);
+
+	margin-top: 1rem;
+	margin-bottom: 1rem;
 }
 
 .card.watched {
