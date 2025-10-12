@@ -7,6 +7,7 @@ import BadResponse from "../responses/badResponse";
 import type MALUserTokenResponse from "../responses/MALUserTokenResponse";
 import { MALCryptography } from "./malCryptography";
 import { MALUserToken } from "./malUserToken";
+import { externalSyncEnabled } from "../../appData";
 
 const clientId = import.meta.env.VITE_CLIENT_ID;
 const redirectUri = window.location.origin + "/malAuth";
@@ -37,6 +38,8 @@ export class MALAuth {
   }
 
   public authorize() {
+    if (!externalSyncEnabled) return;
+
     const tempUserToken = MALUserToken.create();
     if (tempUserToken) {
       if (tempUserToken.isExpired()) {
