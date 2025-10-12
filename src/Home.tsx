@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import AppData from "./appData";
 import AddAnimeMenu from "./components/addAnimeMenu/addAnimeMenu";
 import MainPage from "./components/mainPage";
-import DetailsPage from "./components/detailsPage";
+import DetailsPage from "./components/detailsPage/detailsPage";
 import { toast } from "react-toastify";
 import LoadingSpinner from "./components/generic/loadingSpinner";
 

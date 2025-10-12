@@ -203,25 +203,47 @@ export interface ProgressCSS extends CSSProperties {
  * @param formatString
  * yyyy - year,
  * MM - month value,
+ * m* - full month name
+ * m - month name character (the amount of m's decide how many character)
  * dd - day value
+ * d - day value without start padding
  * @returns
  */
-export function formatDate(
+export function formatDate<TUndefined>(
   date: Date | undefined | null,
-  formatString: string
+  formatString: string,
+  unknownValue: TUndefined
 ) {
   if (!date) {
-    return "Unknown Date";
+    return unknownValue;
   }
 
   const year = String(date.getFullYear());
-  const month = String(date.getMonth() + 1).padStart(2, "0"); // Month is 0-indexed, so add 1
-  const day = String(date.getDate()).padStart(2, "0");
+  const monthValue = String(date.getMonth() + 1).padStart(2, "0"); // Month is 0-indexed, so add 1
+  const month = date.toLocaleString("default", { month: "long" });
+  const day = String(date.getDate());
 
-  return formatString
+  formatString = formatString
     .replaceAll("yyyy", year)
-    .replaceAll("MM", month)
-    .replaceAll("dd", day);
+    .replaceAll("MM", monthValue)
+    .replaceAll("m*", month)
+    .replaceAll("dd", day.padStart(2, "0"))
+    .replaceAll("d", day);
+
+  let ret = "";
+
+  let mCount = 0;
+  for (const char of formatString) {
+    if (char === "m") {
+      ret += month.at(mCount) ?? "";
+      mCount++;
+      continue;
+    }
+    mCount = 0;
+    ret += char;
+  }
+
+  return ret;
 }
 
 export function allSuccess<TIn, TOut>(
@@ -280,3 +302,5 @@ export function checkElementOverflow(element: HTMLElement) {
     isOverflowing: isHorizontallyOverflowing || isVerticallyOverflowing,
   };
 }
+
+export const fullScreenWidth = dvwToPx(100);

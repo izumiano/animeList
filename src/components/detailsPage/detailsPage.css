@@ -1,10 +1,9 @@
 .detailsPage {
-	position: relative;
+	position: absolute;
 	width: 100dvw;
 	height: 100vh;
 	overflow-y: scroll;
 	background-color: var(--colBackground);
-	top: 0;
 	z-index: 4;
 
 	transition: left 1s;

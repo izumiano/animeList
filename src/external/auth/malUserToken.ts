@@ -72,7 +72,7 @@ export class MALUserToken {
       (episode) => episode.watched
     ).length;
 
-    const date = formatDate(new Date(), "yyyy-MM-dd");
+    const date = formatDate(new Date(), "yyyy-MM-dd", undefined);
     const data: MALUpdateMyListStatus = {
       status: "plan_to_watch",
       num_watched_episodes: episodesWatched,

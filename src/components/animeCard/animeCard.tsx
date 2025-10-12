@@ -88,7 +88,6 @@ const AnimeCard = ({
 
   function checkIsOnScreen() {
     const card = cardRef.current;
-    console.log(remToPx(16.5) + dvwToPx(1));
     setIsOnScreen(
       (card && isElementInViewport(card, isOnScreenTolerance)) === true &&
         (cardRef.current?.getBoundingClientRect().height ?? 0) >

@@ -1,4 +1,10 @@
-import { Children, isValidElement, useState, type ReactNode } from "react";
+import {
+  Children,
+  isValidElement,
+  useEffect,
+  useState,
+  type ReactNode,
+} from "react";
 import Dropdown from "./dropdown";
 import "./select.css";
 import { type Alignment } from "../../utils/utils";
@@ -45,6 +51,10 @@ function Select<T extends ValueType>({
   const [current, setCurrentState] = useState(
     getInitialCurrentState(defaultValue, children)
   );
+
+  useEffect(() => {
+    setCurrentState(getInitialCurrentState(defaultValue, children));
+  }, [defaultValue, children]);
 
   function setValue(newValue: T | undefined, index: number | undefined) {
     if (

@@ -20,6 +20,8 @@ export default function useTouch<T extends HTMLElement>({
   onStart,
   onMove,
   onEnd,
+  minX,
+  minY,
 }: {
   onStart?: (currentTouches: Map<number, TouchWithTimestamp>) => void;
   onMove?: (params: {
@@ -30,9 +32,27 @@ export default function useTouch<T extends HTMLElement>({
     currentTouches: Map<number, TouchWithTimestamp>;
     speed: { x: number; y: number };
   }) => void;
+  minX?: number | { positive?: number; negative?: number };
+  minY?: number | { positive?: number; negative?: number };
 }) {
   const touchElemRef = useRef<T>(null);
   const touches = useRef<Map<number, TouchWithTimestamp>>(new Map());
+
+  const hasStartedTouch = useRef(false);
+
+  minX ??= 0;
+  minY ??= 0;
+
+  if (typeof minX !== "object") {
+    minX = { positive: minX, negative: minX };
+  }
+  if (typeof minY !== "object") {
+    minY = { positive: minY, negative: minY };
+  }
+  minX.positive ??= Infinity;
+  minX.negative ??= Infinity;
+  minY.positive ??= Infinity;
+  minY.negative ??= Infinity;
 
   useEffect(() => {
     const currentElem = touchElemRef.current;
@@ -61,8 +81,6 @@ export default function useTouch<T extends HTMLElement>({
           continue;
         }
 
-        // toast(startTouch.clientX === undefined ? "true" : "false");
-
         totalMove.x += touch.clientX - startTouch.touch.clientX;
         totalMove.y += touch.clientY - startTouch.touch.clientY;
 
@@ -70,6 +88,16 @@ export default function useTouch<T extends HTMLElement>({
         totalSpeed.x += speed.x;
         totalSpeed.y += speed.y;
       }
+
+      if (
+        !hasStartedTouch.current &&
+        ((totalMove.x < minX.positive! && totalMove.x > -minX.negative!) ||
+          (totalMove.y < minY.positive! && totalMove.y > -minY.negative!))
+      ) {
+        return;
+      }
+      hasStartedTouch.current = true;
+      event.preventDefault();
       onMove?.call(touchElemRef, { totalMove: totalMove, speed: totalSpeed });
     };
     currentElem.addEventListener("touchmove", handleMove);
@@ -97,6 +125,10 @@ export default function useTouch<T extends HTMLElement>({
         currentTouches: touches.current,
         speed: totalSpeed,
       });
+
+      if (touches.current.size === 0) {
+        hasStartedTouch.current = false;
+      }
     };
     currentElem.addEventListener("touchend", handleEnd);
     currentElem.addEventListener("touchcancel", handleEnd);
@@ -107,7 +139,7 @@ export default function useTouch<T extends HTMLElement>({
       currentElem.removeEventListener("touchend", handleEnd);
       currentElem.removeEventListener("touchcancel", handleEnd);
     };
-  }, [onStart, onMove, onEnd]);
+  }, [onStart, onMove, onEnd, minX, minY]);
 
   return touchElemRef;
 }

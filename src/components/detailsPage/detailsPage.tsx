@@ -1,20 +1,30 @@
-import type { Page } from "../Home";
-import type Anime from "../models/anime";
-import Image from "./generic/image";
-import { useEffect, useRef, useState, type ReactNode } from "react";
-import malLogo from "../assets/malLogo.png";
-import tmdbLogo from "../assets/tmdbLogo.png";
-import SeasonPicker from "./animeCard/seasonPicker";
+import type { Page } from "../../Home";
+import type Anime from "../../models/anime";
+import Image from "../generic/image";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
+import malLogo from "../../assets/malLogo.png";
+import tmdbLogo from "../../assets/tmdbLogo.png";
+import SeasonPicker from "../animeCard/seasonPicker";
 import {
   getSeasonDetails,
   getUrlFromExternalLink,
-} from "../models/externalLink";
-import ProgressNode from "./generic/progress/progressNode";
+} from "../../models/externalLink";
+import ProgressNode from "../generic/progress/progressNode";
 import "./detailsPage.css";
-import ExpandableText from "./generic/expandableText";
+import ExpandableText from "../generic/expandableText";
 import { toast } from "react-toastify";
-import useTouch from "../utils/useTouch";
-import { dvwToPx } from "../utils/utils";
+import useTouch from "../../utils/useTouch";
+import { fullScreenWidth } from "../../utils/utils";
+import DetailsPageForm from "./detailsPageForm";
+import useMultipleRef from "../../utils/useMultiple";
+import { useWindowEvent } from "../../utils/useEvents";
+import LoadingSpinner from "../generic/loadingSpinner";
 
 const DetailsPage = ({
   animes,
@@ -81,23 +91,38 @@ const DetailsPage = ({
             }
           : {}
       }
-      ref={useTouch({
-        onMove: ({ totalMove }) => {
-          setTouchOffsetState(totalMove.x);
-        },
-        onEnd: ({ currentTouches, speed }) => {
-          if (currentTouches.size === 0) {
-            setTouchOffsetState(null);
-            const fullWidth = dvwToPx(100);
-            if (
-              (touchOffset && touchOffset > fullWidth / 2) ||
-              speed.x > fullWidth / 900
-            ) {
-              goToMain();
+      ref={useMultipleRef(
+        useTouch({
+          onMove: ({ totalMove }) => {
+            setTouchOffsetState(totalMove.x);
+          },
+          onEnd: ({ currentTouches, speed }) => {
+            if (currentTouches.size === 0) {
+              setTouchOffsetState(null);
+              if (
+                (touchOffset && touchOffset > fullScreenWidth / 2) ||
+                speed.x > fullScreenWidth / 900
+              ) {
+                goToMain();
+              }
             }
-          }
-        },
-      })}
+          },
+          minX: { positive: fullScreenWidth / 60 },
+        }),
+        useWindowEvent(
+          "scroll",
+          useCallback(() => {
+            const obj = {
+              visual: window.visualViewport?.height,
+              actual: window.outerHeight,
+            };
+
+            if ((obj.visual ?? Infinity) > obj.actual / 2) {
+              window.scrollTo({ top: 0, behavior: "instant" });
+            }
+          }, [])
+        )
+      )}
     >
       {anime.current ? (
         <InternalDetailsPage anime={anime.current}></InternalDetailsPage>
@@ -118,13 +143,15 @@ const InternalDetailsPage = ({ anime }: { anime: Anime }) => {
   const [description, setDescriptionState] = useState("");
   const [isExpanded, setIsExpandedState] = useState(false);
 
-  const selectedSeason = anime.seasons[index];
+  const selectedSeason = anime.seasons.at(index);
   const [selectedSeasonWatched, setSelectedSeasonWatchedState] = useState(
-    selectedSeason.watched
+    selectedSeason?.watched ?? false
   );
-  const seasonExternalLink = selectedSeason.externalLink;
+  const seasonExternalLink = selectedSeason?.externalLink;
 
   useEffect(() => {
+    if (!selectedSeason) return;
+
     (async () => {
       const seasonDetails = await getSeasonDetails(selectedSeason, [
         "synopsis",
@@ -137,6 +164,10 @@ const InternalDetailsPage = ({ anime }: { anime: Anime }) => {
       setDescriptionState(seasonDetails.synopsis ?? "");
     })();
   }, [selectedSeason]);
+
+  if (!selectedSeason) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <>
@@ -196,6 +227,10 @@ const InternalDetailsPage = ({ anime }: { anime: Anime }) => {
           />
         </div>
       </div>
+
+      <hr />
+
+      <DetailsPageForm anime={anime} season={selectedSeason} />
     </>
   );
 };

@@ -22,6 +22,27 @@ export const useOutsideClick = <T extends HTMLElement>(
   return ref;
 };
 
+export const useWindowEvent = <T extends HTMLElement>(
+  type: keyof WindowEventMap,
+  callback: () => void
+) => {
+  const ref = useRef<T>(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      callback();
+    };
+
+    window.addEventListener(type, handleScroll);
+
+    return () => {
+      window.removeEventListener(type, handleScroll);
+    };
+  }, [callback, type]);
+
+  return ref;
+};
+
 export const useOtherElementEvent = <T extends HTMLElement>({
   element,
   eventTypes,
