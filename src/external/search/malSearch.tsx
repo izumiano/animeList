@@ -24,7 +24,7 @@ export default class MALSearch {
   private static async GetResultsAsync(
     data: MALSearchResponse | MALSeasonResponse
   ): Promise<MALSeasonDetails[] | BadResponse> {
-    if (data.statusCode != 200) {
+    if (data.statusCode !== 200) {
       return new BadResponse(
         (
           <span>

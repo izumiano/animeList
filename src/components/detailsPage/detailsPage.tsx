@@ -197,7 +197,7 @@ const InternalDetailsPage = ({ anime }: { anime: Anime }) => {
                   >
                     <img
                       src={
-                        seasonExternalLink.type == "MAL" ? malLogo : tmdbLogo
+                        seasonExternalLink.type === "MAL" ? malLogo : tmdbLogo
                       }
                     ></img>
                   </a>

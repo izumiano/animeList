@@ -183,7 +183,7 @@ const AnimeCard = ({
                   >
                     <img
                       src={
-                        seasonExternalLink.type == "MAL" ? malLogo : tmdbLogo
+                        seasonExternalLink.type === "MAL" ? malLogo : tmdbLogo
                       }
                     ></img>
                   </a>

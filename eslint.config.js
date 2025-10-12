@@ -29,6 +29,7 @@ export default tseslint.config([
         },
       ],
       "no-constant-condition": "warn",
+      eqeqeq: ["warn", "always", { null: "ignore" }],
     },
   },
 ]);

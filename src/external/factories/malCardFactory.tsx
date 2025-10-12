@@ -33,7 +33,7 @@ export default class MALCardFactory {
       task: async ({ addProgress, addMaxProgress }) => {
         const animeData = await this.getAnimeData(id);
         addProgress();
-        if (animeData === undefined || animeData === null) {
+        if (animeData == null) {
           return new BadResponse("animeData was null or undefined");
         }
         if (animeData instanceof BadResponse) {
@@ -115,8 +115,8 @@ export default class MALCardFactory {
       });
 
       if (
-        episodes.length == 0 &&
-        (seasonData.type == "movie" || seasonData.status == "Finished Airing")
+        episodes.length === 0 &&
+        (seasonData.type === "movie" || seasonData.status === "Finished Airing")
       ) {
         const title = SeasonDetails.getTitle({
           title_english: seasonData.title_english,
@@ -237,7 +237,7 @@ export default class MALCardFactory {
         continue;
       }
 
-      if (relation != "Sequel") {
+      if (relation !== "Sequel") {
         continue;
       }
 
@@ -255,7 +255,7 @@ export default class MALCardFactory {
         }
 
         // TODO: do i want this?
-        if (sequelType != "movie") {
+        if (sequelType !== "movie") {
           const malId = season.mal_id;
           if (!malId) {
             console.warn("did not find mal_id");

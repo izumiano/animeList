@@ -191,7 +191,7 @@ export class MALAuth {
     if (!statusCode) {
       return new BadResponse("statusCode for refreshUserToken was not found");
     }
-    if (statusCode == 401) {
+    if (statusCode === 401) {
       this.doAuthorize();
       return;
     }
