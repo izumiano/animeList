@@ -152,6 +152,8 @@ const InternalDetailsPage = ({ anime }: { anime: Anime }) => {
   useEffect(() => {
     if (!selectedSeason) return;
 
+    setSelectedSeasonWatchedState(selectedSeason.watched);
+
     (async () => {
       const seasonDetails = await getSeasonDetails(selectedSeason, [
         "synopsis",
