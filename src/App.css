@@ -272,3 +272,7 @@ hr {
 	overflow: hidden;
 	max-width: 400px;
 }
+
+.fullWidth {
+	width: 100%;
+}

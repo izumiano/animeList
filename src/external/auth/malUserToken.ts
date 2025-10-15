@@ -2,319 +2,373 @@ import type AnimeSeason from "../../models/animeSeason";
 import ActivityTask from "../../utils/activityTask";
 import { formatDate } from "../../utils/utils";
 import WebUtil from "../../utils/webUtil";
+import JikanErrorHandler from "../errorHandlers/jikanErrorHandler";
 import MalErrorHandler from "../errorHandlers/malErrorHandler";
 import type { MALUpdateMyListStatuses } from "../requests/malUpdateMyListStatus";
 import type MALUpdateMyListStatus from "../requests/malUpdateMyListStatus";
+import type MalAccountDetailsResponse from "../responses/malAccountDetailsResponse";
 import BadResponse from "../responses/badResponse";
 import type MALDeleteResponse from "../responses/malDeleteResponse";
 import type { MALMyListStatus } from "../responses/malMyListStatusResponse";
 import type MALMyListStatusResponse from "../responses/malMyListStatusResponse";
 import type MALUserTokenResponse from "../responses/MALUserTokenResponse";
 import { MALAuth } from "./malAuth";
+import type MalFullAccountDetailsResponse from "../responses/malFullAcountDetailsResponse";
 
 export class MALUserToken {
-  accessToken: string;
-  refreshToken: string;
-  expiresAt: Date;
+	accessToken: string;
+	refreshToken: string;
+	expiresAt: Date;
 
-  private constructor({
-    accessToken,
-    refreshToken,
-    expiresAt,
-  }: {
-    accessToken: string;
-    refreshToken: string;
-    expiresAt: Date;
-  }) {
-    this.accessToken = accessToken;
-    this.refreshToken = refreshToken;
-    this.expiresAt = expiresAt;
-  }
+	private constructor({
+		accessToken,
+		refreshToken,
+		expiresAt,
+	}: {
+		accessToken: string;
+		refreshToken: string;
+		expiresAt: Date;
+	}) {
+		this.accessToken = accessToken;
+		this.refreshToken = refreshToken;
+		this.expiresAt = expiresAt;
+	}
 
-  public static create(data?: MALUserTokenResponse | null) {
-    let accessToken;
-    let refreshToken;
-    let expiresAt;
-    if (!data) {
-      accessToken = localStorage.getItem("accessToken");
-      refreshToken = localStorage.getItem("refreshToken");
-      const expiresAtStr = localStorage.getItem("expiresAt");
-      expiresAt = expiresAtStr ? new Date(parseInt(expiresAtStr)) : null;
-    } else {
-      accessToken = data.access_token;
-      refreshToken = data.refresh_token;
-      expiresAt = data.expires_in
-        ? new Date(Date.now() + data.expires_in * 1000)
-        : null;
-    }
+	public static create(data?: MALUserTokenResponse | null) {
+		let accessToken;
+		let refreshToken;
+		let expiresAt;
+		if (!data) {
+			accessToken = localStorage.getItem("accessToken");
+			refreshToken = localStorage.getItem("refreshToken");
+			const expiresAtStr = localStorage.getItem("expiresAt");
+			expiresAt = expiresAtStr ? new Date(parseInt(expiresAtStr)) : null;
+		} else {
+			accessToken = data.access_token;
+			refreshToken = data.refresh_token;
+			expiresAt = data.expires_in
+				? new Date(Date.now() + data.expires_in * 1000)
+				: null;
+		}
 
-    if (!accessToken || !refreshToken || !expiresAt) {
-      return;
-    }
+		if (!accessToken || !refreshToken || !expiresAt) {
+			return;
+		}
 
-    localStorage.setItem("accessToken", accessToken);
-    localStorage.setItem("refreshToken", refreshToken);
-    localStorage.setItem("expiresAt", String(expiresAt.getTime()));
+		localStorage.setItem("accessToken", accessToken);
+		localStorage.setItem("refreshToken", refreshToken);
+		localStorage.setItem("expiresAt", String(expiresAt.getTime()));
 
-    return new MALUserToken({
-      accessToken: accessToken,
-      refreshToken: refreshToken,
-      expiresAt: expiresAt,
-    });
-  }
+		return new MALUserToken({
+			accessToken: accessToken,
+			refreshToken: refreshToken,
+			expiresAt: expiresAt,
+		});
+	}
 
-  public isExpired() {
-    return this.expiresAt.getTime() - Date.now() <= 0;
-  }
+	public static clear() {
+		localStorage.removeItem("accessToken");
+		localStorage.removeItem("refreshToken");
+		localStorage.removeItem("expiresAt");
+	}
 
-  public async updateAnimeSeasonStatus(season: AnimeSeason, title?: string) {
-    const episodesWatched = season.episodes.filter(
-      (episode) => episode.watched
-    ).length;
+	public isExpired() {
+		return this.expiresAt.getTime() - Date.now() <= 0;
+	}
 
-    const date = formatDate(new Date(), "yyyy-MM-dd", undefined);
-    const data: MALUpdateMyListStatus = {
-      status: "plan_to_watch",
-      num_watched_episodes: episodesWatched,
-    };
+	public async updateAnimeSeasonStatus(season: AnimeSeason, title?: string) {
+		const episodesWatched = season.episodes.filter(
+			(episode) => episode.watched,
+		).length;
 
-    const isCompleted = episodesWatched >= season.episodes.length;
+		const date = formatDate(new Date(), "yyyy-MM-dd", undefined);
+		const data: MALUpdateMyListStatus = {
+			status: "plan_to_watch",
+			num_watched_episodes: episodesWatched,
+		};
 
-    if (episodesWatched > 0) {
-      const listStatus = await new ActivityTask({
-        label: "Checking if start/finish date is already set",
-        task: async () => {
-          const listStatus = await this.getListStatus(season, title);
-          if (listStatus instanceof BadResponse) {
-            return listStatus;
-          }
-          if (!listStatus?.finish_date && isCompleted) {
-            data.finish_date = date;
-          }
-          if (!listStatus?.start_date) {
-            data.start_date = date;
-          }
-        },
-      }).start();
+		const isCompleted = episodesWatched >= season.episodes.length;
 
-      if (listStatus instanceof BadResponse) {
-        return listStatus;
-      }
+		if (episodesWatched > 0) {
+			const listStatus = await new ActivityTask({
+				label: "Checking if start/finish date is already set",
+				task: async () => {
+					const listStatus = await this.getListStatus(season, title);
+					if (listStatus instanceof BadResponse) {
+						return listStatus;
+					}
+					if (!listStatus?.finish_date && isCompleted) {
+						data.finish_date = date;
+					}
+					if (!listStatus?.start_date) {
+						data.start_date = date;
+					}
+				},
+			}).start();
 
-      if (!isCompleted) {
-        data.status = "watching";
-      } else {
-        data.status = "completed";
-      }
-    }
+			if (listStatus instanceof BadResponse) {
+				return listStatus;
+			}
 
-    return this.doUpdateAnimeSeasonStatus({
-      season: season,
-      data: data,
-    });
-  }
+			if (!isCompleted) {
+				data.status = "watching";
+			} else {
+				data.status = "completed";
+			}
+		}
 
-  private async doUpdateAnimeSeasonStatus({
-    season,
-    data,
-  }: {
-    season: AnimeSeason;
-    data: MALUpdateMyListStatus;
-  }): Promise<undefined | BadResponse | { success: true }> {
-    if (this.isExpired()) {
-      const newToken = await MALAuth.instance.refreshUserTokenAsync(
-        this.refreshToken
-      );
-      if (newToken instanceof BadResponse) {
-        return newToken;
-      }
-      if (!newToken) {
-        return;
-      }
-      return newToken.doUpdateAnimeSeasonStatus({
-        season: season,
-        data: data,
-      });
-    }
+		return this.doUpdateAnimeSeasonStatus({
+			season: season,
+			data: data,
+		});
+	}
 
-    const malId = season.externalLink?.id;
-    if (!malId) {
-      return new BadResponse("malId was undefined");
-    }
+	private async doUpdateAnimeSeasonStatus({
+		season,
+		data,
+	}: {
+		season: AnimeSeason;
+		data: MALUpdateMyListStatus;
+	}): Promise<undefined | BadResponse | { success: true }> {
+		if (this.isExpired()) {
+			const newToken = await MALAuth.instance.refreshUserTokenAsync(
+				this.refreshToken,
+			);
+			if (newToken instanceof BadResponse) {
+				return newToken;
+			}
+			if (!newToken) {
+				return;
+			}
+			return newToken.doUpdateAnimeSeasonStatus({
+				season: season,
+				data: data,
+			});
+		}
 
-    const request = new Request(
-      `https://api.myanimelist.net/v2/anime/${malId}/my_list_status`
-    );
-    request.headers.set("Authorization", `Bearer ${this.accessToken}`);
-    request.headers.set("Content-Type", "application/x-www-form-urlencoded");
+		const malId = season.externalLink?.id;
+		if (!malId) {
+			return new BadResponse("malId was undefined");
+		}
 
-    const response = (await WebUtil.fetchProxy(request, "PUT", {
-      body: Object.keys(data)
-        .map((key) => `${key}=${data[key as keyof MALUpdateMyListStatus]}`)
-        .join("&"),
-      errorHandler: new MalErrorHandler("Failed updating"),
-    })) as MALMyListStatusResponse | BadResponse;
-    if (response instanceof BadResponse) {
-      return response;
-    }
-    const statusCode = response.statusCode;
-    if (!statusCode) {
-      return new BadResponse("Failed without a status code!", response);
-    }
-    if (statusCode === 401) {
-      const newToken = await MALAuth.instance.refreshUserTokenAsync(
-        this.refreshToken
-      );
-      if (newToken instanceof BadResponse) {
-        return newToken;
-      }
-      if (!newToken) {
-        MALAuth.instance.authorize();
-        return;
-      }
-      return newToken.doUpdateAnimeSeasonStatus({
-        season: season,
-        data: data,
-      });
-    }
-    if (statusCode !== 200) {
-      return new BadResponse(`Failed with statusCode: [${statusCode}]`);
-    }
-    return { success: true };
-  }
+		const request = new Request(
+			`https://api.myanimelist.net/v2/anime/${malId}/my_list_status`,
+		);
+		request.headers.set("Authorization", `Bearer ${this.accessToken}`);
+		request.headers.set("Content-Type", "application/x-www-form-urlencoded");
 
-  private async getListStatus(
-    season: AnimeSeason,
-    title: string | undefined
-  ): Promise<MALMyListStatus | BadResponse | undefined> {
-    const malId = season.externalLink?.id;
-    if (!malId) {
-      return new BadResponse("malId was undefined");
-    }
-    const request = new Request(
-      `https://api.myanimelist.net/v2/anime/${malId}?fields=my_list_status`
-    );
-    request.headers.set("Authorization", `Bearer ${this.accessToken}`);
+		const response = (await WebUtil.fetchProxy(request, "PUT", {
+			body: Object.keys(data)
+				.map((key) => `${key}=${data[key as keyof MALUpdateMyListStatus]}`)
+				.join("&"),
+			errorHandler: new MalErrorHandler("Failed updating"),
+		})) as MALMyListStatusResponse | BadResponse;
+		if (response instanceof BadResponse) {
+			return response;
+		}
+		const statusCode = response.statusCode;
+		if (!statusCode) {
+			return new BadResponse("Failed without a status code!", response);
+		}
+		if (statusCode === 401) {
+			const newToken = await MALAuth.instance.refreshUserTokenAsync(
+				this.refreshToken,
+			);
+			if (newToken instanceof BadResponse) {
+				return newToken;
+			}
+			if (!newToken) {
+				MALAuth.instance.authorize();
+				return;
+			}
+			return newToken.doUpdateAnimeSeasonStatus({
+				season: season,
+				data: data,
+			});
+		}
+		if (statusCode !== 200) {
+			return new BadResponse(`Failed with statusCode: [${statusCode}]`);
+		}
+		return { success: true };
+	}
 
-    const response = (await WebUtil.fetchProxy(request, "GET", {
-      errorHandler: new MalErrorHandler("Failed getting list status"),
-    })) as MALMyListStatusResponse | BadResponse;
+	private async getListStatus(
+		season: AnimeSeason,
+		title: string | undefined,
+	): Promise<MALMyListStatus | BadResponse | undefined> {
+		const malId = season.externalLink?.id;
+		if (!malId) {
+			return new BadResponse("malId was undefined");
+		}
+		const request = new Request(
+			`https://api.myanimelist.net/v2/anime/${malId}?fields=my_list_status`,
+		);
+		request.headers.set("Authorization", `Bearer ${this.accessToken}`);
 
-    if (response instanceof BadResponse) {
-      return response;
-    }
-    const statusCode = response.statusCode;
-    if (!statusCode) {
-      return new BadResponse(
-        `${title}(${season.title}) failed without a status code!`
-      );
-    }
-    if (statusCode === 401) {
-      const newToken = await MALAuth.instance.refreshUserTokenAsync();
-      if (newToken instanceof BadResponse) {
-        return newToken;
-      }
-      if (!newToken) {
-        MALAuth.instance.authorize();
-        return;
-      }
-      return await newToken.getListStatus(season, title);
-    }
-    if (statusCode !== 200) {
-      return new BadResponse(`Failed with status code: [${statusCode}]`);
-    }
+		const response = (await WebUtil.fetchProxy(request, "GET", {
+			errorHandler: new MalErrorHandler("Failed getting list status"),
+		})) as MALMyListStatusResponse | BadResponse;
 
-    const myListStatus = response.my_list_status;
-    if (!myListStatus) {
-      return { statusCode: statusCode };
-    }
+		if (response instanceof BadResponse) {
+			return response;
+		}
+		const statusCode = response.statusCode;
+		if (!statusCode) {
+			return new BadResponse(
+				`${title}(${season.title}) failed without a status code!`,
+			);
+		}
+		if (statusCode === 401) {
+			const newToken = await MALAuth.instance.refreshUserTokenAsync();
+			if (newToken instanceof BadResponse) {
+				return newToken;
+			}
+			if (!newToken) {
+				MALAuth.instance.authorize();
+				return;
+			}
+			return await newToken.getListStatus(season, title);
+		}
+		if (statusCode !== 200) {
+			return new BadResponse(`Failed with status code: [${statusCode}]`);
+		}
 
-    return myListStatus;
-  }
+		const myListStatus = response.my_list_status;
+		if (!myListStatus) {
+			return { statusCode: statusCode };
+		}
 
-  public async deleteSeason(
-    season: AnimeSeason,
-    title: string | undefined
-  ): Promise<
-    BadResponse | { status: MALUpdateMyListStatuses | "deleted" } | undefined
-  > {
-    if (this.isExpired()) {
-      const newToken = await MALAuth.instance.refreshUserTokenAsync(
-        this.refreshToken
-      );
-      if (newToken instanceof BadResponse) {
-        return newToken;
-      }
-      if (!newToken) {
-        return;
-      }
-      return newToken.deleteSeason(season, title);
-    }
+		return myListStatus;
+	}
 
-    const malId = season.externalLink?.id;
-    if (!malId) {
-      return new BadResponse("malId was undefined");
-    }
+	public async deleteSeason(
+		season: AnimeSeason,
+		title: string | undefined,
+	): Promise<
+		BadResponse | { status: MALUpdateMyListStatuses | "deleted" } | undefined
+	> {
+		if (this.isExpired()) {
+			const newToken = await MALAuth.instance.refreshUserTokenAsync(
+				this.refreshToken,
+			);
+			if (newToken instanceof BadResponse) {
+				return newToken;
+			}
+			if (!newToken) {
+				return;
+			}
+			return newToken.deleteSeason(season, title);
+		}
 
-    const episodesWatched = season.episodes.filter(
-      (episode) => episode.watched
-    ).length;
+		const malId = season.externalLink?.id;
+		if (!malId) {
+			return new BadResponse("malId was undefined");
+		}
 
-    if (
-      episodesWatched === season.episodes.length &&
-      season.episodes.length > 0
-    ) {
-      return new BadResponse(
-        `${title}(${season.title}) has already been watched fully`
-      );
-    }
-    if (episodesWatched === 0) {
-      return await this.doDeleteSeason(season, title);
-    }
+		const episodesWatched = season.episodes.filter(
+			(episode) => episode.watched,
+		).length;
 
-    const response = await this.doUpdateAnimeSeasonStatus({
-      season: season,
-      data: { status: "dropped" },
-    });
-    if (response instanceof BadResponse) {
-      return response;
-    }
-    return { status: "dropped" };
-  }
+		if (
+			episodesWatched === season.episodes.length &&
+			season.episodes.length > 0
+		) {
+			return new BadResponse(
+				`${title}(${season.title}) has already been watched fully`,
+			);
+		}
+		if (episodesWatched === 0) {
+			return await this.doDeleteSeason(season, title);
+		}
 
-  private async doDeleteSeason(
-    season: AnimeSeason,
-    title: string | undefined
-  ): Promise<BadResponse | { status: "deleted" } | undefined> {
-    const request = new Request(
-      `https://api.myanimelist.net/v2/anime/${season.externalLink.id}/my_list_status`
-    );
-    request.headers.set("Authorization", `Bearer ${this.accessToken}`);
+		const response = await this.doUpdateAnimeSeasonStatus({
+			season: season,
+			data: { status: "dropped" },
+		});
+		if (response instanceof BadResponse) {
+			return response;
+		}
+		return { status: "dropped" };
+	}
 
-    const response = (await WebUtil.fetchProxy(request, "DELETE")) as
-      | MALDeleteResponse
-      | BadResponse;
-    const statusCode = response.statusCode;
-    if (!statusCode) {
-      return new BadResponse(
-        `${title}(${season.title}) failed without a status code!`
-      );
-    }
-    if (statusCode === 401) {
-      const newToken = await MALAuth.instance.refreshUserTokenAsync();
-      if (newToken instanceof BadResponse) {
-        return newToken;
-      }
-      if (!newToken) {
-        MALAuth.instance.authorize();
-        return;
-      }
-      return await newToken.doDeleteSeason(season, title);
-    }
-    if (statusCode !== 200) {
-      return new BadResponse(`Failed with status code: [${statusCode}]`);
-    }
+	private async doDeleteSeason(
+		season: AnimeSeason,
+		title: string | undefined,
+	): Promise<BadResponse | { status: "deleted" } | undefined> {
+		const request = new Request(
+			`https://api.myanimelist.net/v2/anime/${season.externalLink.id}/my_list_status`,
+		);
+		request.headers.set("Authorization", `Bearer ${this.accessToken}`);
 
-    return { status: "deleted" };
-  }
+		const response = (await WebUtil.fetchProxy(request, "DELETE")) as
+			| MALDeleteResponse
+			| BadResponse;
+		const statusCode = response.statusCode;
+		if (!statusCode) {
+			return new BadResponse(
+				`${title}(${season.title}) failed without a status code!`,
+			);
+		}
+		if (statusCode === 401) {
+			const newToken = await MALAuth.instance.refreshUserTokenAsync();
+			if (newToken instanceof BadResponse) {
+				return newToken;
+			}
+			if (!newToken) {
+				MALAuth.instance.authorize();
+				return;
+			}
+			return await newToken.doDeleteSeason(season, title);
+		}
+		if (statusCode !== 200) {
+			return new BadResponse(`Failed with status code: [${statusCode}]`);
+		}
+
+		return { status: "deleted" };
+	}
+
+	public async getAccountDetails(): Promise<
+		MalAccountDetailsResponse | BadResponse | undefined
+	> {
+		const request = new Request(
+			`https://api.myanimelist.net/v2/users/@me?fields=profile_picture`,
+		);
+		request.headers.set("Authorization", `Bearer ${this.accessToken}`);
+
+		const response = (await WebUtil.fetchProxy(request, "GET")) as
+			| MalAccountDetailsResponse
+			| BadResponse;
+		const statusCode = response.statusCode;
+		if (!statusCode) {
+			return new BadResponse(`Failed without a status code!`);
+		}
+		if (statusCode === 401) {
+			const newToken = await MALAuth.instance.refreshUserTokenAsync();
+			if (newToken instanceof BadResponse) {
+				return newToken;
+			}
+			if (!newToken) {
+				MALAuth.instance.authorize();
+				return;
+			}
+			return await newToken.getAccountDetails();
+		}
+		if (statusCode !== 200) {
+			return new BadResponse(`Failed with status code: [${statusCode}]`);
+		}
+
+		return response;
+	}
+
+	public async getAccountDetailsFull(username: string) {
+		return await WebUtil.ratelimitRetryFunc(async () => {
+			return (await WebUtil.fetch(
+				`https://api.jikan.moe/v4/users/${username}`,
+				"GET",
+				{
+					errorHandler: new JikanErrorHandler("Failed getting account icon"),
+				},
+			)) as MalFullAccountDetailsResponse | BadResponse;
+		});
+	}
 }

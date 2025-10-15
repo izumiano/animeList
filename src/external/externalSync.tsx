@@ -4,6 +4,7 @@ import ActivityTask, { pushTask } from "../utils/activityTask";
 import { sleepFor } from "../utils/utils";
 import { MALAuth } from "./auth/malAuth";
 import { externalSyncEnabled } from "../appData";
+import type { ExternalLink } from "../models/externalLink";
 
 const abortControllers: Map<string, AbortController> = new Map();
 
@@ -13,7 +14,7 @@ export default class ExternalSync {
 		title: string | undefined,
 		params?: { showToastOnSuccess?: boolean; allowAbort?: boolean },
 	) {
-		if (!externalSyncEnabled) return;
+		if (!this.isConnected(season.externalLink)) return;
 
 		params ??= {};
 		params.showToastOnSuccess ??= true;
@@ -76,7 +77,7 @@ export default class ExternalSync {
 		title: string | undefined,
 		params?: { showToastOnSuccess?: boolean },
 	) {
-		if (!externalSyncEnabled) return;
+		if (!this.isConnected(season.externalLink)) return;
 
 		params ??= {};
 		params.showToastOnSuccess ??= true;
@@ -122,5 +123,17 @@ export default class ExternalSync {
 				},
 			}),
 		);
+	}
+
+	private static isConnected(externalLink: ExternalLink) {
+		if (!externalSyncEnabled) return false;
+
+		switch (externalLink.type) {
+			case "MAL":
+				return MALAuth.instance.userToken != null;
+
+			default:
+				return false;
+		}
 	}
 }

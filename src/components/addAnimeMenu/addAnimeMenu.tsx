@@ -17,6 +17,7 @@ import ProgressButton, {
 import { newExternalLink } from "../../models/externalLink";
 import ExternalSync from "../../external/externalSync";
 import { importAnimes } from "./animeImport";
+import AccountNode from "../accountNode";
 
 const AddAnimeMenu = ({
 	addAnime,
@@ -56,6 +57,7 @@ const AddAnimeMenu = ({
 				id="addAnimeMenu"
 				className={`flexColumn shimmerBackground ${isOpenClass}`}
 			>
+				<AccountNode />
 				<div id="addAnimeInputs" className="flexRow margin">
 					<input
 						id="addAnimeSearch"

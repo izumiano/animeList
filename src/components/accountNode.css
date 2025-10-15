@@ -1,0 +1,18 @@
+.accountNode {
+	margin: var(--margin);
+	margin-bottom: 0;
+	height: calc(0.6em + 2rem);
+}
+
+.accountNode > * {
+	height: 100%;
+}
+
+.accountDropdownMenu {
+	min-width: 10rem;
+}
+
+.accountImage {
+	width: 2rem;
+	height: 2rem;
+}

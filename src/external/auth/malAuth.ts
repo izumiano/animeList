@@ -7,7 +7,7 @@ import BadResponse from "../responses/badResponse";
 import type MALUserTokenResponse from "../responses/MALUserTokenResponse";
 import { MALCryptography } from "./malCryptography";
 import { MALUserToken } from "./malUserToken";
-import { externalSyncEnabled } from "../../appData";
+import Signal from "../../utils/signal";
 
 const clientId = import.meta.env.VITE_CLIENT_ID;
 const redirectUri = window.location.origin + "/malAuth";
@@ -22,7 +22,17 @@ export class MALAuth {
 	}
 
 	private readonly cryptography: MALCryptography = new MALCryptography();
-	public userToken: MALUserToken | undefined;
+	// public userToken: MALUserToken | undefined;
+	private _userToken: MALUserToken | undefined;
+	public get userToken() {
+		return this._userToken;
+	}
+	private set userToken(value) {
+		this._userToken = value;
+
+		this.userTokenSignal.notify(value);
+	}
+	public userTokenSignal = new Signal<MALUserToken | undefined>(undefined);
 
 	public init() {
 		(async () => {
@@ -38,8 +48,6 @@ export class MALAuth {
 	}
 
 	public authorize() {
-		if (!externalSyncEnabled) return;
-
 		const tempUserToken = MALUserToken.create();
 		if (tempUserToken) {
 			if (tempUserToken.isExpired()) {
@@ -49,14 +57,12 @@ export class MALAuth {
 			}
 			return;
 		}
-
-		this.doAuthorize();
 	}
 
-	private doAuthorize() {
+	public login() {
 		const codeChallenge = this.cryptography.codeChallenge;
 		if (!codeChallenge) {
-			console.error("codeChallenge was undefined");
+			toast.error("codeChallenge was undefined");
 			return;
 		}
 		const url = new URL("https://myanimelist.net/v1/oauth2/authorize");
@@ -69,6 +75,11 @@ export class MALAuth {
 
 		localStorage.setItem("codeChallenge", codeChallenge);
 		window.location.assign(url.toString());
+	}
+
+	public logout() {
+		MALUserToken.clear();
+		this.userToken = undefined;
 	}
 
 	public async acquireUserToken(code: string) {
@@ -192,7 +203,7 @@ export class MALAuth {
 			return new BadResponse("statusCode for refreshUserToken was not found");
 		}
 		if (statusCode === 401) {
-			this.doAuthorize();
+			this.login();
 			return;
 		}
 

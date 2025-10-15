@@ -55,7 +55,8 @@
 }
 
 .dropdownContent {
-	border-radius: 1rem;
+	--dropdownContentBorderRadius: 1rem;
+	border-radius: var(--dropdownContentBorderRadius);
 	overflow-y: hidden;
 }
 
