@@ -16,7 +16,9 @@
 	overflow: hidden;
 	border-radius: 100vw;
 
-	transition: width 0.5s, background-color 1s;
+	transition:
+		width 0.5s,
+		background-color 1s;
 	font-weight: 1000;
 }
 

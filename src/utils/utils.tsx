@@ -5,196 +5,196 @@ import type { CSSProperties, ReactNode } from "react";
 import { v4 as uuid } from "uuid";
 
 export async function sleepFor(
-  milliseconds: number,
-  abortSignal: AbortSignal | null = null
+	milliseconds: number,
+	abortSignal: AbortSignal | null = null,
 ) {
-  await new Promise((resolve) => setTimeout(resolve, milliseconds));
+	await new Promise((resolve) => setTimeout(resolve, milliseconds));
 
-  if (abortSignal?.aborted) {
-    return { wasAborted: true };
-  }
+	if (abortSignal?.aborted) {
+		return { wasAborted: true };
+	}
 
-  return { wasAborted: false };
+	return { wasAborted: false };
 }
 
 export function waitForNextFrame() {
-  return new Promise((resolve) => {
-    requestAnimationFrame(resolve);
-  });
+	return new Promise((resolve) => {
+		requestAnimationFrame(resolve);
+	});
 }
 
 export function remToPx(remValue: number) {
-  const rootFontSize = parseFloat(
-    getComputedStyle(document.documentElement).fontSize
-  );
+	const rootFontSize = parseFloat(
+		getComputedStyle(document.documentElement).fontSize,
+	);
 
-  const pxValue = remValue * rootFontSize;
+	const pxValue = remValue * rootFontSize;
 
-  return pxValue;
+	return pxValue;
 }
 
 export function dvwToPx(dvwValue: number) {
-  const dynamicViewportWidth = window.innerWidth;
+	const dynamicViewportWidth = window.innerWidth;
 
-  const pixelValue = (dvwValue / 100) * dynamicViewportWidth;
+	const pixelValue = (dvwValue / 100) * dynamicViewportWidth;
 
-  return pixelValue;
+	return pixelValue;
 }
 
 function _parseError(ex: unknown, params?: { showDetails?: boolean }) {
-  if (typeof ex === "string") {
-    return ex;
-  } else if (ex instanceof BadResponse) {
-    if (!params?.showDetails) {
-      return ex.displayMessage;
-    }
+	if (typeof ex === "string") {
+		return ex;
+	} else if (ex instanceof BadResponse) {
+		if (!params?.showDetails) {
+			return ex.displayMessage;
+		}
 
-    const data = ex.data?.data ?? ex.data;
+		const data = ex.data?.data ?? ex.data;
 
-    return (
-      <>
-        <span>{ex.displayMessage}</span>
-        {data ? (
-          <pre className="unimportantText scroll">
-            <i>{JSON.stringify(data, null, 2)}</i>
-          </pre>
-        ) : null}
-      </>
-    );
-  } else if (ex instanceof Error) {
-    if (!params?.showDetails) {
-      return ex.message;
-    }
+		return (
+			<>
+				<span>{ex.displayMessage}</span>
+				{data ? (
+					<pre className="unimportantText scroll">
+						<i>{JSON.stringify(data, null, 2)}</i>
+					</pre>
+				) : null}
+			</>
+		);
+	} else if (ex instanceof Error) {
+		if (!params?.showDetails) {
+			return ex.message;
+		}
 
-    return (
-      <>
-        <span>{ex.message}</span>
-        <pre className="unimportantText scroll">
-          <i>{ex.stack}</i>
-        </pre>
-      </>
-    );
-  } else if (Array.isArray(ex)) {
-    return ex.map((ex) => (
-      <span key={uuid()} className="flexGrow">
-        <hr />
-        {_parseError(ex, params)}
-      </span>
-    ));
-  } else {
-    return (
-      <span>
-        Unknown Error <b>{ex as any}</b>
-      </span>
-    );
-  }
+		return (
+			<>
+				<span>{ex.message}</span>
+				<pre className="unimportantText scroll">
+					<i>{ex.stack}</i>
+				</pre>
+			</>
+		);
+	} else if (Array.isArray(ex)) {
+		return ex.map((ex) => (
+			<span key={uuid()} className="flexGrow">
+				<hr />
+				{_parseError(ex, params)}
+			</span>
+		));
+	} else {
+		return (
+			<span>
+				Unknown Error <b>{ex as any}</b>
+			</span>
+		);
+	}
 }
 
 export function parseError(
-  ex: unknown,
-  params?: { title?: ReactNode; showDetails?: boolean }
+	ex: unknown,
+	params?: { title?: ReactNode; showDetails?: boolean },
 ) {
-  return (
-    <div className="flexColumn breakWord" style={{ height: "100%" }}>
-      {params?.title ? <span>{params.title}</span> : null}
-      {_parseError(ex, params)}
-    </div>
-  );
+	return (
+		<div className="flexColumn breakWord" style={{ height: "100%" }}>
+			{params?.title ? <span>{params.title}</span> : null}
+			{_parseError(ex, params)}
+		</div>
+	);
 }
 
 export function showError(ex: unknown, title?: ReactNode) {
-  toast.error(parseError(ex, { title: title }));
+	toast.error(parseError(ex, { title: title }));
 }
 
 export type MinMaxType =
-  | { min: number; max: number }
-  | { min: number; max?: number }
-  | { min?: number; max: number }
-  | undefined;
+	| { min: number; max: number }
+	| { min: number; max?: number }
+	| { min?: number; max: number }
+	| undefined;
 
 export function clamp(value: number, params: MinMaxType) {
-  return Math.max(
-    params?.min ?? -Infinity,
-    Math.min(value, params?.max ?? Infinity)
-  );
+	return Math.max(
+		params?.min ?? -Infinity,
+		Math.min(value, params?.max ?? Infinity),
+	);
 }
 
 export function capitalizeFirstLetter(str: string) {
-  if (str.length === 0) {
-    return "";
-  }
-  return str.charAt(0).toUpperCase() + str.slice(1);
+	if (str.length === 0) {
+		return "";
+	}
+	return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
 export function isCapital(str: string) {
-  for (const c of str) {
-    if (c !== c.toUpperCase()) {
-      return false;
-    }
-  }
-  return true;
+	for (const c of str) {
+		if (c !== c.toUpperCase()) {
+			return false;
+		}
+	}
+	return true;
 }
 
 export function dialogifyKey(
-  key: string | number | readonly string[] | undefined
+	key: string | number | readonly string[] | undefined,
 ) {
-  key =
-    String(key)
-      .replaceAll(/-|_/g, " ") // replace - and _ with spaces
-      .match(/\b\w+\b/g) // match words
-      ?.map((word) => capitalizeFirstLetter(word))
-      .join("") ?? "";
-  const words = [];
-  let word = "";
-  for (const c of key) {
-    if (isCapital(c) && word !== "") {
-      words.push(word);
-      word = "";
-    }
+	key =
+		String(key)
+			.replaceAll(/-|_/g, " ") // replace - and _ with spaces
+			.match(/\b\w+\b/g) // match words
+			?.map((word) => capitalizeFirstLetter(word))
+			.join("") ?? "";
+	const words = [];
+	let word = "";
+	for (const c of key) {
+		if (isCapital(c) && word !== "") {
+			words.push(word);
+			word = "";
+		}
 
-    word += c;
-  }
-  if (word !== "") {
-    words.push(word);
-  }
-  return words.reduce((prev, word) => prev + " " + word);
+		word += c;
+	}
+	if (word !== "") {
+		words.push(word);
+	}
+	return words.reduce((prev, word) => prev + " " + word);
 }
 
 export function removeDiacritics(str: string) {
-  // Normalize the string to its canonical decomposition form (NFD).
-  // This separates base characters from their diacritical marks.
-  const normalizedStr = str.normalize("NFD");
+	// Normalize the string to its canonical decomposition form (NFD).
+	// This separates base characters from their diacritical marks.
+	const normalizedStr = str.normalize("NFD");
 
-  // Use a regular expression to remove all Unicode diacritical marks.
-  // The Unicode range U+0300–U+036F covers most combining diacritical marks.
-  const withoutDiacritics = normalizedStr.replace(/[\u0300-\u036f]/g, "");
+	// Use a regular expression to remove all Unicode diacritical marks.
+	// The Unicode range U+0300–U+036F covers most combining diacritical marks.
+	const withoutDiacritics = normalizedStr.replace(/[\u0300-\u036f]/g, "");
 
-  return withoutDiacritics;
+	return withoutDiacritics;
 }
 
 export function removeNonAlphanumeric(str: string) {
-  return str.replace(/[^a-zA-Z0-9]/g, "");
+	return str.replace(/[^a-zA-Z0-9]/g, "");
 }
 
 export type Alignment = "left" | "center" | "right";
 
 export function isElementInViewport(
-  element: HTMLElement,
-  tolerance: number = 0
+	element: HTMLElement,
+	tolerance: number = 0,
 ) {
-  const rect = element.getBoundingClientRect();
-  return (
-    rect.bottom >= -tolerance &&
-    rect.top <= window.innerHeight + tolerance &&
-    rect.right >= -tolerance &&
-    rect.left <= window.innerWidth + tolerance
-  );
+	const rect = element.getBoundingClientRect();
+	return (
+		rect.bottom >= -tolerance &&
+		rect.top <= window.innerHeight + tolerance &&
+		rect.right >= -tolerance &&
+		rect.left <= window.innerWidth + tolerance
+	);
 }
 
 export type UUIDType = `${string}-${string}-${string}-${string}-${string}`;
 
 export interface ProgressCSS extends CSSProperties {
-  "--progress": string | number;
+	"--progress": string | number;
 }
 
 /**
@@ -210,97 +210,97 @@ export interface ProgressCSS extends CSSProperties {
  * @returns
  */
 export function formatDate<TUndefined>(
-  date: Date | undefined | null,
-  formatString: string,
-  unknownValue: TUndefined
+	date: Date | undefined | null,
+	formatString: string,
+	unknownValue: TUndefined,
 ) {
-  if (!date) {
-    return unknownValue;
-  }
+	if (!date) {
+		return unknownValue;
+	}
 
-  const year = String(date.getFullYear());
-  const monthValue = String(date.getMonth() + 1).padStart(2, "0"); // Month is 0-indexed, so add 1
-  const month = date.toLocaleString("default", { month: "long" });
-  const day = String(date.getDate());
+	const year = String(date.getFullYear());
+	const monthValue = String(date.getMonth() + 1).padStart(2, "0"); // Month is 0-indexed, so add 1
+	const month = date.toLocaleString("default", { month: "long" });
+	const day = String(date.getDate());
 
-  formatString = formatString
-    .replaceAll("yyyy", year)
-    .replaceAll("MM", monthValue)
-    .replaceAll("m*", month)
-    .replaceAll("dd", day.padStart(2, "0"))
-    .replaceAll("d", day);
+	formatString = formatString
+		.replaceAll("yyyy", year)
+		.replaceAll("MM", monthValue)
+		.replaceAll("m*", month)
+		.replaceAll("dd", day.padStart(2, "0"))
+		.replaceAll("d", day);
 
-  let ret = "";
+	let ret = "";
 
-  let mCount = 0;
-  for (const char of formatString) {
-    if (char === "m") {
-      ret += month.at(mCount) ?? "";
-      mCount++;
-      continue;
-    }
-    mCount = 0;
-    ret += char;
-  }
+	let mCount = 0;
+	for (const char of formatString) {
+		if (char === "m") {
+			ret += month.at(mCount) ?? "";
+			mCount++;
+			continue;
+		}
+		mCount = 0;
+		ret += char;
+	}
 
-  return ret;
+	return ret;
 }
 
 export function allSuccess<TIn, TOut>(
-  arr: TIn[],
-  {
-    forEach,
-    successMessage,
-    failMessage,
-    treatUndefinedAs,
-  }: {
-    forEach: (item: TIn) => Promise<TOut>;
-    successMessage: ReactNode | ((items: TOut[]) => ReactNode);
-    failMessage: ReactNode;
-    treatUndefinedAs?: "success" | "error" | "ignore";
-  }
+	arr: TIn[],
+	{
+		forEach,
+		successMessage,
+		failMessage,
+		treatUndefinedAs,
+	}: {
+		forEach: (item: TIn) => Promise<TOut>;
+		successMessage: ReactNode | ((items: TOut[]) => ReactNode);
+		failMessage: ReactNode;
+		treatUndefinedAs?: "success" | "error" | "ignore";
+	},
 ) {
-  treatUndefinedAs ??= "ignore";
+	treatUndefinedAs ??= "ignore";
 
-  const promises = arr.map((item) => forEach(item));
+	const promises = arr.map((item) => forEach(item));
 
-  Promise.all(promises)
-    .then((responses) => {
-      const errors = responses.filter(
-        (response) =>
-          response instanceof Error ||
-          (treatUndefinedAs === "error" && response === undefined)
-      );
-      if (errors.length > 0) {
-        showError(errors, failMessage);
-        return;
-      }
-      if (
-        treatUndefinedAs !== "success" &&
-        responses.every((response) => response === undefined)
-      )
-        return;
+	Promise.all(promises)
+		.then((responses) => {
+			const errors = responses.filter(
+				(response) =>
+					response instanceof Error ||
+					(treatUndefinedAs === "error" && response === undefined),
+			);
+			if (errors.length > 0) {
+				showError(errors, failMessage);
+				return;
+			}
+			if (
+				treatUndefinedAs !== "success" &&
+				responses.every((response) => response === undefined)
+			)
+				return;
 
-      toast.info(
-        typeof successMessage === "function"
-          ? successMessage(responses)
-          : successMessage
-      );
-    })
-    .catch((ex) => {
-      showError(ex, failMessage);
-    });
+			toast.info(
+				typeof successMessage === "function"
+					? successMessage(responses)
+					: successMessage,
+			);
+		})
+		.catch((ex) => {
+			showError(ex, failMessage);
+		});
 }
 
 export function checkElementOverflow(element: HTMLElement) {
-  const isHorizontallyOverflowing = element.scrollWidth > element.clientWidth;
-  const isVerticallyOverflowing = element.scrollHeight > element.clientHeight;
+	const isHorizontallyOverflowing = element.scrollWidth > element.clientWidth;
+	const isVerticallyOverflowing = element.scrollHeight > element.clientHeight;
 
-  return {
-    isHorizontallyOverflowing,
-    isVerticallyOverflowing,
-    isOverflowing: isHorizontallyOverflowing || isVerticallyOverflowing,
-  };
+	return {
+		isHorizontallyOverflowing,
+		isVerticallyOverflowing,
+		isOverflowing: isHorizontallyOverflowing || isVerticallyOverflowing,
+	};
 }
 
 export const fullScreenWidth = dvwToPx(100);

@@ -12,214 +12,214 @@ import AnimeCardFactory from "../../external/factories/animeCardFactory";
 import BadResponse from "../../external/responses/badResponse";
 import { allSuccess, showError, sleepFor } from "../../utils/utils";
 import ProgressButton, {
-  type ProgressButtonState,
+	type ProgressButtonState,
 } from "../generic/progress/progressButton";
 import { newExternalLink } from "../../models/externalLink";
 import ExternalSync from "../../external/externalSync";
 import { importAnimes } from "./animeImport";
 
 const AddAnimeMenu = ({
-  addAnime,
-  isOpen,
-  setIsOpenState,
+	addAnime,
+	isOpen,
+	setIsOpenState,
 }: {
-  addAnime: (anime: Anime, params?: { doScroll: boolean }) => void;
-  isOpen: boolean;
-  setIsOpenState: (isOpen: boolean) => void;
+	addAnime: (anime: Anime, params?: { doScroll: boolean }) => void;
+	isOpen: boolean;
+	setIsOpenState: (isOpen: boolean) => void;
 }) => {
-  const [searchResults, setSearchResultsState] = useState<
-    SeasonDetails[] | "loading"
-  >([]);
-  const [selectedAnimeIndex, setSelectedAnimeIndexState] = useState<
-    number | null
-  >(null);
-  const [addAnimeProgressState, setAddAnimeProgressState] =
-    useState<ProgressButtonState>({ progress: 0, state: "enabled" });
+	const [searchResults, setSearchResultsState] = useState<
+		SeasonDetails[] | "loading"
+	>([]);
+	const [selectedAnimeIndex, setSelectedAnimeIndexState] = useState<
+		number | null
+	>(null);
+	const [addAnimeProgressState, setAddAnimeProgressState] =
+		useState<ProgressButtonState>({ progress: 0, state: "enabled" });
 
-  const isOpenClass = isOpen ? "open" : "";
+	const isOpenClass = isOpen ? "open" : "";
 
-  return (
-    <>
-      <div
-        id="thingToClose"
-        className={`${isOpenClass}`}
-        onClick={() => {
-          setIsOpenState(false);
-        }}
-        style={{
-          animation: `${
-            isOpen ? "opacityOpenThing" : "opacityCloseThing"
-          } 0.4s forwards`,
-        }}
-      ></div>
-      <div
-        id="addAnimeMenu"
-        className={`flexColumn shimmerBackground ${isOpenClass}`}
-      >
-        <div id="addAnimeInputs" className="flexRow margin">
-          <input
-            id="addAnimeSearch"
-            type="text"
-            placeholder="Search"
-            onChange={(event) => {
-              const text = event.target.value;
-              setSearchResultsState("loading");
-              setSelectedAnimeIndexState(null);
-              AnimeSearch.search(text, ({ seasons, externalType }) => {
-                switch (externalType) {
-                  case "MAL":
-                    setSearchResultsState(seasons);
-                    break;
-                }
-              });
-            }}
-          ></input>
-          <label className="customFileInput">
-            <input
-              type="file"
-              onChange={(event) => {
-                importAnimes(event.target.files, (anime) =>
-                  addAnime(anime, { doScroll: false })
-                );
-              }}
-            />
-            <img src={fileIcon}></img>
-          </label>
-        </div>
+	return (
+		<>
+			<div
+				id="thingToClose"
+				className={`${isOpenClass}`}
+				onClick={() => {
+					setIsOpenState(false);
+				}}
+				style={{
+					animation: `${
+						isOpen ? "opacityOpenThing" : "opacityCloseThing"
+					} 0.4s forwards`,
+				}}
+			></div>
+			<div
+				id="addAnimeMenu"
+				className={`flexColumn shimmerBackground ${isOpenClass}`}
+			>
+				<div id="addAnimeInputs" className="flexRow margin">
+					<input
+						id="addAnimeSearch"
+						type="text"
+						placeholder="Search"
+						onChange={(event) => {
+							const text = event.target.value;
+							setSearchResultsState("loading");
+							setSelectedAnimeIndexState(null);
+							AnimeSearch.search(text, ({ seasons, externalType }) => {
+								switch (externalType) {
+									case "MAL":
+										setSearchResultsState(seasons);
+										break;
+								}
+							});
+						}}
+					></input>
+					<label className="customFileInput">
+						<input
+							type="file"
+							onChange={(event) => {
+								importAnimes(event.target.files, (anime) =>
+									addAnime(anime, { doScroll: false }),
+								);
+							}}
+						/>
+						<img src={fileIcon}></img>
+					</label>
+				</div>
 
-        <div className="scroll">
-          <SearchResults
-            searchResults={searchResults}
-            selectedAnimeIndex={selectedAnimeIndex}
-            setSelectedAnimeIndexState={setSelectedAnimeIndexState}
-          />
-          <div className="addButtonSpacer addButtonProps"></div>
-        </div>
+				<div className="scroll">
+					<SearchResults
+						searchResults={searchResults}
+						selectedAnimeIndex={selectedAnimeIndex}
+						setSelectedAnimeIndexState={setSelectedAnimeIndexState}
+					/>
+					<div className="addButtonSpacer addButtonProps"></div>
+				</div>
 
-        <ProgressButton
-          state={addAnimeProgressState}
-          disabled={selectedAnimeIndex === null}
-          className={`addButton addButtonProps ${
-            addAnimeProgressState.state === "loading" ? "loading" : ""
-          }`}
-          onClick={() => {
-            if (selectedAnimeIndex === null || searchResults === "loading") {
-              toast.error("Nothing is selected");
-              return;
-            }
+				<ProgressButton
+					state={addAnimeProgressState}
+					disabled={selectedAnimeIndex === null}
+					className={`addButton addButtonProps ${
+						addAnimeProgressState.state === "loading" ? "loading" : ""
+					}`}
+					onClick={() => {
+						if (selectedAnimeIndex === null || searchResults === "loading") {
+							toast.error("Nothing is selected");
+							return;
+						}
 
-            const selectedAnime = searchResults[selectedAnimeIndex];
-            if (!selectedAnime.title) {
-              console.error("Selected", selectedAnime, "has no title");
-              toast.error("Selection has no title");
-              return;
-            }
-            const alreadyExistingAnime = AppData.animes.get(
-              Anime.getAnimeDbId(
-                newExternalLink(selectedAnime.externalLink),
-                selectedAnime.title
-              )
-            );
-            if (alreadyExistingAnime) {
-              toast.error(
-                <span>
-                  <b>{selectedAnime.title}</b> has already been added with name:
-                  <br></br>
-                  <b>{alreadyExistingAnime.title}</b>
-                </span>
-              );
-              return;
-            }
+						const selectedAnime = searchResults[selectedAnimeIndex];
+						if (!selectedAnime.title) {
+							console.error("Selected", selectedAnime, "has no title");
+							toast.error("Selection has no title");
+							return;
+						}
+						const alreadyExistingAnime = AppData.animes.get(
+							Anime.getAnimeDbId(
+								newExternalLink(selectedAnime.externalLink),
+								selectedAnime.title,
+							),
+						);
+						if (alreadyExistingAnime) {
+							toast.error(
+								<span>
+									<b>{selectedAnime.title}</b> has already been added with name:
+									<br></br>
+									<b>{alreadyExistingAnime.title}</b>
+								</span>,
+							);
+							return;
+						}
 
-            new Promise((resolve) => {
-              (async () => {
-                const createAnimeTask = AnimeCardFactory.create({
-                  animeExternalLink: newExternalLink(
-                    selectedAnime.externalLink
-                  ),
-                  order: AppData.animes.size,
-                  getSequels: true,
-                });
+						new Promise((resolve) => {
+							(async () => {
+								const createAnimeTask = AnimeCardFactory.create({
+									animeExternalLink: newExternalLink(
+										selectedAnime.externalLink,
+									),
+									order: AppData.animes.size,
+									getSequels: true,
+								});
 
-                if (createAnimeTask instanceof BadResponse) {
-                  showError(createAnimeTask);
-                  resolve(null);
-                  return;
-                }
+								if (createAnimeTask instanceof BadResponse) {
+									showError(createAnimeTask);
+									resolve(null);
+									return;
+								}
 
-                createAnimeTask.onProgressUpdate = ({
-                  progress,
-                  maxProgress,
-                }) => {
-                  setAddAnimeProgressState({
-                    progress: progress / (maxProgress - 1), // remove 1 from max so we can actually see progress bar reach the end
-                    state: "loading",
-                  });
-                };
+								createAnimeTask.onProgressUpdate = ({
+									progress,
+									maxProgress,
+								}) => {
+									setAddAnimeProgressState({
+										progress: progress / (maxProgress - 1), // remove 1 from max so we can actually see progress bar reach the end
+										state: "loading",
+									});
+								};
 
-                const anime = await createAnimeTask.start();
+								const anime = await createAnimeTask.start();
 
-                if (anime instanceof Error || !anime) {
-                  setAddAnimeProgressState({ progress: 0, state: "enabled" });
-                  showError(anime);
-                  resolve(null);
-                  return;
-                }
+								if (anime instanceof Error || !anime) {
+									setAddAnimeProgressState({ progress: 0, state: "enabled" });
+									showError(anime);
+									resolve(null);
+									return;
+								}
 
-                await sleepFor(500);
+								await sleepFor(500);
 
-                LocalDB.doTransaction(
-                  (store, db) => {
-                    return db.saveAnime(anime, store);
-                  },
-                  {
-                    onSuccess: () => {
-                      const addAnimeSearchElement = document.getElementById(
-                        "addAnimeSearch"
-                      ) as HTMLInputElement;
-                      addAnimeSearchElement.value = "";
-                      setAddAnimeProgressState({
-                        progress: 0,
-                        state: "enabled",
-                      });
-                      setSearchResultsState([]);
-                      setSelectedAnimeIndexState(null);
-                      setIsOpenState(false);
-                      addAnime(anime);
+								LocalDB.doTransaction(
+									(store, db) => {
+										return db.saveAnime(anime, store);
+									},
+									{
+										onSuccess: () => {
+											const addAnimeSearchElement = document.getElementById(
+												"addAnimeSearch",
+											) as HTMLInputElement;
+											addAnimeSearchElement.value = "";
+											setAddAnimeProgressState({
+												progress: 0,
+												state: "enabled",
+											});
+											setSearchResultsState([]);
+											setSelectedAnimeIndexState(null);
+											setIsOpenState(false);
+											addAnime(anime);
 
-                      allSuccess(anime.seasons, {
-                        forEach: async (season) =>
-                          ExternalSync.updateAnimeSeasonStatus(
-                            season,
-                            anime.title,
-                            { showToastOnSuccess: false, allowAbort: false }
-                          ),
-                        successMessage: (
-                          <span>
-                            Successfully added <b>{anime.title}</b> to{" "}
-                            {anime.externalLink.type}.
-                          </span>
-                        ),
-                        failMessage: (
-                          <span>
-                            Failed adding <b>{anime.title}</b> to{" "}
-                            {anime.externalLink.type}.
-                          </span>
-                        ),
-                      });
-                    },
-                  }
-                );
-                resolve(null);
-              })();
-            });
-          }}
-        >
-          Add
-        </ProgressButton>
-      </div>
-    </>
-  );
+											allSuccess(anime.seasons, {
+												forEach: async (season) =>
+													ExternalSync.updateAnimeSeasonStatus(
+														season,
+														anime.title,
+														{ showToastOnSuccess: false, allowAbort: false },
+													),
+												successMessage: (
+													<span>
+														Successfully added <b>{anime.title}</b> to{" "}
+														{anime.externalLink.type}.
+													</span>
+												),
+												failMessage: (
+													<span>
+														Failed adding <b>{anime.title}</b> to{" "}
+														{anime.externalLink.type}.
+													</span>
+												),
+											});
+										},
+									},
+								);
+								resolve(null);
+							})();
+						});
+					}}
+				>
+					Add
+				</ProgressButton>
+			</div>
+		</>
+	);
 };
 
 export default AddAnimeMenu;

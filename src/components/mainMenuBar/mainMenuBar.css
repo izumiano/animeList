@@ -19,7 +19,7 @@
 
 	padding: 1rem;
 
-	--defaultItemWidth: calc(var(--height)/13 * 8);
+	--defaultItemWidth: calc(var(--height) / 13 * 8);
 }
 
 .menuBarButton {
@@ -33,5 +33,5 @@
 }
 
 .menuBarButton > img {
-	width: calc(var(--defaultItemWidth)*0.6);
+	width: calc(var(--defaultItemWidth) * 0.6);
 }

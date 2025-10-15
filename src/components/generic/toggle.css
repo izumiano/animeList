@@ -19,7 +19,9 @@
 
 	border-radius: 100vw;
 
-	transition: background-color 0.5s, border-color 0.2s;
+	transition:
+		background-color 0.5s,
+		border-color 0.2s;
 
 	--spacing: 6px;
 	--radius: calc(var(--height) - var(--spacing));
@@ -46,7 +48,8 @@
 	border-radius: var(--radius);
 	background-color: white;
 
-	box-shadow: calc(var(--radius) * -0.1) calc(var(--radius) * 0.3) calc(var(--radius) * 0.5) rgba(0, 0, 0, 0.3);
+	box-shadow: calc(var(--radius) * -0.1) calc(var(--radius) * 0.3)
+		calc(var(--radius) * 0.5) rgba(0, 0, 0, 0.3);
 
 	transition: left 0.5s;
 }

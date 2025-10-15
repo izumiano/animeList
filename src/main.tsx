@@ -6,19 +6,19 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./Home.tsx";
 
 const router = createBrowserRouter([
-  {
-    path: import.meta.env.BASE_URL,
-    element: <App />,
-    children: [
-      { index: true, element: <Home /> },
-      { path: "malAuth", element: <Home /> },
-      { path: "details/*", element: <Home startPage="details" /> },
-    ],
-  },
+	{
+		path: import.meta.env.BASE_URL,
+		element: <App />,
+		children: [
+			{ index: true, element: <Home /> },
+			{ path: "malAuth", element: <Home /> },
+			{ path: "details/*", element: <Home startPage="details" /> },
+		],
+	},
 ]);
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <RouterProvider router={router} />
-  </StrictMode>
+	<StrictMode>
+		<RouterProvider router={router} />
+	</StrictMode>,
 );

@@ -83,7 +83,7 @@
 .title {
 	text-align: left;
 	width: 100%;
-	margin: 0.3rem 0 0.3rem 0
+	margin: 0.3rem 0 0.3rem 0;
 }
 
 .title > a > img {
@@ -122,7 +122,6 @@
 	.titleHover:hover {
 		background-color: hsl(from var(--colPrimary) h s calc(l + 20));
 	}
-
 
 	.titleHover:active {
 		background-color: hsl(from var(--colPrimary) h s calc(l - 5));

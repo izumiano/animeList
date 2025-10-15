@@ -10,7 +10,6 @@
 	overflow: hidden;
 }
 
-
 .progressTask.show {
 	max-height: 0;
 	animation: progressTask_showAnim 1s forwards;

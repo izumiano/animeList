@@ -10,16 +10,16 @@ import { MALAuth } from "./external/auth/malAuth";
 import { useEffect } from "react";
 
 function App() {
-  useEffect(() => {
-    MALAuth.instance.init();
-  }, []);
+	useEffect(() => {
+		MALAuth.instance.init();
+	}, []);
 
-  return (
-    <div>
-      <ToastContainer position="bottom-left" className="leftAlignedText" />
-      <Outlet />
-    </div>
-  );
+	return (
+		<div>
+			<ToastContainer position="bottom-left" className="leftAlignedText" />
+			<Outlet />
+		</div>
+	);
 }
 
 export default App;

@@ -18,7 +18,9 @@
 	stroke-linecap: round;
 	stroke-width: calc(var(--strokeWidth) + 2px);
 
-	transition: stroke-dashoffset 0.7s, stroke 1s;
+	transition:
+		stroke-dashoffset 0.7s,
+		stroke 1s;
 }
 
 .circleProgress > svg {

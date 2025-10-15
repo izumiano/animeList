@@ -3,52 +3,52 @@ import Select from "../generic/select";
 import "./seasonPicker.css";
 
 const SeasonPicker = ({
-  animeTitle,
-  seasons,
-  selectedSeason,
-  watched,
-  listRef,
-  scrollElementRef,
-  onSelect,
+	animeTitle,
+	seasons,
+	selectedSeason,
+	watched,
+	listRef,
+	scrollElementRef,
+	onSelect,
 }: {
-  animeTitle: string;
-  seasons: AnimeSeason[];
-  selectedSeason: AnimeSeason;
-  watched: boolean;
-  listRef?: React.RefObject<HTMLUListElement | null>;
-  scrollElementRef?: React.RefObject<HTMLDivElement | null>;
-  onSelect: (seasonNumber: number) => undefined;
+	animeTitle: string;
+	seasons: AnimeSeason[];
+	selectedSeason: AnimeSeason;
+	watched: boolean;
+	listRef?: React.RefObject<HTMLUListElement | null>;
+	scrollElementRef?: React.RefObject<HTMLDivElement | null>;
+	onSelect: (seasonNumber: number) => undefined;
 }) => {
-  if (seasons.length <= 1) {
-    return null;
-  }
+	if (seasons.length <= 1) {
+		return null;
+	}
 
-  return (
-    <div className="seasonPickerContainer">
-      <Select
-        defaultValue={selectedSeason.seasonNumber}
-        className={`seasonPicker ${watched ? "watched" : ""}`}
-        margin={0}
-        onChange={(value) => {
-          onSelect(value);
-        }}
-        listRef={listRef}
-        scrollElementRef={scrollElementRef}
-        autocloseOnChange={true}
-        optionSelectedClass="seasonOptionSelected"
-      >
-        {seasons.map((season) => (
-          <option
-            key={`${animeTitle}${season.seasonNumber}`}
-            value={season.seasonNumber}
-            className={`seasonOption ${season.watched ? "watched" : ""}`}
-          >
-            {season.title}
-          </option>
-        ))}
-      </Select>
-    </div>
-  );
+	return (
+		<div className="seasonPickerContainer">
+			<Select
+				defaultValue={selectedSeason.seasonNumber}
+				className={`seasonPicker ${watched ? "watched" : ""}`}
+				margin={0}
+				onChange={(value) => {
+					onSelect(value);
+				}}
+				listRef={listRef}
+				scrollElementRef={scrollElementRef}
+				autocloseOnChange={true}
+				optionSelectedClass="seasonOptionSelected"
+			>
+				{seasons.map((season) => (
+					<option
+						key={`${animeTitle}${season.seasonNumber}`}
+						value={season.seasonNumber}
+						className={`seasonOption ${season.watched ? "watched" : ""}`}
+					>
+						{season.title}
+					</option>
+				))}
+			</Select>
+		</div>
+	);
 };
 
 export default SeasonPicker;

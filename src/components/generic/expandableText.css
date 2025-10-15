@@ -7,7 +7,9 @@
 	color: gray;
 	max-height: 3rem;
 
-	transition: opacity 0.5s, max-height 2s;
+	transition:
+		opacity 0.5s,
+		max-height 2s;
 }
 
 .readMoreButton.hidden {

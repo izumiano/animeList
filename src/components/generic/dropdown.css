@@ -45,7 +45,9 @@
 	outline: 2px solid;
 	outline-color: transparent;
 
-	transition: max-height 0.5s, outline-color 0.5s;
+	transition:
+		max-height 0.5s,
+		outline-color 0.5s;
 }
 
 .dropdownMenu.show > .dropdownWrapper:has(.dropdownContent) {
