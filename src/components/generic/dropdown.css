@@ -12,15 +12,16 @@
 	--maxHeight: 100%;
 }
 
-.leftAlign {
+.dropdownMenu.leftAlign {
 	left: 0;
 }
 
-.centerAlign {
-	right: 50%;
+.dropdownMenu.centerAlign {
+	left: 0;
+	translate: -50% 0;
 }
 
-.rightAlign {
+.dropdownMenu.rightAlign {
 	right: 0;
 }
 

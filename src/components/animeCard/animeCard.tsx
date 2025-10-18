@@ -7,6 +7,8 @@ import { useEffect, useRef, useState } from "react";
 import malLogo from "../../assets/malLogo.png";
 import tmdbLogo from "../../assets/tmdbLogo.png";
 import trashIcon from "../../assets/bin.png";
+import plusIcon from "../../assets/plus.png";
+import minusIcon from "../../assets/minus.png";
 import LocalDB from "../../indexedDb/indexedDb";
 import type AnimeFilter from "../../models/animeFilter";
 import {
@@ -24,7 +26,6 @@ import { useOtherElementEvent } from "../../utils/useEvents";
 import { getUrlFromExternalLink } from "../../models/externalLink";
 import ExternalSync from "../../external/externalSync";
 import type { Page } from "../../Home";
-import plusIcon from "../../assets/plus.png";
 import AddAnimeNode from "../addAnimeMenu/addAnimeNode";
 
 const isOnScreenTolerance = remToPx(17);
@@ -49,7 +50,14 @@ const AnimeCard = ({
 }) => {
 	const cardRef = useRef<HTMLDivElement>(null);
 	const [index, setIndex] = useState(
-		anime.getFirstSeasonNotWatched().seasonNumber - 1,
+		(() => {
+			const season = anime.getFirstSeasonNotWatched();
+			if (!season) {
+				return;
+			}
+
+			return season.seasonNumber - 1;
+		})(),
 	);
 	const [watched, setWatchedState] = useState(anime.watched);
 	const [justAdded, setJustAddedState] = useState(anime.justAdded);
@@ -58,10 +66,10 @@ const AnimeCard = ({
 
 	const [seasons, setSeasonsState] = useState(anime.seasons);
 
-	const selectedSeason = seasons[index];
-	const seasonExternalLink = selectedSeason.externalLink;
+	const selectedSeason = index != null ? seasons[index] : undefined;
+	const seasonExternalLink = selectedSeason?.externalLink;
 	const [selectedSeasonWatched, setSelectedSeasonWatchedState] = useState(
-		selectedSeason.watched,
+		selectedSeason?.watched ?? false,
 	);
 
 	const shouldBeEnabled = checkShouldBeEnabled(anime, animeFilter);
@@ -77,8 +85,8 @@ const AnimeCard = ({
 	function updateWatchedState() {
 		const watched = anime.checkWatchedAll();
 
-		selectedSeason.checkWatchedAll();
-		setSelectedSeasonWatchedState(selectedSeason.watched);
+		selectedSeason?.checkWatchedAll();
+		setSelectedSeasonWatchedState(selectedSeason?.watched ?? false);
 
 		setWatchedState(watched);
 
@@ -210,7 +218,7 @@ const AnimeCard = ({
 										title="Really Delete?"
 										confirmMessage="Delete"
 										confirmClass="deleteConfirm"
-										dismissMessage="Don't"
+										dismissMessage="Keep"
 										closeDropdown={closeDropdown}
 										onConfirm={() => {
 											LocalDB.doTransaction((_, db) =>
@@ -248,24 +256,27 @@ const AnimeCard = ({
 							</Dropdown>
 						</div>
 						<div className="flexRow">
-							<SeasonPicker
-								animeTitle={anime.title}
-								seasons={seasons}
-								selectedSeason={selectedSeason}
-								watched={selectedSeasonWatched}
-								listRef={listRef}
-								scrollElementRef={scrollElementRef}
-								onSelect={(seasonNumber) => {
-									setIndex(seasonNumber - 1);
-									const newSelectedSeason = seasons[seasonNumber - 1];
-									newSelectedSeason.checkWatchedAll(newSelectedSeason);
-									setSelectedSeasonWatchedState(newSelectedSeason.watched);
-								}}
-							/>
+							{selectedSeason ? (
+								<SeasonPicker
+									animeTitle={anime.title}
+									seasons={seasons}
+									selectedSeason={selectedSeason}
+									watched={selectedSeasonWatched}
+									listRef={listRef}
+									scrollElementRef={scrollElementRef}
+									onSelect={(seasonNumber) => {
+										setIndex(seasonNumber - 1);
+										const newSelectedSeason = seasons[seasonNumber - 1];
+										newSelectedSeason.checkWatchedAll(newSelectedSeason);
+										setSelectedSeasonWatchedState(newSelectedSeason.watched);
+									}}
+								/>
+							) : null}
 							<Dropdown
 								dropdownButton={<img src={plusIcon}></img>}
 								buttonClass="circleButton"
 								className="verticalCenter"
+								alignment="left"
 								listRef={listRef}
 								scrollElementRef={scrollElementRef}
 								disableScroll={true}
@@ -275,24 +286,69 @@ const AnimeCard = ({
 									<AddAnimeNode
 										onAddAnime={(newAnime) => {
 											anime.addSeasons(newAnime.seasons, {
-												atIndex: index + 1,
+												atIndex: (index ?? -1) + 1,
 											});
 											setSeasonsState(anime.seasons);
 											setWatchedState(anime.watched);
-											setIndex(index + 1);
+											setIndex((index ?? -1) + 1);
 											setSelectedSeasonWatchedState(false);
 										}}
 										setIsOpenState={(isOpen) => !isOpen && closeDropdown()}
 										animeParent={anime}
+										className="addSeasonDropdown"
 									/>
 								)}
 							</Dropdown>
+							{index != null ? (
+								<Dropdown
+									dropdownButton={<img src={minusIcon}></img>}
+									buttonClass="circleButton"
+									className="verticalCenter"
+									alignment="center"
+									listRef={listRef}
+									scrollElementRef={scrollElementRef}
+								>
+									{({ closeDropdown }) => (
+										<ConfirmationDropdown
+											title="Really delete this season?"
+											confirmMessage="Delete"
+											confirmClass="deleteConfirm"
+											dismissMessage="Keep"
+											closeDropdown={closeDropdown}
+											onConfirm={() => {
+												if (!selectedSeason) return;
+
+												ExternalSync.deleteAnimeSeason(
+													selectedSeason,
+													anime.title,
+												);
+
+												anime.removeSeasonAtIndex(index);
+												setSeasonsState(anime.seasons);
+												setWatchedState(anime.watched);
+
+												if (anime.seasons.length > 0) {
+													const newIndex = index > 0 ? index - 1 : 0;
+													setIndex(newIndex);
+													setSelectedSeasonWatchedState(
+														anime.seasons.at(newIndex)?.watched ?? false,
+													);
+												} else {
+													setIndex(undefined);
+												}
+											}}
+										/>
+									)}
+								</Dropdown>
+							) : null}
 						</div>
-						<EpisodeList
-							anime={anime}
-							season={selectedSeason}
-							onCompletionChange={updateWatchedState}
-						/>
+						{selectedSeason ? (
+							<EpisodeList
+								anime={anime}
+								season={selectedSeason}
+								onCompletionChange={updateWatchedState}
+							/>
+						) : null}
 					</div>
 				</>
 			) : null}

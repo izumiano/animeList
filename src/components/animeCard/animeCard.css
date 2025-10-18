@@ -137,3 +137,7 @@
 		background-color: hsl(from var(--colPrimary) h s calc(l + 20%));
 	}
 }
+
+.addSeasonDropdown {
+	min-width: 45rem;
+}

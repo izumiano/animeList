@@ -119,7 +119,7 @@ export default class Anime {
 				return season;
 			}
 		}
-		return this.seasons[0];
+		return this.seasons.at(0);
 	}
 
 	public addSeasons(
@@ -158,6 +158,28 @@ export default class Anime {
 			this.seasons = [...this.seasons];
 			this.watched = false;
 			this.dateFinished = null;
+		});
+
+		this.saveToDb();
+	}
+
+	public removeSeasonAtIndex(index: number) {
+		this.seasons
+			.filter((season) => season.seasonNumber > index + 1)
+			.forEach((season) =>
+				season.runWithoutUpdatingDb(() => (season.seasonNumber -= 1)),
+			);
+
+		this.runWithoutUpdatingDb(() => {
+			this.seasons.splice(index, 1);
+			this.seasons = [...this.seasons];
+			if (this.checkWatchedAll()) {
+				this.updateDate();
+			}
+			if (this.seasons.length === 0) {
+				this.dateStarted = null;
+				this.dateFinished = null;
+			}
 		});
 
 		this.saveToDb();
@@ -289,6 +311,11 @@ export default class Anime {
 	}
 
 	checkWatchedAll() {
+		if (this.seasons.length === 0) {
+			this.watched = false;
+			return false;
+		}
+
 		for (const season of this.seasons) {
 			if (!season.checkWatchedAll()) {
 				this.watched = false;

@@ -23,10 +23,12 @@ export default function AddAnimeNode({
 	onAddAnime,
 	setIsOpenState,
 	animeParent,
+	className,
 }: {
 	onAddAnime: (anime: Anime, params?: { doScroll: boolean }) => void;
 	setIsOpenState: (isOpen: boolean) => void;
 	animeParent?: Anime;
+	className?: string;
 }) {
 	const [searchResults, setSearchResultsState] = useState<SearchResultsType>(
 		[],
@@ -72,7 +74,7 @@ export default function AddAnimeNode({
 	}
 
 	return (
-		<div className={`${animeParent ? "" : "scroll"}`}>
+		<div className={`${animeParent ? "" : "scroll"} ${className}`}>
 			<div className="addAnimeInputs flexRow margin">
 				<input
 					ref={addAnimeSearchElementRef}
@@ -169,8 +171,6 @@ export default function AddAnimeNode({
 								addAnime(anime);
 								return;
 							}
-
-							toast("adding to db");
 
 							LocalDB.doTransaction(
 								(store, db) => {

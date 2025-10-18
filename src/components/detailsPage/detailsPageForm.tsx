@@ -13,7 +13,7 @@ const DetailsPageForm = ({
 	season,
 }: {
 	anime: Anime;
-	season: AnimeSeason;
+	season: AnimeSeason | undefined;
 }) => {
 	return (
 		<Grid container color={"white"} spacing={2} sx={{ margin: "1rem 3rem" }}>
@@ -53,50 +53,54 @@ const DetailsPageForm = ({
 				/>
 			</Grid>
 
-			<Grid size={12}>
-				<h2 className="leftAlignedText smallMargin">-Season Details-</h2>
-			</Grid>
-			<Grid size={6}>
-				<TextField
-					fullWidth
-					label="Title"
-					defaultValue={season.title}
-					onChange={(event) => {
-						const title = event.target.value;
-						season.title = title;
-					}}
-				/>
-			</Grid>
-			<Grid size={6}>
-				<TextField
-					fullWidth
-					label="Media Type"
-					defaultValue={season.mediaType}
-					onChange={(event) => {
-						console.log(event.target.value);
-					}}
-				/>
-			</Grid>
-			<Grid size={6}>
-				<TextField
-					fullWidth
-					label="Date Started"
-					defaultValue={formatDate(season.dateStarted)}
-					onChange={(event) => {
-						console.log(event.target.value);
-					}}
-				/>
-			</Grid>
-			<Grid size={6}>
-				<TextField
-					fullWidth
-					label="Date Finished"
-					defaultValue={formatDate(season.dateFinished)}
-					onChange={(event) => {
-						console.log(event.target.value);
-					}}
-				/>
-			</Grid>
+			{season ? (
+				<>
+					<Grid size={12}>
+						<h2 className="leftAlignedText smallMargin">-Season Details-</h2>
+					</Grid>
+					<Grid size={6}>
+						<TextField
+							fullWidth
+							label="Title"
+							defaultValue={season.title}
+							onChange={(event) => {
+								const title = event.target.value;
+								season.title = title;
+							}}
+						/>
+					</Grid>
+					<Grid size={6}>
+						<TextField
+							fullWidth
+							label="Media Type"
+							defaultValue={season.mediaType}
+							onChange={(event) => {
+								console.log(event.target.value);
+							}}
+						/>
+					</Grid>
+					<Grid size={6}>
+						<TextField
+							fullWidth
+							label="Date Started"
+							defaultValue={formatDate(season.dateStarted)}
+							onChange={(event) => {
+								console.log(event.target.value);
+							}}
+						/>
+					</Grid>
+					<Grid size={6}>
+						<TextField
+							fullWidth
+							label="Date Finished"
+							defaultValue={formatDate(season.dateFinished)}
+							onChange={(event) => {
+								console.log(event.target.value);
+							}}
+						/>
+					</Grid>
+				</>
+			) : null}
 		</Grid>
 	);
 };

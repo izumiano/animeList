@@ -24,7 +24,6 @@ import { fullScreenWidth } from "../../utils/utils";
 import DetailsPageForm from "./detailsPageForm";
 import useMultipleRef from "../../utils/useMultiple";
 import { useWindowEvent } from "../../utils/useEvents";
-import LoadingSpinner from "../generic/loadingSpinner";
 
 const DetailsPage = ({
 	animes,
@@ -133,17 +132,33 @@ const DetailsPage = ({
 
 const InternalDetailsPage = ({ anime }: { anime: Anime }) => {
 	const [index, setIndex] = useState(
-		anime.getFirstSeasonNotWatched().seasonNumber - 1,
+		(() => {
+			const season = anime.getFirstSeasonNotWatched();
+			if (!season) {
+				return;
+			}
+
+			return season.seasonNumber - 1;
+		})(),
 	);
 
 	useEffect(() => {
-		setIndex(anime.getFirstSeasonNotWatched().seasonNumber - 1);
+		setIndex(
+			(() => {
+				const season = anime.getFirstSeasonNotWatched();
+				if (!season) {
+					return;
+				}
+
+				return season.seasonNumber - 1;
+			})(),
+		);
 	}, [anime]);
 
 	const [description, setDescriptionState] = useState("");
 	const [isExpanded, setIsExpandedState] = useState(false);
 
-	const selectedSeason = anime.seasons.at(index);
+	const selectedSeason = index != null ? anime.seasons.at(index) : undefined;
 	const [selectedSeasonWatched, setSelectedSeasonWatchedState] = useState(
 		selectedSeason?.watched ?? false,
 	);
@@ -166,10 +181,6 @@ const InternalDetailsPage = ({ anime }: { anime: Anime }) => {
 			setDescriptionState(seasonDetails.synopsis ?? "");
 		})();
 	}, [selectedSeason]);
-
-	if (!selectedSeason) {
-		return <LoadingSpinner />;
-	}
 
 	return (
 		<>
@@ -205,18 +216,20 @@ const InternalDetailsPage = ({ anime }: { anime: Anime }) => {
 									</a>
 								) : null}
 							</h1>
-							<SeasonPicker
-								animeTitle={anime.title}
-								seasons={anime.seasons}
-								selectedSeason={selectedSeason}
-								watched={selectedSeasonWatched}
-								onSelect={(seasonNumber) => {
-									setIndex(seasonNumber - 1);
-									const newSelectedSeason = anime.seasons[seasonNumber - 1];
-									newSelectedSeason.checkWatchedAll(newSelectedSeason);
-									setSelectedSeasonWatchedState(newSelectedSeason.watched);
-								}}
-							/>
+							{selectedSeason ? (
+								<SeasonPicker
+									animeTitle={anime.title}
+									seasons={anime.seasons}
+									selectedSeason={selectedSeason}
+									watched={selectedSeasonWatched}
+									onSelect={(seasonNumber) => {
+										setIndex(seasonNumber - 1);
+										const newSelectedSeason = anime.seasons[seasonNumber - 1];
+										newSelectedSeason.checkWatchedAll(newSelectedSeason);
+										setSelectedSeasonWatchedState(newSelectedSeason.watched);
+									}}
+								/>
+							) : null}
 						</div>
 						<ProgressNode size="3.2rem" alignment="right" />
 					</div>
