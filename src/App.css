@@ -207,6 +207,10 @@ hr {
 	margin: var(--margin);
 }
 
+.marginTop {
+	margin-top: var(--margin);
+}
+
 .mediumMargin {
 	margin: var(--mediumMargin);
 }

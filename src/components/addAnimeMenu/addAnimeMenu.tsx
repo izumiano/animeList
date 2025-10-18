@@ -31,7 +31,11 @@ const AddAnimeMenu = ({
 				className={`addAnimeMenu flexColumn shimmerBackground ${isOpenClass}`}
 			>
 				<AccountNode />
-				<AddAnimeNode onAddAnime={addAnime} setIsOpenState={setIsOpenState} />
+				<AddAnimeNode
+					onAddAnime={addAnime}
+					setIsOpenState={setIsOpenState}
+					className="marginTop"
+				/>
 			</div>
 		</>
 	);

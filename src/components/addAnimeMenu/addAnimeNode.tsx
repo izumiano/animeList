@@ -75,7 +75,7 @@ export default function AddAnimeNode({
 
 	return (
 		<div className={`${animeParent ? "" : "scroll"} ${className}`}>
-			<div className="addAnimeInputs flexRow margin">
+			<div className="addAnimeInputs flexRow">
 				<input
 					ref={addAnimeSearchElementRef}
 					className="addAnimeSearch"

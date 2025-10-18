@@ -1,7 +1,9 @@
 .addAnimeInputs {
 	position: sticky;
-	top: var(--margin);
+	top: 0;
+	padding: var(--padding);
 	height: fit-content;
+	background-color: rgb(from var(--colNeutral) r g b / 0.5);
 }
 
 .addAnimeSearch {
