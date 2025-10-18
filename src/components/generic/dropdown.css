@@ -57,10 +57,16 @@
 .dropdownContent {
 	--dropdownContentBorderRadius: 1rem;
 	border-radius: var(--dropdownContentBorderRadius);
+	display: flex;
+	flex-direction: column;
 	overflow-y: hidden;
 }
 
-.dropdownContent.scroll {
+.dropdownContent > * {
+	flex: 1 1 auto;
+}
+
+.dropdownContent > *.scroll {
 	overflow-y: scroll !important;
 }
 

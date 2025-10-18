@@ -12,9 +12,11 @@ const Dropdown = ({
 	buttonProps,
 	useDefaultButtonStyle,
 	backgroundColor,
+	dropdownContentClassName,
 	onOpenChange,
 	listRef,
 	scrollElementRef,
+	disableScroll,
 	children,
 }: {
 	dropdownButton: ReactNode;
@@ -24,9 +26,11 @@ const Dropdown = ({
 	buttonProps?: React.ComponentProps<"button">;
 	useDefaultButtonStyle?: boolean;
 	backgroundColor?: Property.BackgroundColor;
+	dropdownContentClassName?: string;
 	onOpenChange?: (isOpen: boolean) => void;
 	listRef?: React.RefObject<HTMLUListElement | null>;
 	scrollElementRef?: React.RefObject<HTMLDivElement | null>;
+	disableScroll?: boolean;
 	children?:
 		| ReactNode
 		| ((params: {
@@ -36,6 +40,7 @@ const Dropdown = ({
 }) => {
 	const [isOpen, setIsOpenState] = useState(false);
 	const dropdownContentRef = useRef<HTMLDivElement>(null);
+	const dropdownContentScrollRef = useRef<HTMLDivElement>(null);
 	const dropdownWrapperRef = useRef<HTMLDivElement>(null);
 	const [dropdownContentScroll, setDropdownContentScroll] = useState(0);
 	const [dropdownMaxHeight, setDropdownMaxHeight] = useState(0);
@@ -43,14 +48,14 @@ const Dropdown = ({
 	const [scrollEnabled, setScrollEnabledState] = useState(true);
 
 	useEffect(() => {
-		const currentContent = dropdownContentRef.current;
+		const currentContentScroll = dropdownContentScrollRef.current;
 		const currentWrapper = dropdownWrapperRef.current;
 		const currentList = listRef?.current ?? window;
 		const currentScrollElement = scrollElementRef?.current ?? document;
 
 		const handleScroll = () => {
-			if (currentContent) {
-				setDropdownContentScroll(currentContent.scrollTop);
+			if (currentContentScroll) {
+				setDropdownContentScroll(currentContentScroll.scrollTop);
 			}
 		};
 
@@ -74,8 +79,8 @@ const Dropdown = ({
 			});
 		});
 
-		if (currentContent) {
-			currentContent.addEventListener("scroll", handleScroll);
+		if (currentContentScroll) {
+			currentContentScroll.addEventListener("scroll", handleScroll);
 		}
 		if (currentWrapper) {
 			sizeObserverHandleSize.observe(currentWrapper);
@@ -101,8 +106,8 @@ const Dropdown = ({
 		handleSize();
 
 		return () => {
-			if (currentContent) {
-				currentContent.removeEventListener("scroll", handleScroll);
+			if (currentContentScroll) {
+				currentContentScroll.removeEventListener("scroll", handleScroll);
 			}
 			if (currentWrapper) {
 				sizeObserverHandleSize.disconnect();
@@ -131,6 +136,7 @@ const Dropdown = ({
 	useDefaultButtonStyle ??= true;
 	alignment ??= "left";
 	backgroundColor ??= "var(--colNeutral)";
+	disableScroll ??= false;
 
 	const isOpenClass = isOpen ? "show" : "hide";
 	function setIsOpen(isOpen: boolean) {
@@ -170,21 +176,24 @@ const Dropdown = ({
 				<div ref={dropdownWrapperRef} className="dropdownWrapper">
 					<div
 						ref={dropdownContentRef}
-						className={`dropdownContent shimmerBackground ${
-							scrollEnabled && requiresScroll ? "scroll" : ""
-						}`}
+						className={`dropdownContent shimmerBackground ${dropdownContentClassName}`}
 						style={{
 							backgroundColor: backgroundColor,
 						}}
 					>
-						{typeof children === "function"
-							? children?.call(this, {
-									setParentScrollEnabled: setScrollEnabledState,
-									closeDropdown: () => {
-										if (isOpen) setIsOpen(false);
-									},
-								})
-							: children}
+						<div
+							ref={dropdownContentScrollRef}
+							className={`${scrollEnabled && requiresScroll ? "scroll" : ""}`}
+						>
+							{typeof children === "function"
+								? children({
+										setParentScrollEnabled: setScrollEnabledState,
+										closeDropdown: () => {
+											if (isOpen) setIsOpen(false);
+										},
+									})
+								: children}
+						</div>
 					</div>
 				</div>
 			</div>

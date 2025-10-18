@@ -24,6 +24,8 @@ import { useOtherElementEvent } from "../../utils/useEvents";
 import { getUrlFromExternalLink } from "../../models/externalLink";
 import ExternalSync from "../../external/externalSync";
 import type { Page } from "../../Home";
+import plusIcon from "../../assets/plus.png";
+import AddAnimeNode from "../addAnimeMenu/addAnimeNode";
 
 const isOnScreenTolerance = remToPx(17);
 
@@ -54,7 +56,9 @@ const AnimeCard = ({
 	const [toBeRemoved, setToBeRemovedState] = useState(false);
 	const [animating, setAnimating] = useState(false);
 
-	const selectedSeason = anime.seasons[index];
+	const [seasons, setSeasonsState] = useState(anime.seasons);
+
+	const selectedSeason = seasons[index];
 	const seasonExternalLink = selectedSeason.externalLink;
 	const [selectedSeasonWatched, setSelectedSeasonWatchedState] = useState(
 		selectedSeason.watched,
@@ -65,6 +69,10 @@ const AnimeCard = ({
 
 	const [isOnScreen, setIsOnScreen] = useState<boolean | null>(null);
 	const [animeSortBy, setAnimeSortByState] = useState(animeFilter.sortBy);
+
+	useEffect(() => {
+		setSeasonsState(anime.seasons);
+	}, [anime.seasons]);
 
 	function updateWatchedState() {
 		const watched = anime.checkWatchedAll();
@@ -208,7 +216,7 @@ const AnimeCard = ({
 											LocalDB.doTransaction((_, db) =>
 												db.deleteAnime(anime, {
 													onSuccess: () => {
-														allSuccess(anime.seasons, {
+														allSuccess(seasons, {
 															forEach: async (season) =>
 																ExternalSync.deleteAnimeSeason(
 																	season,
@@ -239,20 +247,47 @@ const AnimeCard = ({
 								)}
 							</Dropdown>
 						</div>
-						<SeasonPicker
-							animeTitle={anime.title}
-							seasons={anime.seasons}
-							selectedSeason={selectedSeason}
-							watched={selectedSeasonWatched}
-							listRef={listRef}
-							scrollElementRef={scrollElementRef}
-							onSelect={(seasonNumber) => {
-								setIndex(seasonNumber - 1);
-								const newSelectedSeason = anime.seasons[seasonNumber - 1];
-								newSelectedSeason.checkWatchedAll(newSelectedSeason);
-								setSelectedSeasonWatchedState(newSelectedSeason.watched);
-							}}
-						/>
+						<div className="flexRow">
+							<SeasonPicker
+								animeTitle={anime.title}
+								seasons={seasons}
+								selectedSeason={selectedSeason}
+								watched={selectedSeasonWatched}
+								listRef={listRef}
+								scrollElementRef={scrollElementRef}
+								onSelect={(seasonNumber) => {
+									setIndex(seasonNumber - 1);
+									const newSelectedSeason = seasons[seasonNumber - 1];
+									newSelectedSeason.checkWatchedAll(newSelectedSeason);
+									setSelectedSeasonWatchedState(newSelectedSeason.watched);
+								}}
+							/>
+							<Dropdown
+								dropdownButton={<img src={plusIcon}></img>}
+								buttonClass="circleButton"
+								className="verticalCenter"
+								listRef={listRef}
+								scrollElementRef={scrollElementRef}
+								disableScroll={true}
+								dropdownContentClassName="relative"
+							>
+								{({ closeDropdown }) => (
+									<AddAnimeNode
+										onAddAnime={(newAnime) => {
+											anime.addSeasons(newAnime.seasons, {
+												atIndex: index + 1,
+											});
+											setSeasonsState(anime.seasons);
+											setWatchedState(anime.watched);
+											setIndex(index + 1);
+											setSelectedSeasonWatchedState(false);
+										}}
+										setIsOpenState={(isOpen) => !isOpen && closeDropdown()}
+										animeParent={anime}
+									/>
+								)}
+							</Dropdown>
+						</div>
 						<EpisodeList
 							anime={anime}
 							season={selectedSeason}

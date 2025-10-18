@@ -1,4 +1,4 @@
-#addAnimeMenu {
+.addAnimeMenu {
 	position: fixed;
 	top: 0;
 	left: -100%;
@@ -14,11 +14,11 @@
 	transition: left 0.8s;
 }
 
-#addAnimeMenu.open {
+.addAnimeMenu.open {
 	left: 0;
 }
 
-#thingToClose {
+.thingToClose {
 	visibility: hidden;
 	position: fixed;
 	top: 0;
@@ -54,52 +54,4 @@
 		opacity: 1;
 		visibility: visible;
 	}
-}
-
-#addAnimeInputs {
-	height: fit-content;
-}
-
-#addAnimeSearch {
-	flex: 1 1 auto;
-	text-align: center;
-	font-size: 1rem;
-	margin-bottom: 0.8rem;
-}
-
-.addButtonProps {
-	--bottomSpacing: 3rem;
-	--height: 2rem;
-}
-
-.addButton {
-	position: absolute;
-	--width: 30%;
-	width: var(--width);
-	height: var(--height);
-	bottom: var(--bottomSpacing);
-	font-size: larger;
-	left: calc(50% - var(--width) / 2);
-	background-color: white;
-	color: black;
-
-	margin: auto;
-	box-shadow:
-		0 0 100px black,
-		0 0 40px rgba(0, 0, 0, 0.3);
-
-	border-radius: 100rem;
-
-	transition:
-		background-color 0.5s,
-		color 0.5s,
-		translate 0.7s cubic-bezier(0.47, 1.64, 0.41, 0.8);
-}
-
-.addButton:not(.loading):disabled {
-	translate: 0 calc(var(--bottomSpacing) + var(--height) + 4rem);
-}
-
-.addButtonSpacer {
-	height: calc(var(--bottomSpacing) + var(--height) + 1rem);
 }

@@ -122,6 +122,47 @@ export default class Anime {
 		return this.seasons[0];
 	}
 
+	public addSeasons(
+		newSeasons: AnimeSeason[],
+		{ atIndex }: { atIndex: number },
+	) {
+		this.seasons
+			.filter((season) => season.seasonNumber > atIndex)
+			.forEach((season) =>
+				season.runWithoutUpdatingDb(
+					() => (season.seasonNumber += newSeasons.length),
+				),
+			);
+
+		newSeasons = newSeasons
+			.sort((lhs, rhs) => {
+				if (lhs.seasonNumber < rhs.seasonNumber) {
+					return -1;
+				}
+				return 1;
+			})
+			.map(
+				(season, index) =>
+					new AnimeSeason({
+						...season,
+						...{
+							seasonNumber: index + atIndex + 1,
+							animeDbId: this.getAnimeDbId(),
+							anime: this,
+						},
+					}),
+			);
+
+		this.runWithoutUpdatingDb(() => {
+			this.seasons.splice(atIndex, 0, ...newSeasons);
+			this.seasons = [...this.seasons];
+			this.watched = false;
+			this.dateFinished = null;
+		});
+
+		this.saveToDb();
+	}
+
 	public updateDate() {
 		const firstSeason = this.seasons.at(0);
 		if (!this.dateStarted && firstSeason && firstSeason.dateStarted) {

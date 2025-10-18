@@ -3,12 +3,14 @@ import "./addAnimeButton.css";
 
 const AddAnimeButton = ({
 	setIsOpenState,
+	className,
 }: {
 	setIsOpenState: (isOpen: boolean) => void;
+	className: string;
 }) => {
 	return (
 		<button
-			className="menuBarButton"
+			className={className}
 			onClick={() => {
 				setIsOpenState(true);
 			}}

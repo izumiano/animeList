@@ -16,6 +16,8 @@ export default class AnimeSeason {
 
 	private anime: Anime | undefined;
 
+	pauseAutoSave = false;
+
 	constructor(params: {
 		animeDbId?: string;
 		title?: string;
@@ -60,19 +62,28 @@ export default class AnimeSeason {
 					value: any,
 				) {
 					if (target[property] !== value) {
-						console.debug(
-							`AnimeSeason Property in '${params.title}' '${property}' changed from'`,
-							target[property],
-							"to",
-							value,
-						);
 						Reflect.set(target, property, value);
-						AppData.animes.get(params.animeDbId!)?.saveToDb();
+
+						if (!target.pauseAutoSave && property !== "pauseAutoSave") {
+							console.debug(
+								`AnimeSeason Property in '${params.title}' '${property}' changed from'`,
+								target[property],
+								"to",
+								value,
+							);
+							AppData.animes.get(params.animeDbId!)?.saveToDb();
+						}
 					}
 					return true;
 				},
 			});
 		}
+	}
+
+	public runWithoutUpdatingDb(action: () => void) {
+		this.pauseAutoSave = true;
+		action();
+		this.pauseAutoSave = false;
 	}
 
 	public checkWatchedAll(season: AnimeSeason | null = null) {

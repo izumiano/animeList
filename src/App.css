@@ -276,3 +276,22 @@ hr {
 .fullWidth {
 	width: 100%;
 }
+
+.circleButton {
+	--size: 2rem;
+	border-radius: 100vw;
+	width: var(--size);
+	height: var(--size);
+	display: flex;
+	align-self: center;
+	justify-content: center;
+	align-items: center;
+	border-radius: 100%;
+	background-color: var(--colAccent);
+
+	padding: 0;
+}
+
+.circleButton > img {
+	width: calc(var(--size) * 0.6);
+}
