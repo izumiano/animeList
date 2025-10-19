@@ -1,7 +1,11 @@
 import LocalDB from "../indexedDb/indexedDb";
 import AnimeEpisode from "./animeEpisode";
 import AnimeSeason from "./animeSeason";
-import { newExternalLink, type ExternalLink } from "./externalLink";
+import {
+	externalLinkId,
+	newExternalLink,
+	type ExternalLink,
+} from "./externalLink";
 
 export const MediaTypeValues = [
 	"tv",
@@ -197,7 +201,7 @@ export default class Anime {
 	}
 
 	public static getAnimeDbId(externalLink: ExternalLink, title: string) {
-		return `${externalLink?.type ?? "NONE"}${externalLink?.id ?? title}`;
+		return externalLinkId(externalLink, title);
 	}
 
 	public static Load({

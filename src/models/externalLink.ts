@@ -35,6 +35,18 @@ export function getUrlFromExternalLink(externalLink: ExternalLink) {
 	}
 }
 
+export function externalLinkId(externalLink: ExternalLink, title: string) {
+	switch (externalLink.type) {
+		case "MAL":
+			return `MAL${externalLink.id}`;
+
+		case "TMDB":
+			return `TMDB${externalLink.id}${externalLink.seasonId ?? ""}`;
+		default:
+			return `NONE${title}`;
+	}
+}
+
 export async function getSeasonDetails(season: AnimeSeason, fields: string[]) {
 	switch (season.externalLink.type) {
 		case "MAL":

@@ -9,7 +9,7 @@ export default class AnimeSeason {
 	episodes: AnimeEpisode[];
 	watched: boolean;
 	seasonNumber: number;
-	mediaType: MediaType;
+	mediaType: MediaType | undefined;
 	externalLink: ExternalLink;
 	dateStarted: Date | null;
 	dateFinished: Date | null;
@@ -24,7 +24,7 @@ export default class AnimeSeason {
 		episodes: AnimeEpisode[];
 		watched: boolean;
 		seasonNumber: number;
-		mediaType: MediaType;
+		mediaType: MediaType | undefined;
 		externalLink: ExternalLink;
 		dateStarted: Date | number | null;
 		dateFinished: Date | number | null;

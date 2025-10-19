@@ -16,6 +16,7 @@ export function importAnimes(
 			for (const file of files) {
 				const obj = JSON.parse(await file.text());
 				for (const o of obj) {
+					if (o.title !== "Doctor Who") continue;
 					animes.push(o);
 				}
 			}

@@ -1,0 +1,60 @@
+.baseFormItem {
+	--borderRadius: 1rem;
+	--primaryMain: #1976d2;
+
+	--textColor: white;
+
+	& .MuiOutlinedInput-root {
+
+		border-radius: var(--borderRadius);
+		background-color: rgb(from white r g b / 0.1);
+
+		& fieldset {
+			border-radius: var(--borderRadius);
+		}
+	}
+
+	& .MuiInputLabel-root {
+		color: gray;
+
+		&.MuiInputLabel-shrink {
+			color: var(--textColor);
+		}
+
+		&.Mui-focused {
+			color: var(--primaryMain);
+		}
+
+	}
+}
+
+.formTextField {
+	& input {
+		color: var(--textColor)
+	}
+}
+
+.formSelect {
+	& .MuiSelect-select {
+		color: var(--textColor);
+		text-align: left;
+	}
+
+	& .MuiSelect-icon {
+		color: var(--textColor);
+	}
+}
+
+.formSelectMenu {
+	& .MuiPaper-root {
+		background-color: var(--colNeutral);
+
+		& .MuiList-root {
+			color: white;
+
+			& > li:hover {
+				background-color: rgb(from var(--colAccent) r g b / 0.1);
+			}
+		}
+	}
+}
