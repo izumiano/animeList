@@ -219,6 +219,14 @@ hr {
 	margin: var(--smallMargin);
 }
 
+.gap {
+	gap: var(--margin);
+}
+
+.mediumGap {
+	gap: var(--mediumMargin);
+}
+
 .shimmerBackground {
 	box-shadow: inset 0 0 4rem rgba(146, 125, 125, 0.3);
 }

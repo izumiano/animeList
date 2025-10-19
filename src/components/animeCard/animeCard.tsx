@@ -255,7 +255,7 @@ const AnimeCard = ({
 								)}
 							</Dropdown>
 						</div>
-						<div className="flexRow">
+						<div className="flexRow mediumGap">
 							{selectedSeason ? (
 								<SeasonPicker
 									animeTitle={anime.title}
