@@ -304,3 +304,7 @@ export function checkElementOverflow(element: HTMLElement) {
 }
 
 export const fullScreenWidth = dvwToPx(100);
+
+export function isValidDate(date: Date) {
+	return date instanceof Date && !isNaN(date.getTime());
+}

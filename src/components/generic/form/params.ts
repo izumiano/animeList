@@ -11,4 +11,5 @@ export type MuiProps<T> = {
 	onChange?: (value: T) => void;
 	margin?: "normal" | "dense" | "none";
 	className?: string;
+	disabled?: boolean;
 };

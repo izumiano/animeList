@@ -43,6 +43,31 @@ export const useWindowEvent = <T extends HTMLElement>(
 	return ref;
 };
 
+export const useDomEvent = <T extends HTMLElement>({
+	event,
+	callback,
+}: {
+	event: keyof HTMLElementEventMap;
+	callback: () => void;
+}) => {
+	const element = useRef<T>(null);
+
+	useEffect(() => {
+		const currentElement = element.current;
+		if (!currentElement) {
+			return;
+		}
+
+		currentElement.addEventListener(event, callback);
+
+		return () => {
+			currentElement.removeEventListener(event, callback);
+		};
+	}, [callback, element, event]);
+
+	return element;
+};
+
 export const useOtherElementEvent = <T extends HTMLElement>({
 	element,
 	eventTypes,

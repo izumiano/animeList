@@ -26,12 +26,54 @@
 		}
 
 	}
+
+	& .MuiIconButton-root {
+		color: var(--textColor);
+		background-color: transparent;
+		width: 1.5rem;
+		height: 1.5rem;
+		padding: 1.3rem;
+		margin: 0;
+
+		transition: background-color 0.3s;
+
+		&:hover {
+			background-color: rgb(from var(--textColor) r g b / 0.2);
+		}
+	}
+}
+
+.baseFormItem.cursorPointer {
+	& .MuiOutlinedInput-root {
+		cursor: pointer;
+	}
 }
 
 .formTextField {
 	& input {
-		color: var(--textColor)
+		color: var(--textColor);
+
+		& .Mui-disabled.ignoreDisabled {
+			color: var(--textColor);
+			background-color: red;
+		}
 	}
+}
+
+.formTextField.cursorPointer input {
+	cursor: pointer;
+}
+
+.formTextField.noCaret input {
+	caret-color: transparent;
+}
+
+.baseFormItem.ignoreDisabled .MuiInputLabel-root {
+	color: white;
+}
+
+.ignoreDisabled input:disabled {
+	-webkit-text-fill-color: var(--textColor);
 }
 
 .formSelect {
@@ -54,6 +96,73 @@
 
 			& > li:hover {
 				background-color: rgb(from var(--colAccent) r g b / 0.1);
+			}
+		}
+	}
+}
+
+div:has(> .formDatePicker) {
+	--borderRadius: 1rem;
+	border-radius: var(--borderRadius);
+	background-color: rgb(from white r g b / 0.1);
+
+	& fieldset {
+		border-radius: var(--borderRadius);
+	}
+}
+
+.formDatePicker {
+	border-radius: var(--borderRadius);
+
+	& .MuiPickersSectionList-root {
+		color: var(--textColor);
+		cursor: pointer;
+	}
+}
+
+.MuiPaper-root.formCalendar {
+	--textColor: white;
+	--primaryMain: #1976d2;
+
+	background-color: var(--colNeutral);
+
+	& .MuiPickersCalendarHeader-root {
+		& * {
+			color: var(--textColor);
+		}
+	}
+
+	& .MuiDayCalendar-root {
+		& .MuiDayCalendar-header * {
+			color: rgb(from var(--textColor) r g b / 0.4);
+		}
+
+		& .MuiDayCalendar-monthContainer {
+
+			& * {
+				color: var(--textColor);
+			}
+
+			& .Mui-disabled {
+				color: rgb(from var(--textColor) r g b / 0.4);
+			}
+		}
+	}
+
+	& .MuiYearCalendar-root {
+
+		& > button {
+			padding: 0;
+			color: rgb(from var(--textColor) r g b / 0.5);
+
+
+			&.Mui-disabled {
+				color: rgb(from var(--textColor) r g b / 0.2);
+			}
+
+			&.Mui-selected {
+				color: var(--textColor);
+				background-color: var(--primaryMain);
 			}
 		}
 	}

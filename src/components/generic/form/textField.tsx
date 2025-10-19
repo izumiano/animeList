@@ -17,6 +17,7 @@ const TextField = ({
 	className,
 }: {
 	placeholder?: string | { useDefaultValue?: boolean };
+	onClick?: () => void;
 } & MuiProps<string>) => {
 	const [{ value }, setValue] = useState({ value: defaultValue });
 

@@ -307,3 +307,7 @@ hr {
 .circleButton > img {
 	width: calc(var(--size) * 0.6);
 }
+
+.cursorPointer {
+	cursor: pointer;
+}
