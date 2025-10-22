@@ -223,7 +223,7 @@ export default class MALCardFactory {
 		return await this.getAnimeData(sequelId);
 	}
 
-	private static getSequelId(season: MALSeasonDetails): number | null {
+	private static getSequelId(season: MALSeasonDetails) {
 		const relations = season.relations;
 		if (!relations) {
 			console.warn("did not find relations");
@@ -248,22 +248,21 @@ export default class MALCardFactory {
 			}
 
 			for (const season of entry) {
-				const sequelType = SeasonDetails.getTypeName(season.type);
+				const sequelType = season.type;
 				if (!sequelType) {
-					console.warn("did not find media_type");
+					console.warn("did not find sequel type");
+					continue;
+				}
+				if (sequelType !== "anime") {
+					continue;
+				}
+				const malId = season.mal_id;
+				if (!malId) {
+					console.warn("did not find mal_id");
 					continue;
 				}
 
-				// TODO: do i want this?
-				if (sequelType !== "movie") {
-					const malId = season.mal_id;
-					if (!malId) {
-						console.warn("did not find mal_id");
-						continue;
-					}
-
-					return malId;
-				}
+				return malId;
 			}
 		}
 

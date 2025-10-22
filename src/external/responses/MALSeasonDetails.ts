@@ -22,5 +22,11 @@ export class MALSeasonDetails implements IResponseData {
 
 interface SeasonRelation {
 	relation?: string;
-	entry?: MALSeasonDetails[];
+	entry?: MALSeasonRelationEntry[];
+}
+
+interface MALSeasonRelationEntry {
+	mal_id?: number;
+	name?: number;
+	type?: "anime" | "manga" | "novel";
 }
