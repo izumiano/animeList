@@ -11,10 +11,17 @@ import { newExternalLink } from "../../models/externalLink";
 import AnimeCardFactory from "../../external/factories/animeCardFactory";
 import AppData from "../../appData";
 import BadResponse from "../../external/responses/badResponse";
-import { allSuccess, showError, sleepFor } from "../../utils/utils";
+import {
+	allSuccess,
+	downloadObjectAsFile,
+	formatDate,
+	showError,
+	sleepFor,
+} from "../../utils/utils";
 import LocalDB from "../../indexedDb/indexedDb";
 import ExternalSync from "../../external/externalSync";
 import fileUploadIcon from "../../assets/fileUpload.png";
+import fileDownloadIcon from "../../assets/fileDownload.png";
 import "./addAnimeNode.css";
 
 type SearchResultsType = SeasonDetails[] | "loading";
@@ -94,7 +101,7 @@ export default function AddAnimeNode({
 						});
 					}}
 				></input>
-				<label className="customFileInput">
+				<label className="fileButton">
 					<input
 						type="file"
 						onChange={(event) => {
@@ -105,8 +112,21 @@ export default function AddAnimeNode({
 					/>
 					<img src={fileUploadIcon}></img>
 				</label>
+				<div
+					className="fileButton"
+					onClick={() => {
+						downloadObjectAsFile({
+							fileName: `animeListData_${formatDate(new Date(), "yyyy-MM-dd", "")}.json`,
+							data: Array.from(AppData.animes.values()),
+							mimeType: "application/json",
+							excludeKeys: ["anime", "pauseAutoSave", "justAdded"],
+							jsonSpace: "	", // tab character
+						});
+					}}
+				>
+					<img src={fileDownloadIcon} />
+				</div>
 			</div>
-
 			<div>
 				<SearchResults
 					searchResults={searchResults}
@@ -115,7 +135,6 @@ export default function AddAnimeNode({
 				/>
 				<div className="addButtonSpacer addButtonProps"></div>
 			</div>
-
 			<ProgressButton
 				state={addAnimeProgressState}
 				disabled={selectedAnimeIndex === null}

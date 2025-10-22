@@ -98,23 +98,6 @@ pre {
 	background-color: transparent;
 }
 
-.customFileInput {
-	cursor: pointer;
-}
-
-.customFileInput > * {
-	margin: 0.3rem;
-}
-
-.customFileInput > input {
-	display: none;
-}
-
-.customFileInput > img {
-	width: 3rem;
-	opacity: 0.6;
-}
-
 h1 {
 	font-size: 1.8rem;
 }

@@ -2,15 +2,58 @@
 	position: sticky;
 	top: 0;
 	padding: var(--padding);
-	height: fit-content;
 	background-color: rgb(from var(--colNeutral) r g b / 0.5);
+
+	margin-bottom: 0.8rem;
+}
+
+.fileButton {
+	--buttonSize: 2.5rem;
+	--buttonPadding: 0.6rem;
+
+	cursor: pointer;
+	overflow: hidden;
+
+	background-color: transparent;
+	height: calc(var(--buttonSize) + 2 * var(--buttonPadding));
+
+	border-radius: 100vw;
+	border: 2px solid transparent;
+
+	transition: background-color 0.15s, border 0.15s;
+}
+
+.fileButton:hover {
+	background-color: rgb(from var(--colAccent) r g b / 0.3);
+	border: 2px solid var(--colAccent);
+}
+
+.fileButton:focus,
+.fileButton:focus-visible {
+	border: 2px solid var(--colAccent);
+}
+
+.fileButton:active {
+	filter: brightness(0.8);
+}
+
+.fileButton > * {
+	padding: var(--buttonPadding);
+}
+
+label.fileButton > input {
+	display: none;
+}
+
+.fileButton > img {
+	width: var(--buttonSize);
+	opacity: 0.6;
 }
 
 .addAnimeSearch {
 	flex: 1 1 auto;
 	text-align: center;
 	font-size: 1rem;
-	margin-bottom: 0.8rem;
 }
 
 .addButtonProps {
