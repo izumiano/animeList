@@ -1,3 +1,4 @@
+import { SeasonDetails } from "../external/responses/SeasonDetails";
 import LocalDB from "../indexedDb/indexedDb";
 import AnimeEpisode from "./animeEpisode";
 import AnimeSeason from "./animeSeason";
@@ -138,6 +139,7 @@ export default class Anime {
 				),
 			);
 
+		let minSeasonNumber = 1;
 		newSeasons = newSeasons
 			.sort((lhs, rhs) => {
 				if (lhs.seasonNumber < rhs.seasonNumber) {
@@ -145,17 +147,30 @@ export default class Anime {
 				}
 				return 1;
 			})
-			.map(
-				(season, index) =>
-					new AnimeSeason({
-						...season,
-						...{
-							seasonNumber: index + atIndex + 1,
-							animeDbId: this.getAnimeDbId(),
-							anime: this,
-						},
-					}),
-			);
+			.map((season, index) => {
+				let seasonTitle = season.title;
+				const inferredSeasonNumberInfo =
+					SeasonDetails.getInferredSeasonNumberInfo({
+						title: season.title,
+						animeTitle: this.title,
+						minSeasonNumber: minSeasonNumber,
+					});
+				const inferredSeasonNumber = inferredSeasonNumberInfo.seasonNumber;
+
+				if (inferredSeasonNumber != null) {
+					minSeasonNumber = inferredSeasonNumber;
+				}
+				seasonTitle = inferredSeasonNumberInfo.title ?? seasonTitle;
+				return new AnimeSeason({
+					...season,
+					...{
+						title: seasonTitle,
+						seasonNumber: index + atIndex + 1,
+						animeDbId: this.getAnimeDbId(),
+						anime: this,
+					},
+				});
+			});
 
 		this.runWithoutUpdatingDb(() => {
 			this.seasons.splice(atIndex, 0, ...newSeasons);

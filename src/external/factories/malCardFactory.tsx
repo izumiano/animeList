@@ -56,6 +56,7 @@ export default class MALCardFactory {
 					seasonsData: seasonsData,
 					order: order,
 					id: id,
+					isGettingSequels: getSequels,
 					addProgress: addProgress,
 					addMaxProgress: addMaxProgress,
 				});
@@ -67,12 +68,14 @@ export default class MALCardFactory {
 		seasonsData,
 		order,
 		id,
+		isGettingSequels,
 		addProgress,
 		addMaxProgress,
 	}: {
 		seasonsData: MALSeasonDetails[];
 		order: number;
 		id: number;
+		isGettingSequels: boolean;
 		addProgress: () => void;
 		addMaxProgress: (count: number) => void;
 	}) {
@@ -81,16 +84,27 @@ export default class MALCardFactory {
 			return new BadResponse(`${id} has no seasons`);
 		}
 
-		const title = SeasonDetails.getTitle({
+		const animeTitle = SeasonDetails.getTitle({
 			title_english: seasonOne.title_english,
 			title: seasonOne.title,
 		});
+
+		if (!animeTitle) {
+			return new BadResponse(
+				(
+					<span>
+						Missing title for id <b>{id}</b>
+					</span>
+				),
+			);
+		}
 
 		const imageLink = seasonOne.images?.jpg?.large_image_url;
 
 		addMaxProgress(seasonsData.length);
 
 		const seasons = [];
+		let minSeasonNumber = 1;
 		for (const [index, seasonData] of seasonsData.entries()) {
 			const seasonId = seasonData.mal_id;
 			if (!seasonId) {
@@ -141,8 +155,29 @@ export default class MALCardFactory {
 				);
 			}
 
+			let seasonTitle: string | undefined | null = SeasonDetails.getTitle({
+				title: seasonData.title,
+				title_english: seasonData.title_english,
+			});
+			if (isGettingSequels) {
+				const inferredSeasonNumberInfo =
+					SeasonDetails.getInferredSeasonNumberInfo({
+						title: seasonTitle,
+						animeTitle: animeTitle,
+						minSeasonNumber: minSeasonNumber,
+					});
+				const inferredSeasonNumber = inferredSeasonNumberInfo.seasonNumber;
+
+				if (inferredSeasonNumber != null) {
+					minSeasonNumber = inferredSeasonNumber;
+				}
+
+				seasonTitle = inferredSeasonNumberInfo.title;
+			}
+
 			seasons.push(
 				new AnimeSeason({
+					title: seasonTitle,
 					seasonNumber: index + 1,
 					episodes: episodes,
 					watched: false,
@@ -158,18 +193,8 @@ export default class MALCardFactory {
 
 		addProgress();
 
-		if (!title) {
-			return new BadResponse(
-				(
-					<span>
-						Missing title for id <b>{id}</b>
-					</span>
-				),
-			);
-		}
-
 		const animeToSave: Anime = new Anime({
-			title: title,
+			title: animeTitle,
 			seasons: seasons,
 			watched: false,
 			imageLink: imageLink,

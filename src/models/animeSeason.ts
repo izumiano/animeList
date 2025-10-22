@@ -20,7 +20,7 @@ export default class AnimeSeason {
 
 	constructor(params: {
 		animeDbId?: string;
-		title?: string;
+		title?: string | null;
 		episodes: AnimeEpisode[];
 		watched: boolean;
 		seasonNumber: number;

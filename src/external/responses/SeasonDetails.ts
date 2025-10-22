@@ -75,6 +75,58 @@ export class SeasonDetails {
 		return title;
 	}
 
+	public static getInferredSeasonNumberInfo({
+		title,
+		animeTitle,
+		minSeasonNumber,
+	}: {
+		title: string | undefined;
+		animeTitle: string;
+		minSeasonNumber: number;
+	}) {
+		if (!title) return { title: null };
+
+		title = title.replaceAll(new RegExp(`${animeTitle}[:]?`, "g"), "").trim();
+		const titleRemovedSeason = title.replaceAll(/\bseason\b/gi, "").trim();
+
+		let titleStart = "";
+
+		for (const char of titleRemovedSeason) {
+			if (isNaN(parseInt(char))) {
+				break;
+			}
+			titleStart += char;
+		}
+
+		let seasonNumber = parseInt(titleRemovedSeason === "" ? "0" : titleStart);
+		if (isNaN(seasonNumber)) {
+			const regexRes =
+				/\bseason\s+(?<seasonPrefix>\d+)|(?<seasonPrefix>\d+)(?:st|nd|rd|th)\s+season/gi.exec(
+					title,
+				);
+			let seasonPrefix = regexRes?.groups?.seasonPrefix;
+			seasonNumber = parseInt(seasonPrefix ?? "");
+			if (!seasonPrefix) {
+				const regexRes = /(?<seasonPrefix>\b\w+\b)\s+season/gi.exec(title);
+				seasonPrefix = regexRes?.groups?.seasonPrefix;
+				seasonNumber = parseInt(seasonPrefix ?? "");
+
+				if (!seasonPrefix) {
+					return { title: title };
+				}
+			}
+			if (isNaN(seasonNumber)) {
+				return { title: `${seasonPrefix} Season` };
+			}
+		}
+
+		seasonNumber = Math.max(seasonNumber, minSeasonNumber);
+		return {
+			title: `Season ${seasonNumber}`,
+			seasonNumber: seasonNumber,
+		};
+	}
+
 	public static create(
 		malSeasonDetails: Omit<MALSeasonDetailsRequireId, "statusCode">,
 	) {
