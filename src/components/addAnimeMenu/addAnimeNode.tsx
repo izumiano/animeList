@@ -14,7 +14,7 @@ import BadResponse from "../../external/responses/badResponse";
 import { allSuccess, showError, sleepFor } from "../../utils/utils";
 import LocalDB from "../../indexedDb/indexedDb";
 import ExternalSync from "../../external/externalSync";
-import fileIcon from "../../assets/file.png";
+import fileUploadIcon from "../../assets/fileUpload.png";
 import "./addAnimeNode.css";
 
 type SearchResultsType = SeasonDetails[] | "loading";
@@ -103,7 +103,7 @@ export default function AddAnimeNode({
 							);
 						}}
 					/>
-					<img src={fileIcon}></img>
+					<img src={fileUploadIcon}></img>
 				</label>
 			</div>
 
