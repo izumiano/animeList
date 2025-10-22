@@ -101,10 +101,11 @@ export class SeasonDetails {
 		let seasonNumber = parseInt(titleRemovedSeason === "" ? "0" : titleStart);
 		if (isNaN(seasonNumber)) {
 			const regexRes =
-				/\bseason\s+(?<seasonPrefix>\d+)|(?<seasonPrefix>\d+)(?:st|nd|rd|th)\s+season/gi.exec(
+				/\bseason\s+(?<seasonPrefix1>\d+)|(?<seasonPrefix2>\d+)(?:st|nd|rd|th)\s+season/gi.exec(
 					title,
 				);
-			let seasonPrefix = regexRes?.groups?.seasonPrefix;
+			let seasonPrefix =
+				regexRes?.groups?.seasonPrefix1 ?? regexRes?.groups?.seasonPrefix2;
 			seasonNumber = parseInt(seasonPrefix ?? "");
 			if (!seasonPrefix) {
 				const regexRes = /(?<seasonPrefix>\b\w+\b)\s+season/gi.exec(title);
