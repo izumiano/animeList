@@ -4,6 +4,7 @@ import BadResponse from "../responses/badResponse";
 import MALSearchResponse from "../responses/MALSearchResponse";
 import { MALSeasonDetails } from "../responses/MALSeasonDetails";
 import MALSeasonResponse from "../responses/MALSeasonResponse";
+import { SeasonDetails } from "../responses/SeasonDetails";
 
 export default class MALSearch {
 	public static async GetResults(
@@ -116,13 +117,19 @@ export default class MALSearch {
 
 	public static async GetAnimeDataRetry(id: number) {
 		try {
-			return (await WebUtil.fetch(
+			const response = (await WebUtil.fetch(
 				`https://api.jikan.moe/v4/anime/${id}/full`,
 				"GET",
 				{
 					errorHandler: new JikanErrorHandler("Failed getting anime data"),
 				},
 			)) as MALSeasonResponse | BadResponse;
+
+			if (!(response instanceof BadResponse) && response.data) {
+				response.data.type = SeasonDetails.getTypeName(response.data.type);
+			}
+
+			return response;
 		} catch (ex) {
 			if (ex instanceof BadResponse) {
 				return ex;

@@ -42,13 +42,6 @@ export class SeasonDetails {
 		this.airedDate = params.started_date;
 
 		this.externalLink = params.externalLink;
-		// if (params.id && params.externalLinkType) {
-		//   this.externalLink = new ExternalLink({
-		//     id: params.id,
-		//     animeDbId: "",
-		//     type: params.externalLinkType,
-		//   });
-		// }
 	}
 
 	public static getTypeName(
