@@ -138,6 +138,7 @@ export default class AnimeSeason {
 						seasonNumber: index + atIndex + 1,
 						animeDbId: this.anime?.getAnimeDbId(),
 						anime: this,
+						seasonInfo: { season: this, animeTitle: this.anime?.title },
 					},
 				});
 			});
