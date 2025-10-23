@@ -2,7 +2,7 @@ import "./App.css";
 import Anime from "./models/anime";
 import LocalDB from "./indexedDb/indexedDb";
 import { useEffect, useRef, useState } from "react";
-import AppData from "./appData";
+import AppData, { devUtils } from "./appData";
 import AddAnimeMenu from "./components/addAnimeMenu/addAnimeMenu";
 import MainPage from "./components/mainPage";
 import DetailsPage from "./components/detailsPage/detailsPage";
@@ -49,20 +49,13 @@ function Home({ startPage }: { startPage?: Page }) {
 		setAnimesState(new Map(AppData.animes));
 	}
 
-	// Delete all animes
-	// LocalDB.Instance?.doTransaction(
-	//   (store) => {
-	//     return Array.from(AppData.animes.values()).map((anime) => {
-	//       return store.delete(anime.getAnimeDbId());
-	//     });
-	//   },
-	//   { onError: () => toast.error("Failed deleting all") }
-	// );
-
 	useEffect(() => {
 		(async () => {
 			const db = await LocalDB.Create();
-			loadAnimes(db, setAnimesState);
+			const animes = await loadAnimes(db, setAnimesState);
+
+			devUtils?.deleteAllAnimes(animes, setAnimesState);
+			devUtils?.setAnimesToTestState(animes, setAnimesState);
 		})();
 	}, []);
 
@@ -150,6 +143,7 @@ async function loadAnimes(
 	});
 
 	setAnimesState(animes);
+	return animes;
 }
 
 export default Home;
