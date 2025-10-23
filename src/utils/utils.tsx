@@ -42,7 +42,9 @@ export function dvwToPx(dvwValue: number) {
 }
 
 function _parseError(ex: unknown, params?: { showDetails?: boolean }) {
-	if (typeof ex === "string") {
+	if (ex == null) {
+		return null;
+	} else if (typeof ex === "string") {
 		return ex;
 	} else if (ex instanceof BadResponse) {
 		if (!params?.showDetails) {
