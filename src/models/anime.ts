@@ -108,9 +108,9 @@ export default class Anime {
 		}
 	}
 
-	public runWithoutUpdatingDb(action: () => void) {
+	public runWithoutUpdatingDb(action: (anime: Anime) => void) {
 		this.pauseAutoSave = true;
-		action();
+		action(this);
 		this.pauseAutoSave = false;
 	}
 
@@ -127,10 +127,12 @@ export default class Anime {
 		return this.seasons.at(0);
 	}
 
-	public addSeasons(
-		newSeasons: AnimeSeason[],
-		{ atIndex }: { atIndex: number },
-	) {
+	public addSeasons(newSeasons: AnimeSeason[], params?: { atIndex?: number }) {
+		if (newSeasons.length === 0) return;
+
+		params ??= {};
+		const atIndex = params.atIndex ?? this.seasons.length;
+
 		this.seasons
 			.filter((season) => season.seasonNumber > atIndex)
 			.forEach((season) =>

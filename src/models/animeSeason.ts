@@ -107,6 +107,56 @@ export default class AnimeSeason {
 		return true;
 	}
 
+	public addEpisodes(
+		newEpisodes: AnimeEpisode[],
+		params?: { atIndex?: number },
+	) {
+		if (newEpisodes.length === 0) return;
+
+		params ??= {};
+		const atIndex = params.atIndex ?? this.episodes.length;
+
+		this.episodes
+			.filter((episode) => episode.episodeNumber > atIndex)
+			.forEach((episode) =>
+				episode.runWithoutUpdatingDb(
+					() => (episode.episodeNumber += newEpisodes.length),
+				),
+			);
+
+		newEpisodes = newEpisodes
+			.sort((lhs, rhs) => {
+				if (lhs.episodeNumber < rhs.episodeNumber) {
+					return -1;
+				}
+				return 1;
+			})
+			.map((season, index) => {
+				return new AnimeEpisode({
+					...season,
+					...{
+						seasonNumber: index + atIndex + 1,
+						animeDbId: this.anime?.getAnimeDbId(),
+						anime: this,
+					},
+				});
+			});
+
+		this.runWithoutUpdatingDb(() => {
+			this.episodes.splice(atIndex, 0, ...newEpisodes);
+			this.episodes = [...this.episodes];
+			this.watched = false;
+			this.dateFinished = null;
+
+			this.anime?.runWithoutUpdatingDb((anime) => {
+				anime.dateFinished = null;
+				anime.watched = false;
+			});
+		});
+
+		this.anime?.saveToDb();
+	}
+
 	public updateDate() {
 		const watchedEpisodes = this.episodes.filter(
 			(episode) => episode.watched,

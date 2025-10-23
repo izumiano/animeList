@@ -1,0 +1,34 @@
+@property --refreshRotation {
+	syntax: "<angle>";
+	inherits: false;
+	initial-value: 0deg;
+}
+
+.refreshImg {
+	--refreshRotation: 0deg;
+	transform: rotate(var(--refreshRotation));
+	transform-origin: 50.05% 50.15%;
+}
+
+.refreshImg.refreshing {
+	animation: refreshingAnim 1s infinite forwards linear;
+}
+
+.refreshImg:not(.refreshing) {
+	--refreshRotation: 360deg;
+	animation-play-state: paused;
+	animation: none;
+
+	transition: transform 0.8s ease-out !important;
+	-webkit-transition: --refreshRotation 0.8s ease-out !important;
+	-moz-transition: transform 0.8s ease-out !important;
+
+	transform: rotate(var(--refreshRotation));
+	-moz-transform: rotate(360deg);
+}
+
+@keyframes refreshingAnim {
+	to {
+		--refreshRotation: 360deg;
+	}
+}

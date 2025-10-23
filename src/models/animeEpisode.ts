@@ -7,6 +7,8 @@ export default class AnimeEpisode {
 	episodeNumber: number;
 	watched: boolean;
 
+	pauseAutoSave = false;
+
 	constructor({
 		animeDbId,
 		title,
@@ -32,27 +34,36 @@ export default class AnimeEpisode {
 					value: any,
 				) {
 					if (target[property] !== value) {
-						console.debug(
-							`AnimeEpisode Property in '${title}' '${property}' changed from'`,
-							target[property],
-							"to",
-							value,
-						);
 						Reflect.set(target, property, value);
-						AppData.animes.get(animeDbId!)?.saveToDb();
 
-						if (property === "watched" && seasonInfo) {
-							seasonInfo.season.updateDate();
-							ExternalSync.updateAnimeSeasonStatus(
-								seasonInfo.season,
-								seasonInfo.animeTitle,
+						if (!target.pauseAutoSave && property !== "pauseAutoSave") {
+							console.debug(
+								`AnimeEpisode Property in '${title}' '${property}' changed from'`,
+								target[property],
+								"to",
+								value,
 							);
+							AppData.animes.get(animeDbId!)?.saveToDb();
+
+							if (property === "watched" && seasonInfo) {
+								seasonInfo.season.updateDate();
+								ExternalSync.updateAnimeSeasonStatus(
+									seasonInfo.season,
+									seasonInfo.animeTitle,
+								);
+							}
 						}
 					}
 					return true;
 				},
 			});
 		}
+	}
+
+	public runWithoutUpdatingDb(action: () => void) {
+		this.pauseAutoSave = true;
+		action();
+		this.pauseAutoSave = false;
 	}
 
 	toIndexedDBObj() {

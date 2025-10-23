@@ -18,6 +18,7 @@ import {
 	removeDiacritics,
 	removeNonAlphanumeric,
 	remToPx,
+	showError,
 	waitForNextFrame,
 } from "../../utils/utils";
 import Dropdown from "../generic/dropdown";
@@ -27,6 +28,10 @@ import { getUrlFromExternalLink } from "../../models/externalLink";
 import ExternalSync from "../../external/externalSync";
 import type { Page } from "../../Home";
 import AddAnimeNode from "../addAnimeMenu/addAnimeNode";
+import AnimeCardFactory from "../../external/factories/animeCardFactory";
+import BadResponse from "../../external/responses/badResponse";
+import { toast } from "react-toastify";
+import RefreshButton from "../generic/progress/refreshButton";
 
 const isOnScreenTolerance = remToPx(17);
 
@@ -299,47 +304,122 @@ const AnimeCard = ({
 									/>
 								)}
 							</Dropdown>
-							{index != null ? (
-								<Dropdown
-									dropdownButton={<img src={minusIcon}></img>}
-									buttonClass="circleButton"
-									className="verticalCenter"
-									alignment="center"
-									listRef={listRef}
-									scrollElementRef={scrollElementRef}
-								>
-									{({ closeDropdown }) => (
-										<ConfirmationDropdown
-											title="Really delete this season?"
-											confirmMessage="Delete"
-											confirmClass="deleteConfirm"
-											dismissMessage="Keep"
-											closeDropdown={closeDropdown}
-											onConfirm={() => {
-												if (!selectedSeason) return;
-
-												ExternalSync.deleteAnimeSeason(
-													selectedSeason,
-													anime.title,
-												);
-
-												anime.removeSeasonAtIndex(index);
-												setSeasonsState(anime.seasons);
-												setWatchedState(anime.watched);
-
-												if (anime.seasons.length > 0) {
-													const newIndex = index > 0 ? index - 1 : 0;
-													setIndex(newIndex);
-													setSelectedSeasonWatchedState(
-														anime.seasons.at(newIndex)?.watched ?? false,
+							{index != null && selectedSeason != null ? (
+								<>
+									<Dropdown
+										dropdownButton={<img src={minusIcon}></img>}
+										buttonClass="circleButton"
+										className="verticalCenter"
+										alignment="center"
+										listRef={listRef}
+										scrollElementRef={scrollElementRef}
+									>
+										{({ closeDropdown }) => (
+											<ConfirmationDropdown
+												title="Really delete this season?"
+												confirmMessage="Delete"
+												confirmClass="deleteConfirm"
+												dismissMessage="Keep"
+												closeDropdown={closeDropdown}
+												onConfirm={() => {
+													ExternalSync.deleteAnimeSeason(
+														selectedSeason,
+														anime.title,
 													);
-												} else {
-													setIndex(undefined);
-												}
-											}}
-										/>
-									)}
-								</Dropdown>
+
+													anime.removeSeasonAtIndex(index);
+													setSeasonsState(anime.seasons);
+													setWatchedState(anime.watched);
+
+													if (anime.seasons.length > 0) {
+														const newIndex = index > 0 ? index - 1 : 0;
+														setIndex(newIndex);
+														setSelectedSeasonWatchedState(
+															anime.seasons.at(newIndex)?.watched ?? false,
+														);
+													} else {
+														setIndex(undefined);
+													}
+												}}
+											/>
+										)}
+									</Dropdown>
+
+									<RefreshButton
+										className="circleButton refreshButton"
+										onClick={async () => {
+											const response = AnimeCardFactory.create({
+												animeExternalLink: selectedSeason.externalLink,
+												order: 0,
+												getSequels: false,
+											});
+											const onError = (error?: Error | null | undefined) => {
+												showError(
+													error,
+													<span>
+														Failed getting season info for{" "}
+														<b>
+															{anime.title} <i>{selectedSeason.title}</i>
+														</b>
+													</span>,
+												);
+											};
+											if (response instanceof BadResponse) {
+												onError(response);
+												return;
+											}
+
+											const seasonData = await response.start();
+											if (!seasonData || seasonData instanceof Error) {
+												onError(seasonData);
+												return;
+											}
+
+											const episodesData = seasonData.seasons
+												.at(0)
+												?.episodes.filter(
+													(episode) =>
+														episode.episodeNumber >=
+														selectedSeason!.episodes.length,
+												);
+											if (episodesData == null) {
+												onError();
+												return;
+											}
+
+											if (episodesData.length === 0) {
+												toast.info(
+													<span>
+														<b>
+															{anime.title} <i>{selectedSeason.title}</i>
+														</b>{" "}
+														is already up to date
+													</span>,
+												);
+												return;
+											}
+
+											selectedSeason.addEpisodes(episodesData);
+
+											toast.info(
+												<span>
+													Added{" "}
+													<b>
+														<i>{episodesData.length}</i>
+													</b>{" "}
+													episodes to{" "}
+													<b>
+														{anime.title} <i>{selectedSeason.title}</i>
+													</b>
+												</span>,
+											);
+
+											setSeasonsState([...anime.seasons]);
+											setSelectedSeasonWatchedState(selectedSeason.watched);
+											setWatchedState(anime.watched);
+										}}
+									/>
+								</>
 							) : null}
 						</div>
 						{selectedSeason ? (
