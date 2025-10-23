@@ -95,7 +95,7 @@ const ProgressNode = ({
 					></img>
 				</div>
 			}
-			buttonClass="transparentBackground smallPadding invisibleDisable"
+			buttonClass="transparentBackground noPadding invisibleDisable"
 			buttonProps={{ disabled: isFinished }}
 			alignment={alignment}
 		>

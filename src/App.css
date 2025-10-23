@@ -182,6 +182,10 @@ hr {
 	padding: var(--smallPadding);
 }
 
+.noPadding {
+	padding: 0;
+}
+
 .largeMargin {
 	margin: var(--largeMargin);
 }

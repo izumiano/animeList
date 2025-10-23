@@ -231,13 +231,17 @@ const InternalDetailsPage = ({ anime }: { anime: Anime }) => {
 								/>
 							) : null}
 						</div>
-						<ProgressNode size="3.2rem" alignment="right" />
+						<ProgressNode
+							size="3.2rem"
+							alignment="right"
+							className="detailedAnimeCardProgress"
+						/>
 					</div>
 					<ExpandableText
 						isExpanded={isExpanded}
 						setIsExpandedState={setIsExpandedState}
 						text={description}
-						maxLines={5}
+						maxLines={4}
 						className="animeSummary"
 					/>
 				</div>

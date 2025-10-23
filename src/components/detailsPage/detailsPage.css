@@ -22,11 +22,16 @@
 }
 
 .detailedCard {
-	min-height: var(--cardHeight);
+	--detailedCardHeight: calc(var(--cardHeight) * 0.8);
+	min-height: var(--detailedCardHeight);
+}
+
+.detailedCard > * > .animeImage {
+	max-height: calc(var(--cardHeight) * 0.8)
 }
 
 .detailedCardInfo {
-	max-height: calc(var(--cardHeight));
+	max-height: calc(var(--cardHeight) * 0.9);
 	transition: max-height 1s;
 }
 
