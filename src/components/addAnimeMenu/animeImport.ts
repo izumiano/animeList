@@ -28,20 +28,29 @@ export function importAnimes(
 			LocalDB.doTransaction((store, db) => {
 				animes.forEach((anime, index) => {
 					anime.order = index;
-					anime.dateStarted = thirdMilleniumSecondsToUnixMilli(
-						anime.dateStarted,
-					);
-					anime.dateFinished = thirdMilleniumSecondsToUnixMilli(
-						anime.dateFinished,
-					);
+
+					if (typeof anime.dateStarted === "number") {
+						anime.dateStarted = thirdMilleniumSecondsToUnixMilli(
+							anime.dateStarted,
+						);
+					}
+					if (typeof anime.dateStarted === "number") {
+						anime.dateFinished = thirdMilleniumSecondsToUnixMilli(
+							anime.dateFinished,
+						);
+					}
 
 					anime.seasons.forEach((season: any) => {
-						season.dateStarted = thirdMilleniumSecondsToUnixMilli(
-							season.dateStarted,
-						);
-						season.dateFinished = thirdMilleniumSecondsToUnixMilli(
-							season.dateFinished,
-						);
+						if (typeof season.dateStarted === "number") {
+							season.dateStarted = thirdMilleniumSecondsToUnixMilli(
+								season.dateStarted,
+							);
+						}
+						if (typeof anime.dateStarted === "number") {
+							season.dateFinished = thirdMilleniumSecondsToUnixMilli(
+								season.dateFinished,
+							);
+						}
 						if (season.externalLink.type === "TMDB") {
 							season.externalLink.seasonId = season.externalLink?.id;
 							season.externalLink.id = anime.externalLink?.id;
