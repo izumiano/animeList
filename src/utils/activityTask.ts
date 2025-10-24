@@ -11,7 +11,19 @@ type ActivityTaskObserver = (args: {
 	isDeletion: boolean;
 }) => void;
 
-export function pushTask<T>(task: ActivityTask<T>) {
+export function pushTask<T>(
+	task: ActivityTask<T> | { label: ReactNode; value: T },
+) {
+	if (!(task instanceof ActivityTask)) {
+		const obj = task;
+		task = new ActivityTask({
+			label: task.label,
+			task: async () => {
+				return obj.value;
+			},
+		});
+	}
+
 	taskQueue.set(task.id, task);
 	return task.start();
 }

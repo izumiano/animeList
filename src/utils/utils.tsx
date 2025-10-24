@@ -3,6 +3,7 @@ import BadResponse from "../external/responses/badResponse";
 import "../App.css";
 import type { CSSProperties, ReactNode } from "react";
 import { v4 as uuid } from "uuid";
+import { pushTask } from "./activityTask";
 
 export async function sleepFor(
 	milliseconds: number,
@@ -104,8 +105,17 @@ export function parseError(
 	);
 }
 
-export function showError(ex: unknown, title?: ReactNode) {
+export function showError(
+	ex: unknown,
+	title?: ReactNode,
+	params?: { showInProgressNode?: boolean },
+) {
 	toast.error(parseError(ex, { title: title }));
+
+	const showInProgressNode = params?.showInProgressNode ?? false;
+	if (showInProgressNode) {
+		pushTask({ label: title, value: ex });
+	}
 }
 
 export type MinMaxType =
