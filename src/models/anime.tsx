@@ -520,7 +520,7 @@ function validate(
 									{season.episodes.map((episode) => (
 										<Fragment key={uuid()}>
 											<b>Episode: {episode.title}</b>
-											<div className="indent">
+											<div className="indent flexColumn">
 												{episode.errors.map((error) => (
 													<Fragment key={uuid()}>{error}</Fragment>
 												))}
