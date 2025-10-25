@@ -12,15 +12,14 @@ type ActivityTaskObserver = (args: {
 }) => void;
 
 export function pushTask<T>(
-	task: ActivityTask<T> | { label: ReactNode; value: T },
+	task: ActivityTask<T> | { label: ReactNode; value: T; isError?: boolean },
 ) {
 	if (!(task instanceof ActivityTask)) {
 		const obj = task;
 		task = new ActivityTask({
 			label: task.label,
-			task: async () => {
-				return obj.value;
-			},
+			value: obj.value,
+			failed: obj.isError,
 		});
 	}
 
@@ -61,7 +60,7 @@ export default class ActivityTask<T> {
 	label: ReactNode;
 	progress = 0;
 	maxProgress: number;
-	task: ActivityTaskType<T>;
+	task?: ActivityTaskType<T>;
 
 	result: { value: ActivityTaskReturnType<T>; failed: boolean } | undefined;
 
@@ -71,15 +70,23 @@ export default class ActivityTask<T> {
 		| ((params: { progress: number; maxProgress: number }) => void)
 		| undefined;
 
-	constructor(params: {
-		label: ReactNode;
-		maxProgress?: number;
-		task: ActivityTaskType<T>;
-	}) {
+	constructor(
+		params: {
+			label: ReactNode;
+			maxProgress?: number;
+		} & (
+			| { task: ActivityTaskType<T> }
+			| { value: ActivityTaskReturnType<T>; failed?: boolean; task?: undefined }
+		),
+	) {
 		this.id = uuid() as UUIDType;
 		this.label = params.label;
 		this.maxProgress = params.maxProgress ?? 1;
 		this.task = params.task;
+
+		if (!params.task) {
+			this.result = { value: params.value, failed: !!params.failed };
+		}
 	}
 
 	private _onProgressUpdate(params: { progress: number; maxProgress: number }) {
@@ -91,7 +98,7 @@ export default class ActivityTask<T> {
 	}
 
 	public async start() {
-		if (this.started) return;
+		if (this.started) return this.result?.value;
 		this.started = true;
 
 		if (taskQueue.has(this.id)) {
@@ -103,10 +110,14 @@ export default class ActivityTask<T> {
 			maxProgress: this.maxProgress,
 		});
 
+		if (this.result) {
+			return this.result.value;
+		}
+
 		let taskResult;
 		let failed = false;
 		try {
-			taskResult = await this.task({
+			taskResult = await this.task?.call(this, {
 				addProgress: (count) => {
 					this.progress += count ?? 1;
 

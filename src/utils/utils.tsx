@@ -114,7 +114,7 @@ export function showError(
 
 	const showInProgressNode = params?.showInProgressNode ?? false;
 	if (showInProgressNode) {
-		pushTask({ label: title, value: ex });
+		pushTask({ label: title, value: ex, isError: true });
 	}
 }
 
