@@ -298,3 +298,14 @@ hr {
 .cursorPointer {
 	cursor: pointer;
 }
+
+.indentRoot {
+	border-left: rgb(from var(--colNeutral) r g b / 0.3) 2px solid;
+	padding-left: 0.3rem;
+}
+
+.indentRoot .indent {
+	border-left: rgb(from var(--colNeutral) r g b / 0.3) 2px solid;
+	margin-left: 1rem;
+	padding-left: 0.3rem;
+}

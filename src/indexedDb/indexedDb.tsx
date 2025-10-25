@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 import Anime from "../models/anime";
-import { sleepFor } from "../utils/utils";
+import { showError, sleepFor } from "../utils/utils";
 import AppData from "../appData";
 
 const dbName = "animesDB";
@@ -103,7 +103,6 @@ export default class LocalDB {
 		);
 
 		if (!transactionResult) {
-			params?.onError?.call(null, null);
 			return null;
 		}
 
@@ -236,7 +235,13 @@ export default class LocalDB {
 						justAdded: false,
 						autoSave: true,
 					});
-					animes.set(anime.getAnimeDbId(), anime);
+
+					if (anime instanceof Anime) {
+						animes.set(anime.getAnimeDbId(), anime);
+					} else {
+						showError(anime.error, null, { showInProgressNode: true });
+					}
+
 					cursor.continue();
 				} else {
 					animesRet = animes;

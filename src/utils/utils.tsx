@@ -1,7 +1,7 @@
 import { toast } from "react-toastify";
 import BadResponse from "../external/responses/badResponse";
 import "../App.css";
-import type { CSSProperties, ReactNode } from "react";
+import { isValidElement, type CSSProperties, type ReactNode } from "react";
 import { v4 as uuid } from "uuid";
 import { pushTask } from "./activityTask";
 
@@ -78,12 +78,19 @@ function _parseError(ex: unknown, params?: { showDetails?: boolean }) {
 			</>
 		);
 	} else if (Array.isArray(ex)) {
-		return ex.map((ex) => (
-			<span key={uuid()} className="flexGrow">
-				<hr />
-				{_parseError(ex, params)}
+		return (
+			<span className="scroll">
+				{" "}
+				{ex.map((ex) => (
+					<span key={uuid()} className="flexGrow">
+						<hr />
+						{_parseError(ex, params)}
+					</span>
+				))}
 			</span>
-		));
+		);
+	} else if (isValidElement(ex)) {
+		return <span>{ex}</span>;
 	} else {
 		return (
 			<span>

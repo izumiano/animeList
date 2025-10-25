@@ -1,6 +1,6 @@
 import LocalDB from "../../indexedDb/indexedDb";
 import Anime from "../../models/anime";
-import { showError } from "../../utils/utils";
+import { showError, sleepFor } from "../../utils/utils";
 
 export function importAnimes(
 	files: FileList | null,
@@ -11,6 +11,16 @@ export function importAnimes(
 	}
 
 	const animes: any[] = [];
+
+	function handleError(ex: unknown) {
+		showError(
+			ex,
+			<span>
+				<b>Failed importing data</b>
+			</span>,
+			{ showInProgressNode: true },
+		);
+	}
 
 	new Promise((resolve, reject) => {
 		(async () => {
@@ -33,7 +43,7 @@ export function importAnimes(
 
 			LocalDB.doTransaction(
 				(store, db) => {
-					animes.forEach((anime, index) => {
+					const t = animes.map(async (anime, index) => {
 						anime.order = index;
 
 						if (typeof anime.dateStarted === "number") {
@@ -47,7 +57,7 @@ export function importAnimes(
 							);
 						}
 
-						anime.seasons.forEach((season: any) => {
+						anime.seasons?.forEach((season: any) => {
 							if (typeof season.dateStarted === "number") {
 								season.dateStarted = thirdMilleniumSecondsToUnixMilli(
 									season.dateStarted,
@@ -67,10 +77,39 @@ export function importAnimes(
 							animeData: anime,
 							justAdded: false,
 						});
-						db.saveAnime(newAnime, store).onsuccess = () => {
+						if (!(newAnime instanceof Anime)) {
+							return { isError: true, value: newAnime.error };
+						}
+
+						let ret: undefined | "done" | Event;
+
+						const request = db.saveAnime(newAnime, store);
+						request.onsuccess = () => {
 							onAnimeSaved(newAnime);
+							ret = "done";
 						};
+						request.onerror = (ex) => {
+							ret = ex;
+						};
+
+						while (!ret) {
+							await sleepFor(20);
+						}
+
+						return { isError: false, value: ret };
 					});
+
+					Promise.all(t)
+						.then((values) => {
+							const errors = values
+								.filter((value) => value.isError)
+								.map((value) => value.value);
+
+							if (errors.length > 0) {
+								handleError(errors);
+							}
+						})
+						.catch(handleError);
 
 					return null;
 				},
@@ -78,15 +117,7 @@ export function importAnimes(
 			);
 			resolve(null);
 		})();
-	}).catch((ex) => {
-		showError(
-			ex,
-			<span>
-				<b>Failed importing data</b>
-			</span>,
-			{ showInProgressNode: true },
-		);
-	});
+	}).catch(handleError);
 }
 
 function thirdMilleniumSecondsToUnixMilli(

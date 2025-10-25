@@ -1,3 +1,4 @@
+import { Fragment, type ReactNode } from "react";
 import { SeasonDetails } from "../external/responses/SeasonDetails";
 import LocalDB from "../indexedDb/indexedDb";
 import AnimeEpisode from "./animeEpisode";
@@ -7,6 +8,7 @@ import {
 	newExternalLink,
 	type ExternalLink,
 } from "./externalLink";
+import { v4 as uuid } from "uuid";
 
 export const MediaTypeValues = [
 	"tv",
@@ -230,6 +232,12 @@ export default class Anime {
 		justAdded: boolean;
 		autoSave?: boolean;
 	}) {
+		const validatationResult = validate(animeData);
+
+		if (!validatationResult.valid) {
+			return validatationResult;
+		}
+
 		const seasons: AnimeSeason[] = [];
 		const animeDbId = autoSave
 			? this.getAnimeDbId(animeData.externalLink, animeData.title)
@@ -346,4 +354,187 @@ export default class Anime {
 		this.watched = true;
 		return true;
 	}
+}
+
+function validate(
+	animeData: any,
+): { valid: true } | { valid: false; error: ReactNode } {
+	const errors: {
+		hasError: boolean;
+		anime: ReactNode[];
+		seasons: {
+			title?: string | number;
+			errors: ReactNode[];
+			episodes: { title?: string | number; errors: ReactNode[] }[];
+		}[];
+	} = {
+		hasError: false,
+		anime: [],
+		seasons: [],
+	};
+
+	let animeTitle = animeData.title as string | undefined;
+	if (!animeData.title) {
+		const externalLink = animeData?.externalLink as ExternalLink | undefined;
+		if (externalLink) {
+			animeTitle = `${externalLink.type}${externalLink.id}`;
+		}
+		errors.hasError = true;
+		errors.anime.push(
+			<span>
+				Missing{" "}
+				<b>
+					<i>"title"</i>
+				</b>{" "}
+			</span>,
+		);
+	}
+
+	if (!animeData.seasons) {
+		errors.hasError = true;
+		errors.anime.push(
+			<span>
+				Missing{" "}
+				<b>
+					<i>"seasons"</i>
+				</b>{" "}
+			</span>,
+		);
+	}
+
+	const seasons = animeData.seasons as Array<any> | undefined;
+	for (const season of seasons ?? []) {
+		const seasonErrors = [];
+		let seasonTitle = season.title as string | number | undefined;
+
+		if (!season.title) {
+			errors.hasError = true;
+			seasonErrors.push(
+				<span>
+					Missing{" "}
+					<b>
+						<i>"title"</i>
+					</b>{" "}
+				</span>,
+			);
+			seasonTitle = season.seasonNumber;
+		}
+
+		if (!season.seasonNumber) {
+			errors.hasError = true;
+			seasonErrors.push(
+				<span>
+					Missing{" "}
+					<b>
+						<i>"seasonNumber"</i>
+					</b>{" "}
+				</span>,
+			);
+
+			const externalLink = animeData.externalLink as ExternalLink;
+			seasonTitle ??= externalLink
+				? `${externalLink.type}${externalLink.id}${externalLink.type === "TMDB" ? `_${externalLink.seasonId}` : ""}`
+				: undefined;
+		}
+
+		const seasonData = {
+			title: seasonTitle,
+			errors: seasonErrors,
+			episodes: [] as { title?: string | number; errors: ReactNode[] }[],
+		};
+
+		if (!season.episodes) {
+			errors.hasError = true;
+			seasonErrors.push(
+				<span>
+					Missing{" "}
+					<b>
+						<i>"episodes"</i>
+					</b>
+				</span>,
+			);
+		}
+
+		const episodes = season.episodes as Array<any> | undefined;
+		for (const episode of episodes ?? []) {
+			const episodeErrors: ReactNode[] = [];
+
+			let episodeTitle = episode.title as string | number | undefined;
+
+			if (!episode.title) {
+				errors.hasError = true;
+				episodeErrors.push(
+					<span>
+						Missing{" "}
+						<b>
+							<i>"title"</i>
+						</b>{" "}
+					</span>,
+				);
+
+				episodeTitle = episode.episodeNumber;
+			}
+
+			if (episode.episodeNumber == null) {
+				errors.hasError = true;
+				episodeErrors.push(
+					<span>
+						Missing{" "}
+						<b>
+							<i>"episodeNumber"</i>
+						</b>{" "}
+					</span>,
+				);
+			}
+
+			if (episodeErrors.length > 0) {
+				seasonData.episodes.push({
+					title: episodeTitle,
+					errors: episodeErrors,
+				});
+			}
+		}
+
+		if (seasonData.errors.length > 0 || seasonData.episodes.length > 0) {
+			errors.seasons.push(seasonData);
+		}
+	}
+
+	if (errors.hasError) {
+		return {
+			valid: false,
+			error: (
+				<span>
+					<b>Anime: {animeTitle}</b>
+					<div className="indentRoot flexColumn">
+						{errors.anime.map((error) => (
+							<Fragment key={uuid()}>{error}</Fragment>
+						))}
+						{errors.seasons.map((season) => (
+							<span key={uuid()} className="flexColumn">
+								<b>Season: {season.title}</b>
+								<div className="indent flexColumn">
+									{season.errors.map((error) => (
+										<Fragment key={uuid()}>{error}</Fragment>
+									))}
+									{season.episodes.map((episode) => (
+										<Fragment key={uuid()}>
+											<b>Episode: {episode.title}</b>
+											<div className="indent">
+												{episode.errors.map((error) => (
+													<Fragment key={uuid()}>{error}</Fragment>
+												))}
+											</div>
+										</Fragment>
+									))}
+								</div>
+							</span>
+						))}
+					</div>
+				</span>
+			),
+		};
+	}
+
+	return { valid: true };
 }
