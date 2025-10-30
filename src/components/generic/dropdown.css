@@ -2,14 +2,20 @@
 	position: relative;
 }
 
+.dropdown.forceStatic {
+	position: relative;
+}
+
 .dropdownMenu {
 	position: absolute;
 	display: flex;
 
-	z-index: 1;
+	z-index: 1000;
 
 	--arrowHeight: 1rem;
 	--maxHeight: 100%;
+
+	translate: 0 calc(var(--offset) * -1);
 }
 
 .dropdownMenu.leftAlign {
@@ -86,8 +92,4 @@
 	width: var(--arrowHeight);
 	clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
 	filter: brightness(0.7);
-}
-
-.test {
-	translate: 0 calc(var(--offset) * -1);
 }

@@ -17,6 +17,7 @@ const Dropdown = ({
 	listRef,
 	scrollElementRef,
 	disableScroll,
+	forceStaticPosition,
 	children,
 }: {
 	dropdownButton: ReactNode;
@@ -31,6 +32,7 @@ const Dropdown = ({
 	listRef?: React.RefObject<HTMLUListElement | null>;
 	scrollElementRef?: React.RefObject<HTMLDivElement | null>;
 	disableScroll?: boolean;
+	forceStaticPosition?: boolean;
 	children?:
 		| ReactNode
 		| ((params: {
@@ -137,6 +139,7 @@ const Dropdown = ({
 	alignment ??= "left";
 	backgroundColor ??= "var(--colNeutral)";
 	disableScroll ??= false;
+	forceStaticPosition ??= false;
 
 	const isOpenClass = isOpen ? "show" : "hide";
 	function setIsOpen(isOpen: boolean) {
@@ -147,7 +150,7 @@ const Dropdown = ({
 	return (
 		<div
 			ref={useOutsideClick(() => setIsOpen(false))}
-			className={`dropdown ${className}`}
+			className={`dropdown ${className} ${forceStaticPosition ? "forceStatic" : ""}`}
 		>
 			{useDefaultButtonStyle ? (
 				<button

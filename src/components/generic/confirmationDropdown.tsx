@@ -19,7 +19,7 @@ const ConfirmationDropdown = ({
 	onConfirm: () => void;
 }) => (
 	<div className="flexColumn largePadding">
-		<span className="smallMargin">{title}</span>
+		<span className="smallMargin centerAlignedText">{title}</span>
 		<div className="equalRowItems thing">
 			<button
 				className={`smallMargin ${confirmClass}`}

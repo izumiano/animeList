@@ -9,6 +9,7 @@ import { externalLinkId } from "../../models/externalLink";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import DatePicker from "../generic/form/datePicker";
+import { useEffect } from "react";
 
 const DetailsPageForm = ({
 	anime,
@@ -22,9 +23,18 @@ const DetailsPageForm = ({
 		? externalLinkId(season.externalLink, season.title)
 		: null;
 
+	useEffect(() => {
+		console.log("now");
+	}, [anime.watched, season?.watched]);
+
 	return (
 		<LocalizationProvider dateAdapter={AdapterDayjs}>
-			<Grid container color={"white"} spacing={2} sx={{ margin: "1rem 3rem" }}>
+			<Grid
+				container
+				color={"white"}
+				spacing={2}
+				sx={{ padding: "0 3rem 3rem 3rem" }}
+			>
 				<Grid size={12}>
 					<h2 className="leftAlignedText smallMargin">-Anime Details-</h2>
 				</Grid>

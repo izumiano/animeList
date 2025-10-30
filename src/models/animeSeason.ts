@@ -131,13 +131,12 @@ export default class AnimeSeason {
 				}
 				return 1;
 			})
-			.map((season, index) => {
+			.map((episode, index) => {
 				return new AnimeEpisode({
-					...season,
+					...episode,
 					...{
-						seasonNumber: index + atIndex + 1,
+						episodeNumber: index + atIndex,
 						animeDbId: this.anime?.getAnimeDbId(),
-						anime: this,
 						seasonInfo: { season: this, animeTitle: this.anime?.title },
 					},
 				});
@@ -153,6 +152,32 @@ export default class AnimeSeason {
 				anime.dateFinished = null;
 				anime.watched = false;
 			});
+		});
+
+		this.anime?.saveToDb();
+	}
+
+	public removeEpisodeAtIndex(index: number) {
+		this.episodes
+			.filter((episode) => episode.episodeNumber > index)
+			.forEach((episode) =>
+				episode.runWithoutUpdatingDb(() => (episode.episodeNumber -= 1)),
+			);
+
+		this.runWithoutUpdatingDb(() => {
+			this.episodes.splice(index, 1);
+			this.episodes = [...this.episodes];
+			if (this.checkWatchedAll()) {
+				this.updateDate();
+
+				this.anime?.runWithoutUpdatingDb((anime) => {
+					anime.checkWatchedAll();
+				});
+			}
+			if (this.episodes.length === 0) {
+				this.dateStarted = null;
+				this.dateFinished = null;
+			}
 		});
 
 		this.anime?.saveToDb();

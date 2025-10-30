@@ -126,6 +126,10 @@ hr {
 	text-align: left;
 }
 
+.centerAlignedText {
+	text-align: center;
+}
+
 .rightAlignedText {
 	text-align: right;
 }

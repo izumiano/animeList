@@ -48,7 +48,7 @@ export const useDomEvent = <T extends HTMLElement>({
 	callback,
 }: {
 	event: keyof HTMLElementEventMap;
-	callback: () => void;
+	callback: (element: T | null) => void;
 }) => {
 	const element = useRef<T>(null);
 
@@ -58,10 +58,24 @@ export const useDomEvent = <T extends HTMLElement>({
 			return;
 		}
 
-		currentElement.addEventListener(event, callback);
+		const onEvent = () => {
+			callback(element.current);
+		};
 
+		if (event === "resize") {
+			const resizeObserver = new ResizeObserver(() => {
+				onEvent();
+			});
+			resizeObserver.observe(currentElement);
+
+			return () => {
+				resizeObserver.unobserve(currentElement);
+			};
+		}
+
+		currentElement.addEventListener(event, () => onEvent);
 		return () => {
-			currentElement.removeEventListener(event, callback);
+			currentElement.removeEventListener(event, onEvent);
 		};
 	}, [callback, element, event]);
 

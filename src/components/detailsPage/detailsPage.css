@@ -1,12 +1,20 @@
 .detailsPage {
-	position: absolute;
+	position: relative;
 	width: 100dvw;
 	height: 100vh;
-	overflow-y: scroll;
 	background-color: var(--colBackground);
 	z-index: 4;
 
 	transition: left 1s;
+}
+
+.detailsPage > div {
+	height: 100vh;
+	overflow-y: scroll;
+	overflow-x: hidden;
+
+	/* display: flex;
+	flex-direction: column; */
 }
 
 .detailsPage.show {

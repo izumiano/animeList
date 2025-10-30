@@ -42,6 +42,14 @@ export function dvwToPx(dvwValue: number) {
 	return pixelValue;
 }
 
+export function dvhToPx(dvhValue: number) {
+	const dynamicViewportHeight = window.innerHeight;
+
+	const pixelValue = (dvhValue / 100) * dynamicViewportHeight;
+
+	return pixelValue;
+}
+
 function _parseError(ex: unknown, params?: { showDetails?: boolean }) {
 	if (ex == null) {
 		return null;

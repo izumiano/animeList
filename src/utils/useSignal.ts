@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import type Signal from "./signal";
+import { useEffect, useState } from "react";
+import Signal from "./signal";
 
 /**
  *
@@ -7,14 +7,25 @@ import type Signal from "./signal";
  * @param onNotify Make sure the function is wrapped in a useCallback
  */
 export default function useSignal<T>(
-	signal: Signal<T>,
+	signal: Signal<T> | T,
 	onNotify: (value: T) => void,
 ) {
+	const [_signal] = useState(
+		(() => {
+			if (signal instanceof Signal) {
+				return signal;
+			}
+			return new Signal(signal);
+		})(),
+	);
+
 	useEffect(() => {
-		onNotify(signal.value);
+		onNotify(_signal.value);
 
-		signal.observe(onNotify);
+		_signal.observe(onNotify);
 
-		return () => signal.unobserve(onNotify);
-	}, [onNotify, signal]);
+		return () => _signal.unobserve(onNotify);
+	}, [onNotify, _signal]);
+
+	return _signal;
 }

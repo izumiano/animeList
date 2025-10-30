@@ -1,0 +1,106 @@
+.tabsNode {
+	--changeTabAnimTime: 0.7s;
+
+	transition: height 1s;
+}
+
+.tabsContainer {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(1px, 1fr));
+	position: sticky;
+	top: 0;
+	background-color: var(--colBackground);
+	z-index: 10;
+
+	background-color: hsl(from var(--colPrimary) h s calc(l * 0.7));
+
+	--borderRadius: 1rem;
+
+	&::before {
+		content: "";
+		position: absolute;
+
+		bottom: 0;
+
+		transition: left var(--changeTabAnimTime);
+
+		--margin: 2rem;
+		width: calc(100% / var(--tabCount) - 2 * var(--margin));
+		height: 100%;
+		left: calc(var(--selectedTabIndex) / var(--tabCount) * 100% + var(--margin));
+		background-color: var(--colPrimary);
+		z-index: -1;
+
+		border-radius: var(--borderRadius) var(--borderRadius) 0 0;
+
+	}
+}
+
+.tabsContainer > button {
+	border-radius: 0;
+	background-color: transparent;
+	border: none;
+
+	display: flex;
+	justify-content: center;
+
+	padding: 1rem;
+
+	& > * {
+		position: relative;
+		width: fit-content;
+
+		&::after {
+			content: "";
+			position: absolute;
+			bottom: -0.2rem;
+			left: 50%;
+			width: 0;
+			height: 0.2rem;
+			background-color: rgb(from white r g b / 0.5);
+			border-radius: 100vw;
+
+			transition: width 0.3s, left 0.3s, background-color 0.2s;
+		}
+	}
+
+	&:is(.selected, :hover) > *::after {
+		width: calc(100% + 2rem);
+		left: -1rem;
+	}
+
+	&.selected > *::after {
+		background-color: rgb(from white r g b / 0.9);
+	}
+}
+
+.tabsContent {
+	position: relative;
+	overflow: hidden;
+	height: calc(100% + 6rem);
+
+
+	> div {
+		overflow: hidden;
+
+		width: 100dvw;
+		height: 100%;
+
+		display: flex;
+
+		transition: height 1s;
+
+		> * {
+			width: 100%;
+
+			position: absolute;
+			border-radius: 0 0 1rem 1rem;
+
+			background-color: var(--colPrimary);
+
+			left: calc(100% * (var(--tabIndex) - var(--selectedTabIndex)));
+
+			transition: left var(--changeTabAnimTime);
+		}
+	}
+}

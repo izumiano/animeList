@@ -73,8 +73,9 @@ const AnimeCard = ({
 
 	const selectedSeason = index != null ? seasons[index] : undefined;
 	const seasonExternalLink = selectedSeason?.externalLink;
+	const _selectedSeasonWatched = selectedSeason?.watched ?? false;
 	const [selectedSeasonWatched, setSelectedSeasonWatchedState] = useState(
-		selectedSeason?.watched ?? false,
+		_selectedSeasonWatched,
 	);
 
 	const shouldBeEnabled = checkShouldBeEnabled(anime, animeFilter);
@@ -86,6 +87,14 @@ const AnimeCard = ({
 	useEffect(() => {
 		setSeasonsState(anime.seasons);
 	}, [anime.seasons]);
+
+	useEffect(() => {
+		setWatchedState(anime.watched);
+	}, [anime.watched]);
+
+	useEffect(() => {
+		setSelectedSeasonWatchedState(_selectedSeasonWatched);
+	}, [_selectedSeasonWatched]);
 
 	function updateWatchedState() {
 		const watched = anime.checkWatchedAll();
@@ -424,8 +433,8 @@ const AnimeCard = ({
 						</div>
 						{selectedSeason ? (
 							<EpisodeList
-								anime={anime}
 								season={selectedSeason}
+								type="regular"
 								onCompletionChange={updateWatchedState}
 							/>
 						) : null}

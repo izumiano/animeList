@@ -374,7 +374,7 @@ function validate(
 	};
 
 	let animeTitle = animeData.title as string | undefined;
-	if (!animeData.title) {
+	if (animeData.title == null) {
 		const externalLink = animeData?.externalLink as ExternalLink | undefined;
 		if (externalLink) {
 			animeTitle = `${externalLink.type}${externalLink.id}`;
@@ -390,7 +390,7 @@ function validate(
 		);
 	}
 
-	if (!animeData.seasons) {
+	if (animeData.seasons == null) {
 		errors.hasError = true;
 		errors.anime.push(
 			<span>
@@ -407,7 +407,7 @@ function validate(
 		const seasonErrors = [];
 		let seasonTitle = season.title as string | number | undefined;
 
-		if (!season.title) {
+		if (season.title == null) {
 			errors.hasError = true;
 			seasonErrors.push(
 				<span>
@@ -420,7 +420,7 @@ function validate(
 			seasonTitle = season.seasonNumber;
 		}
 
-		if (!season.seasonNumber) {
+		if (season.seasonNumber == null) {
 			errors.hasError = true;
 			seasonErrors.push(
 				<span>
@@ -443,7 +443,7 @@ function validate(
 			episodes: [] as { title?: string | number; errors: ReactNode[] }[],
 		};
 
-		if (!season.episodes) {
+		if (season.episodes == null) {
 			errors.hasError = true;
 			seasonErrors.push(
 				<span>
@@ -461,7 +461,7 @@ function validate(
 
 			let episodeTitle = episode.title as string | number | undefined;
 
-			if (!episode.title) {
+			if (episode.title == null) {
 				errors.hasError = true;
 				episodeErrors.push(
 					<span>
@@ -520,7 +520,7 @@ function validate(
 									{season.episodes.map((episode) => (
 										<Fragment key={uuid()}>
 											<b>Episode: {episode.title}</b>
-											<div className="indent">
+											<div className="indent flexColumn">
 												{episode.errors.map((error) => (
 													<Fragment key={uuid()}>{error}</Fragment>
 												))}

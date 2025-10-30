@@ -24,6 +24,10 @@ import { fullScreenWidth } from "../../utils/utils";
 import DetailsPageForm from "./detailsPageForm";
 import useMultipleRef from "../../utils/useMultiple";
 import { useWindowEvent } from "../../utils/useEvents";
+import TabsNode from "../generic/tabsNode";
+import detailsIcon from "../../assets/details.png";
+import listIcon from "../../assets/list.png";
+import EpisodeList from "../animeCard/episodeList";
 
 const DetailsPage = ({
 	animes,
@@ -35,6 +39,7 @@ const DetailsPage = ({
 	setCurrentPageState: (page: Page) => void;
 }) => {
 	const anime = useRef<Anime>(null);
+	const detailsPageRef = useRef<HTMLDivElement>(null);
 
 	function goToMain(errorMessage?: ReactNode) {
 		if (errorMessage) {
@@ -123,14 +128,25 @@ const DetailsPage = ({
 				),
 			)}
 		>
-			{anime.current ? (
-				<InternalDetailsPage anime={anime.current}></InternalDetailsPage>
-			) : null}
+			<div ref={detailsPageRef}>
+				{anime.current ? (
+					<InternalDetailsPage
+						anime={anime.current}
+						scrollParent={detailsPageRef}
+					></InternalDetailsPage>
+				) : null}
+			</div>
 		</div>
 	);
 };
 
-const InternalDetailsPage = ({ anime }: { anime: Anime }) => {
+const InternalDetailsPage = ({
+	anime,
+	scrollParent,
+}: {
+	anime: Anime;
+	scrollParent: React.RefObject<HTMLDivElement | null>;
+}) => {
 	const [index, setIndex] = useState(
 		(() => {
 			const season = anime.getFirstSeasonNotWatched();
@@ -167,8 +183,6 @@ const InternalDetailsPage = ({ anime }: { anime: Anime }) => {
 	useEffect(() => {
 		if (!selectedSeason) return;
 
-		setSelectedSeasonWatchedState(selectedSeason.watched);
-
 		(async () => {
 			const seasonDetails = await getSeasonDetails(selectedSeason, [
 				"synopsis",
@@ -181,6 +195,10 @@ const InternalDetailsPage = ({ anime }: { anime: Anime }) => {
 			setDescriptionState(seasonDetails.synopsis ?? "");
 		})();
 	}, [selectedSeason]);
+
+	useEffect(() => {
+		setSelectedSeasonWatchedState(selectedSeason?.watched ?? false);
+	}, [selectedSeason?.watched]);
 
 	return (
 		<>
@@ -247,9 +265,26 @@ const InternalDetailsPage = ({ anime }: { anime: Anime }) => {
 				</div>
 			</div>
 
-			<hr />
-
-			<DetailsPageForm anime={anime} season={selectedSeason} />
+			<TabsNode id={anime.getAnimeDbId()} scrollParent={scrollParent.current}>
+				{[
+					{
+						tab: <img src={detailsIcon} className="mediumIcon" />,
+						content: <DetailsPageForm anime={anime} season={selectedSeason} />,
+					},
+					{
+						tab: <img src={listIcon} className="mediumIcon" />,
+						content: (
+							<EpisodeList
+								type="detailed"
+								anime={anime}
+								season={selectedSeason}
+								scrollElementRef={scrollParent}
+								setSeasonWatchedState={setSelectedSeasonWatchedState}
+							/>
+						),
+					},
+				]}
+			</TabsNode>
 		</>
 	);
 };

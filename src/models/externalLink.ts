@@ -23,15 +23,13 @@ export function newExternalLink(
 }
 
 export function getUrlFromExternalLink(externalLink: ExternalLink) {
-	if (externalLink.type === undefined) {
-		return null;
-	}
-
 	switch (externalLink.type) {
 		case "MAL":
 			return `https://myanimelist.net/anime/${externalLink.id}`;
 		case "TMDB":
 			return `https://www.themoviedb.org/tv/${externalLink.id}`;
+		default:
+			return null;
 	}
 }
 

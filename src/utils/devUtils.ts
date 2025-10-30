@@ -4,6 +4,7 @@ import BadResponse from "../external/responses/badResponse";
 import Anime from "../models/anime";
 import AnimeCardFactory from "../external/factories/animeCardFactory";
 import LocalDB from "../indexedDb/indexedDb";
+import type { ExternalLink } from "../models/externalLink";
 
 export async function setAnimesToTestState(
 	animes: Map<string, Anime>,
@@ -17,8 +18,29 @@ export async function setAnimesToTestState(
 
 	console.info("Adding mock data");
 
+	const anime = await thing({ type: "MAL", id: 52991 }, 0);
+	if (!anime) {
+		return;
+	}
+	const anime2 = await thing({ type: "MAL", id: 5 }, 1);
+	if (!anime2) {
+		return;
+	}
+	setAnimesState(
+		new Map([
+			[anime.getAnimeDbId(), anime],
+			[anime2.getAnimeDbId(), anime2],
+		]),
+	);
+}
+
+async function thing(
+	externalLink: ExternalLink,
+	order?: number,
+	count?: number,
+) {
 	const response = AnimeCardFactory.create({
-		animeExternalLink: { id: 52991, type: "MAL" },
+		animeExternalLink: externalLink,
 		order: 0,
 		getSequels: false,
 	});
@@ -31,15 +53,15 @@ export async function setAnimesToTestState(
 		toast.error("Failed adding anime");
 		return;
 	}
-	anime.seasons.forEach((season) => {
-		season.episodes.splice(2);
-		season.title = "Season 1";
-	});
+	if (count != null) {
+		anime.seasons.forEach((season) => {
+			season.episodes.splice(count);
+		});
+	}
+	anime.order = order ?? 0;
 	anime = new Anime({ ...anime, autoSave: true });
-	setAnimesState(
-		new Map([[anime.getAnimeDbId(), new Anime({ ...anime, autoSave: true })]]),
-	);
 	anime.saveToDb();
+	return anime;
 }
 
 export function deleteAllAnimes(
