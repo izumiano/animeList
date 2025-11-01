@@ -1,10 +1,11 @@
 .progressButton {
+	position: relative;
 	height: fit-content;
-	z-index: 0;
-	overflow: hidden;
+	z-index: 1;
+	border: none;
 }
 
-.progressButton > .progress {
+.progressButton .progress {
 	overflow: hidden;
 	position: absolute;
 	display: block;
@@ -12,7 +13,7 @@
 	left: 0;
 	width: 0;
 	height: 100%;
-	z-index: -1;
+	z-index: 0;
 	background-color: var(--colSecondary);
 	border-radius: var(--borderRadius);
 	transition: width 0.5s;

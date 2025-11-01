@@ -59,6 +59,7 @@ export function AddEpisodeNode({
 			blurSize={5}
 			animationTime="4s"
 			doRotate="onHover"
+			mobileDoRotate="never"
 		>
 			<div
 				className="episodeContainer addEpisode cursorPointer"

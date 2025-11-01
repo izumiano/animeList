@@ -15,6 +15,7 @@ interface RainbowOutlineCSS extends CSSProperties {
 	"--animationTime": string;
 	"--playState": AnimationPlayState;
 	"--hoverPlayState": AnimationPlayState;
+	"--mobilePlayState": AnimationPlayState;
 }
 
 export default function RainbowOutline({
@@ -24,15 +25,19 @@ export default function RainbowOutline({
 	blurSize,
 	animationTime,
 	doRotate,
+	mobileDoRotate,
+	disabled,
 	className,
 	children,
 }: {
 	elementType: ElementType;
-	onClick?: () => void;
+	onClick?: React.MouseEventHandler<HTMLButtonElement>;
 	borderSize?: number | string;
 	blurSize?: number;
 	animationTime?: string;
 	doRotate?: "always" | "never" | "onHover";
+	mobileDoRotate?: "always" | "never";
+	disabled?: boolean;
 	className?: string;
 	children: ReactNode;
 }) {
@@ -53,6 +58,7 @@ export default function RainbowOutline({
 	}
 
 	doRotate ??= elementType === "button" ? "onHover" : "always";
+	mobileDoRotate ??= "always";
 
 	let playState: AnimationPlayState;
 	let hoverPlayState: AnimationPlayState;
@@ -83,6 +89,7 @@ export default function RainbowOutline({
 			)}
 			className={`rainbowOutline ${className}`}
 			onClick={onClick}
+			disabled={disabled}
 			style={
 				{
 					"--aspectRatio": aspectRatio ?? 1,
@@ -91,13 +98,15 @@ export default function RainbowOutline({
 					"--animationTime": animationTime ?? "4s",
 					"--playState": playState,
 					"--hoverPlayState": hoverPlayState,
+					"--mobilePlayState":
+						mobileDoRotate === "always" ? "running" : "paused",
 				} as RainbowOutlineCSS
 			}
 		>
 			<div className="rainbow">
-				<div></div>
+				<div className={mobileDoRotate === "always" ? "mobileAnim" : ""}></div>
 			</div>
-			{children}
+			<div className="rainbow__content">{children}</div>
 		</Tag>
 	);
 }

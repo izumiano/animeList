@@ -4,9 +4,15 @@
 	initial-value: -90deg;
 }
 
-@keyframes glow {
+@keyframes glowRotate {
 	100% {
 		--glow-deg: 270deg;
+	}
+}
+
+@keyframes rotate {
+	100% {
+		rotate: 360deg;
 	}
 }
 
@@ -23,6 +29,8 @@
 	background: transparent;
 	padding: var(--borderSize);
 
+
+
 	> .rainbow {
 		position: absolute;
 		top: 0;
@@ -31,6 +39,8 @@
 		height: 100%;
 
 		filter: blur(var(--blurSize));
+
+		border-radius: inherit;
 
 		> * {
 			position: relative;
@@ -41,6 +51,8 @@
 
 			background-color: transparent;
 
+
+			border: 1px solid white;
 			border-radius: inherit;
 			overflow: hidden;
 
@@ -58,9 +70,21 @@
 						blue,
 						purple,
 						red);
-				transform: scaleX(max(var(--aspectRatio), 1)) scaleY(max(calc(1 / var(--aspectRatio)), 1));
-				animation: glow var(--animationTime) infinite linear;
+
+				animation: glowRotate var(--animationTime) infinite linear;
 				animation-play-state: var(--playState);
+				scale: max(var(--aspectRatio), 1) max(calc(1 / var(--aspectRatio)), 1);
+			}
+
+			@media (pointer: coarse) {
+				&::before {
+					animation: rotate var(--animationTime) infinite linear;
+					animation-play-state: var(--mobilePlayState);
+				}
+
+				&.mobileAnim::before {
+					scale: calc(100 * var(--aspectRatio)) calc(100 * max(calc(1 / var(--aspectRatio)), 1));
+				}
 			}
 		}
 	}
@@ -71,10 +95,11 @@
 		}
 	}
 
-	> * {
+	> .rainbow__content {
 		position: relative;
 		top: 0;
 		left: 0;
+		overflow: hidden;
 		width: 100%;
 		border-radius: inherit;
 	}

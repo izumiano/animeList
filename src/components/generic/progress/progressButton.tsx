@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import "./progressButton.css";
 import { clamp } from "../../../utils/utils";
 import LoadingSpinner from "../loadingSpinner";
+import RainbowOutline from "../rainbowOutline";
 
 export type ProgressButtonState = {
 	progress: number;
@@ -23,7 +24,10 @@ const ProgressButton = ({
 }) => {
 	const progress = clamp(state.progress, { min: 0, max: 1 });
 	return (
-		<button
+		<RainbowOutline
+			elementType={"button"}
+			borderSize={2}
+			blurSize={5}
 			className={`progressButton ${className}`}
 			disabled={disabled || state.state !== "enabled"}
 			onClick={onClick}
@@ -32,12 +36,14 @@ const ProgressButton = ({
 				className="progress"
 				style={{ width: `calc(${progress} * 100%)` }}
 			></span>
-			{state.state === "enabled" ? (
-				<span className="content">{children}</span>
-			) : (
-				<LoadingSpinner props={{ centered: true, size: "0.4rem" }} />
-			)}
-		</button>
+			<div className="progress__content">
+				{state.state === "enabled" ? (
+					<span>{children}</span>
+				) : (
+					<LoadingSpinner props={{ centered: true, size: "0.4rem" }} />
+				)}
+			</div>
+		</RainbowOutline>
 	);
 };
 

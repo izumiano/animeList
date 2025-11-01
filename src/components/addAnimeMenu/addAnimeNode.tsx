@@ -206,7 +206,7 @@ export default function AddAnimeNode({
 					});
 				}}
 			>
-				Add
+				<span>Add</span>
 			</ProgressButton>
 		</div>
 	);

@@ -65,12 +65,11 @@ label.fileButton > input {
 	position: absolute;
 	--width: 10rem;
 	width: var(--width);
-	height: var(--height);
 	bottom: calc(var(--bottomSpacing));
 	font-size: larger;
 	left: calc(50% - var(--width) / 2);
-	background-color: white;
 	color: black;
+	border-radius: 100vw;
 
 	display: flex;
 	align-items: center;
@@ -80,12 +79,23 @@ label.fileButton > input {
 		0 0 100px black,
 		0 0 40px rgba(0, 0, 0, 0.3);
 
-	border-radius: 100rem;
-
 	transition:
 		background-color 0.5s,
 		color 0.5s,
 		translate 0.7s cubic-bezier(0.47, 1.64, 0.41, 0.8);
+
+
+	& .progress__content {
+		background-color: white;
+		display: flex;
+		padding: 0.5rem;
+		border-radius: 100vw;
+		justify-content: center;
+
+		> span {
+			position: relative;
+		}
+	}
 }
 
 .addButton:not(.loading):disabled {
