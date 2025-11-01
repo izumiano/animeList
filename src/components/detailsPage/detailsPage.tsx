@@ -289,6 +289,7 @@ const InternalDetailsPage = ({
 								season={selectedSeason}
 								scrollElementRef={scrollParent}
 								setSeasonWatchedState={setSelectedSeasonWatchedState}
+								className="largeMargin"
 							/>
 						),
 					},

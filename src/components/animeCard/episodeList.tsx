@@ -13,6 +13,7 @@ import { externalLinkId } from "../../models/externalLink";
 const EpisodeList = (
 	params: {
 		season: AnimeSeason | undefined;
+		className?: string;
 	} & (
 		| { type: "regular"; onCompletionChange: () => void }
 		| {
@@ -54,7 +55,7 @@ const EpisodeList = (
 	const key = `${externalLinkId(season.externalLink, season.title)}_${id}`;
 
 	return (
-		<ul ref={listRef} className={`episodeList ${type}`}>
+		<ul ref={listRef} className={`episodeList ${type} ${params.className}`}>
 			{season ? (
 				<>
 					{episodes?.map((episode, index) => {
