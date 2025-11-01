@@ -274,7 +274,7 @@ const InternalDetailsPage = ({
 				</div>
 			</div>
 
-			<TabsNode id={anime.getAnimeDbId()} scrollParent={scrollParent.current}>
+			<TabsNode scrollParent={scrollParent.current}>
 				{[
 					{
 						tab: <img src={detailsIcon} className="mediumIcon" />,

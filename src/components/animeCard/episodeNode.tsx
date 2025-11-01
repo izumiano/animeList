@@ -54,7 +54,7 @@ export function AddEpisodeNode({
 }) {
 	return (
 		<RainbowOutline
-			elementType={"li"}
+			elementType="li"
 			borderSize={2}
 			blurSize={5}
 			animationTime="4s"

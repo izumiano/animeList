@@ -11,7 +11,6 @@ import {
 import "./tabsNode.css";
 import useMultipleRef from "../../utils/useMultiple";
 import { useDomEvent } from "../../utils/useEvents";
-import { dvhToPx } from "../../utils/utils";
 import Signal from "../../utils/signal";
 import useSignal from "../../utils/useSignal";
 
@@ -22,12 +21,10 @@ interface TabsNodeStyle extends CSSProperties {
 
 export default function TabsNode({
 	defaultSelectedTabIndex,
-	id,
 	scrollParent,
 	children,
 }: {
 	defaultSelectedTabIndex?: number;
-	id: string;
 	scrollParent?: HTMLElement | null;
 	children: { tab: ReactNode; content: ReactNode }[];
 }) {
@@ -55,10 +52,6 @@ export default function TabsNode({
 		heightSignal.value = height;
 	}, [selectedTabIndex, heightSignal]);
 
-	useEffect(() => {
-		setSelectedTabIndex(defaultSelectedTabIndex);
-	}, [defaultSelectedTabIndex, id]);
-
 	const tabsId = useId();
 
 	if (children.length === 0) {
@@ -82,18 +75,8 @@ export default function TabsNode({
 						<button
 							key={`${tabsId}${index}_tab`}
 							onClick={() => {
-								if (scrollParent && scrollParent.scrollTop > 0) {
-									function setIndex() {
-										if (scrollParent && scrollParent.scrollTop < dvhToPx(1)) {
-											setSelectedTabIndex(index);
-											scrollParent.removeEventListener("scroll", setIndex);
-										}
-									}
-									scrollParent.addEventListener("scroll", setIndex);
-									scrollParent.scroll({ top: 0, behavior: "smooth" });
-								} else {
-									setSelectedTabIndex(index);
-								}
+								scrollParent?.scroll({ top: 0, behavior: "smooth" });
+								setSelectedTabIndex(index);
 							}}
 							className={index === selectedTabIndex ? "selected" : ""}
 						>
