@@ -107,30 +107,36 @@ export function DetailedEpisodeNode({
 			<p className="episodeNumber">
 				<b>{`${episode.episodeNumber + 1}.`}</b>
 			</p>
-			<input
-				type="text"
-				value={value}
-				placeholder={defaultValue}
-				autoFocus={autoFocus}
-				onFocus={(event) => {
-					event.target.select();
-				}}
-				onKeyDown={(event) => {
-					if (event.key === "Enter") {
-						event.preventDefault();
-						event.currentTarget.blur();
-					}
-				}}
-				onBlur={(event) => {
-					const value = event.target.value;
-					event.target.value = value !== "" ? value : defaultValue;
-				}}
-				onChange={(event) => {
-					const value = event.target.value;
-					setValueState(value);
-					episode.title = value !== "" ? value : defaultValue;
-				}}
-			/>
+			<label className="flexGrow">
+				<div>{value !== "" ? value : defaultValue}</div>
+				<input
+					type="text"
+					value={value}
+					placeholder={defaultValue}
+					autoFocus={autoFocus}
+					onFocus={(event) => {
+						event.target.select();
+					}}
+					onKeyDown={(event) => {
+						if (event.key === "Enter") {
+							event.preventDefault();
+							event.currentTarget.blur();
+						}
+					}}
+					onBlur={(event) => {
+						const targetValue = event.target.value;
+						const value = targetValue !== "" ? targetValue : defaultValue;
+						event.target.value = value;
+						episode.title = value;
+						setValueState(value);
+					}}
+					onChange={(event) => {
+						const value = event.target.value;
+						setValueState(value);
+						episode.title = value;
+					}}
+				/>
+			</label>
 			<Dropdown
 				alignment="right"
 				buttonClass="transparentBackground t"
