@@ -313,3 +313,8 @@ hr {
 	margin-left: 1rem;
 	padding-left: 0.3rem;
 }
+
+.circle {
+	background-color: black;
+	border-radius: 100vw;
+}

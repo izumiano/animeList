@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react";
-import { toast } from "react-toastify";
 
 type TouchWithTimestamp = { touch: React.Touch; time: DOMHighResTimeStamp };
 

@@ -5,6 +5,8 @@ import type AnimeSeason from "../../models/animeSeason";
 import Dropdown from "../generic/dropdown";
 import trashIcon from "../../assets/bin.png";
 import ConfirmationDropdown from "../generic/confirmationDropdown";
+import plusIcon from "../../assets/plus.png";
+import RainbowOutline from "../generic/rainbowOutline";
 
 export function EpisodeNode({
 	episode,
@@ -51,20 +53,32 @@ export function AddEpisodeNode({
 	updateEpisodes: () => void;
 }) {
 	return (
-		<li
-			className={`episodeContainer addEpisode cursorPointer`}
-			onClick={() => {
-				season.addEpisodes([
-					new AnimeEpisode({ episodeNumber: 0, title: "", watched: false }),
-				]);
-				updateEpisodes();
-			}}
+		<RainbowOutline
+			elementType={"li"}
+			borderSize={2}
+			blurSize={5}
+			animationTime="4s"
+			doRotate="onHover"
 		>
-			<p className="episodeNumber">
-				<b>{"*"}</b>
-			</p>
-			<span>Add Episode</span>
-		</li>
+			<div
+				className="episodeContainer addEpisode cursorPointer"
+				onClick={() => {
+					season.addEpisodes([
+						new AnimeEpisode({ episodeNumber: 0, title: "", watched: false }),
+					]);
+					updateEpisodes();
+				}}
+			>
+				<div className="episodeNumber flexRow">
+					<img
+						src={plusIcon}
+						width={10}
+						className="mediumIcon circle smallPadding"
+					/>
+				</div>
+				<span className="verticalCenter">Add Episode</span>
+			</div>
+		</RainbowOutline>
 	);
 }
 
@@ -139,7 +153,7 @@ export function DetailedEpisodeNode({
 			</label>
 			<Dropdown
 				alignment="right"
-				buttonClass="transparentBackground t"
+				buttonClass="transparentBackground"
 				useDefaultButtonStyle={true}
 				dropdownButton={<img src={trashIcon} width="15"></img>}
 				listRef={listRef}

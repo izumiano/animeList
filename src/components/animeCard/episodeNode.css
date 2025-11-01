@@ -7,16 +7,33 @@
 .episodeContainer {
 	display: flex;
 	flex-direction: row;
+	align-items: center;
 
 	--backgroundCol: var(--colAccent);
 	--placeholderCol: rgb(from white r g b / 0.5);
 	background: linear-gradient(to right, var(--backgroundCol), rgba(0, 0, 0, 0));
 	transition: --backgroundCol 0.4s;
 
-	align-items: center;
+	> .episodeNumber {
+		padding: 0.4rem;
+		text-align: center;
+		min-width: 2.7rem;
+		padding-left: 0.2rem;
 
-	> p {
-		padding: 0.6rem;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		&:is(p),
+		> p {
+			color: white;
+		}
+
+		&:is(img),
+		> img {
+			background-color: rgb(150, 150, 150);
+			box-shadow: -0.2rem 0.2rem 7px 2px rgba(0, 0, 0, 0.2);
+		}
 	}
 
 	&.watched {
@@ -24,8 +41,9 @@
 	}
 
 	> label {
-
 		position: relative;
+		display: flex;
+		align-items: center;
 
 		> input {
 			all: unset;
@@ -69,13 +87,7 @@
 	}
 
 	&.addEpisode {
-		--backgroundCol: rgb(from white r g b / 0.8);
 		color: black;
+		background: linear-gradient(to right, rgb(250, 220, 220), rgb(130, 100, 100));
 	}
-}
-
-.episodeNumber {
-	text-align: center;
-	min-width: 2.7rem;
-	padding-left: 0.2rem;
 }
