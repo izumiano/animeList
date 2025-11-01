@@ -19,7 +19,10 @@ import ProgressNode from "../generic/progress/progressNode";
 import "./detailsPage.css";
 import ExpandableText from "../generic/expandableText";
 import { toast } from "react-toastify";
-import useTouch from "../../utils/useTouch";
+import useTouch, {
+	type OnTouchEndType,
+	type OnTouchMoveType,
+} from "../../utils/useTouch";
 import { fullScreenWidth } from "../../utils/utils";
 import DetailsPageForm from "./detailsPageForm";
 import useMultipleRef from "../../utils/useMultiple";
@@ -41,16 +44,19 @@ const DetailsPage = ({
 	const anime = useRef<Anime>(null);
 	const detailsPageRef = useRef<HTMLDivElement>(null);
 
-	function goToMain(errorMessage?: ReactNode) {
-		if (errorMessage) {
-			toast.error(errorMessage);
-		}
+	const goToMain = useCallback(
+		(errorMessage?: ReactNode) => {
+			if (errorMessage) {
+				toast.error(errorMessage);
+			}
 
-		if (currentPage === "details") {
-			history.pushState(null, "", "/");
-			setCurrentPageState("main");
-		}
-	}
+			if (currentPage === "details") {
+				history.pushState(null, "", "/");
+				setCurrentPageState("main");
+			}
+		},
+		[currentPage, setCurrentPageState],
+	);
 
 	function setCurrentAnime() {
 		if (!window.location.pathname.startsWith("/details/")) {
@@ -97,20 +103,23 @@ const DetailsPage = ({
 			}
 			ref={useMultipleRef(
 				useTouch({
-					onMove: ({ totalMove }) => {
+					onMove: useCallback<OnTouchMoveType>(({ totalMove }) => {
 						setTouchOffsetState(totalMove.x);
-					},
-					onEnd: ({ currentTouches, speed }) => {
-						if (currentTouches.size === 0) {
-							setTouchOffsetState(null);
-							if (
-								(touchOffset && touchOffset > fullScreenWidth / 2) ||
-								speed.x > fullScreenWidth / 900
-							) {
-								goToMain();
+					}, []),
+					onEnd: useCallback<OnTouchEndType>(
+						({ currentTouches, speed }) => {
+							if (currentTouches.size === 0) {
+								setTouchOffsetState(null);
+								if (
+									(touchOffset && touchOffset > fullScreenWidth / 2) ||
+									speed.x > fullScreenWidth / 900
+								) {
+									goToMain();
+								}
 							}
-						}
-					},
+						},
+						[touchOffset, goToMain],
+					),
 					minX: { positive: fullScreenWidth / 60 },
 				}),
 				useWindowEvent(

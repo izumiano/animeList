@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AnimeEpisode from "../../models/animeEpisode";
 import "./episodeNode.css";
 import type AnimeSeason from "../../models/animeSeason";
@@ -14,6 +14,10 @@ export function EpisodeNode({
 	onCompletionChange?: () => void;
 }) {
 	const [watched, setWatchedState] = useState(episode.watched);
+
+	useEffect(() => {
+		setWatchedState(episode.watched);
+	}, [episode.watched]);
 
 	function setWatched(watched: boolean) {
 		if (watched === episode.watched) return;
@@ -68,20 +72,35 @@ export function DetailedEpisodeNode({
 	season,
 	episode,
 	updateEpisodes,
-	autoSelect: autoFocus,
+	autoFocus,
+	resetAutoFocus,
 	listRef,
 	scrollElementRef,
 }: {
 	season: AnimeSeason;
 	episode: AnimeEpisode;
 	updateEpisodes: () => void;
-	autoSelect?: boolean;
+	autoFocus?: boolean;
+	resetAutoFocus?: () => void;
 	listRef: React.RefObject<HTMLUListElement | null>;
 	scrollElementRef: React.RefObject<HTMLDivElement | null>;
 }) {
 	const watched = episode.watched;
 
-	const defaultValue = episode.title;
+	const [defaultValue, setDefaultValueState] = useState(episode.title);
+	const [value, setValueState] = useState(episode.title);
+
+	useEffect(() => {
+		setValueState(episode.title);
+	}, [episode.title]);
+
+	useEffect(() => {
+		setDefaultValueState(episode.title);
+	}, [episode]);
+
+	if (autoFocus) {
+		resetAutoFocus?.call(null);
+	}
 
 	return (
 		<li className={`episodeContainer ${watched ? "watched" : ""}`}>
@@ -90,7 +109,7 @@ export function DetailedEpisodeNode({
 			</p>
 			<input
 				type="text"
-				defaultValue={defaultValue}
+				value={value}
 				placeholder={defaultValue}
 				autoFocus={autoFocus}
 				onFocus={(event) => {
@@ -108,6 +127,7 @@ export function DetailedEpisodeNode({
 				}}
 				onChange={(event) => {
 					const value = event.target.value;
+					setValueState(value);
 					episode.title = value !== "" ? value : defaultValue;
 				}}
 			/>

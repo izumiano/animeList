@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import AnimeSeason from "../../models/animeSeason";
 import "./episodeList.css";
 import {
@@ -6,9 +6,9 @@ import {
 	DetailedEpisodeNode,
 	EpisodeNode,
 } from "./episodeNode";
-import { v4 as uuid } from "uuid";
 import type AnimeEpisode from "../../models/animeEpisode";
 import type Anime from "../../models/anime";
+import { externalLinkId } from "../../models/externalLink";
 
 const EpisodeList = (
 	params: {
@@ -25,7 +25,7 @@ const EpisodeList = (
 ) => {
 	const { season, type } = params;
 	const [episodes, setEpisodesState] = useState(season?.episodes);
-	const [autoSelectEpisodeIndex, setAutoSelectEpisodeIndex] = useState<
+	const [autoFocusEpisodeIndex, setAutoFocusEpisodeIndex] = useState<
 		number | null
 	>(null);
 
@@ -45,6 +45,14 @@ const EpisodeList = (
 
 	const listRef = useRef<HTMLUListElement>(null);
 
+	const id = useId();
+
+	if (!season) {
+		return null;
+	}
+
+	const key = `${externalLinkId(season.externalLink, season.title)}_${id}`;
+
 	return (
 		<ul ref={listRef} className={`episodeList ${type}`}>
 			{season ? (
@@ -54,7 +62,7 @@ const EpisodeList = (
 							case "regular":
 								return (
 									<EpisodeNode
-										key={uuid()}
+										key={`${key}_${index}`}
 										episode={episode}
 										onCompletionChange={params.onCompletionChange}
 									/>
@@ -62,13 +70,14 @@ const EpisodeList = (
 							case "detailed":
 								return (
 									<DetailedEpisodeNode
-										key={uuid()}
+										key={`${key}_${index}`}
 										season={season}
 										episode={episode}
 										updateEpisodes={() => setEpisodes(season.episodes)}
 										listRef={listRef}
 										scrollElementRef={params.scrollElementRef}
-										autoSelect={index === autoSelectEpisodeIndex}
+										autoFocus={index === autoFocusEpisodeIndex}
+										resetAutoFocus={() => setAutoFocusEpisodeIndex(null)}
 									/>
 								);
 						}
@@ -78,7 +87,7 @@ const EpisodeList = (
 							season={season}
 							updateEpisodes={() => {
 								setEpisodes(season.episodes);
-								setAutoSelectEpisodeIndex(season.episodes.length - 1);
+								setAutoFocusEpisodeIndex(season.episodes.length - 1);
 							}}
 						/>
 					) : null}

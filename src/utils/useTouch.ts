@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { toast } from "react-toastify";
 
 type TouchWithTimestamp = { touch: React.Touch; time: DOMHighResTimeStamp };
 
@@ -16,6 +17,18 @@ function calculateSpeed(
 	return { x: delta.x / deltaTime, y: delta.y / deltaTime };
 }
 
+export type OnTouchStartType = (
+	currentTouches: Map<number, TouchWithTimestamp>,
+) => void;
+export type OnTouchMoveType = (params: {
+	totalMove: { x: number; y: number };
+	speed: { x: number; y: number };
+}) => void;
+export type OnTouchEndType = (params: {
+	currentTouches: Map<number, TouchWithTimestamp>;
+	speed: { x: number; y: number };
+}) => void;
+
 export default function useTouch<T extends HTMLElement>({
 	onStart,
 	onMove,
@@ -23,15 +36,9 @@ export default function useTouch<T extends HTMLElement>({
 	minX,
 	minY,
 }: {
-	onStart?: (currentTouches: Map<number, TouchWithTimestamp>) => void;
-	onMove?: (params: {
-		totalMove: { x: number; y: number };
-		speed: { x: number; y: number };
-	}) => void;
-	onEnd?: (params: {
-		currentTouches: Map<number, TouchWithTimestamp>;
-		speed: { x: number; y: number };
-	}) => void;
+	onStart?: OnTouchStartType;
+	onMove?: OnTouchMoveType;
+	onEnd?: OnTouchEndType;
 	minX?: number | { positive?: number; negative?: number };
 	minY?: number | { positive?: number; negative?: number };
 }) {
