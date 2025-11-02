@@ -298,8 +298,13 @@ const AnimeCard = ({
 							>
 								{({ closeDropdown }) => (
 									<AddAnimeNode
-										onAddAnime={(newAnime) => {
-											anime.addSeasons(newAnime.seasons, {
+										onAddAnimes={(newAnimes) => {
+											const seasons = newAnimes.at(0)?.seasons;
+											if (!seasons) {
+												return;
+											}
+
+											anime.addSeasons(seasons, {
 												atIndex: (index ?? -1) + 1,
 											});
 											setSeasonsState(anime.seasons);

@@ -6,8 +6,8 @@ import AppData, { devUtils } from "./appData";
 import AddAnimeMenu from "./components/addAnimeMenu/addAnimeMenu";
 import MainPage from "./components/mainPage";
 import DetailsPage from "./components/detailsPage/detailsPage";
-import { toast } from "react-toastify";
 import LoadingSpinner from "./components/generic/loadingSpinner";
+import { showError } from "./utils/utils";
 
 export type Page = "main" | "details";
 
@@ -18,21 +18,27 @@ function Home({ startPage }: { startPage?: Page }) {
 	const [addAnimeMenuIsOpen, setAddAnimeMenuIsOpenState] = useState(false);
 	const fullScreenScrollContainerRef = useRef<HTMLDivElement>(null);
 
-	function addAnime(anime: Anime, params?: { doScroll: boolean }) {
+	function addAnimes(newAnimes: Anime[], params?: { doScroll: boolean }) {
+		if (newAnimes.length === 0) {
+			return;
+		}
+
 		if (!animes) {
-			toast.error(
-				<span>
-					Failed adding <b>{anime.title}</b> because <i>animes</i> map was
-					undefined
+			showError(
+				newAnimes.map((anime) => <b>{anime.title}</b>),
+				<span className="flexColumn">
+					<i>{<b>animes</b>} map was undefined.</i>{" "}
+					<span>The following will not show until refresh:</span>
 				</span>,
+				{ showInProgressNode: true },
 			);
 			return;
 		}
 
-		animes.set(anime.getAnimeDbId(), new Anime({ ...anime, autoSave: true }));
+		newAnimes.forEach((anime) => {
+			animes.set(anime.getAnimeDbId(), new Anime({ ...anime, autoSave: true }));
+		});
 		setAnimesState(new Map(animes));
-
-		new Anime(anime);
 
 		const doScroll = !params ? true : false;
 		if (doScroll) {
@@ -80,7 +86,7 @@ function Home({ startPage }: { startPage?: Page }) {
 			/>
 
 			<AddAnimeMenu
-				addAnime={addAnime}
+				addAnimes={addAnimes}
 				isOpen={addAnimeMenuIsOpen}
 				setIsOpenState={setAddAnimeMenuIsOpenState}
 			/>

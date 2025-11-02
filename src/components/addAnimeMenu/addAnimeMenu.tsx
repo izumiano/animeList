@@ -4,11 +4,11 @@ import "./addAnimeMenu.css";
 import AddAnimeNode from "./addAnimeNode";
 
 const AddAnimeMenu = ({
-	addAnime,
+	addAnimes,
 	isOpen,
 	setIsOpenState,
 }: {
-	addAnime: (anime: Anime, params?: { doScroll: boolean }) => void;
+	addAnimes: (anime: Anime[], params?: { doScroll: boolean }) => void;
 	isOpen: boolean;
 	setIsOpenState: (isOpen: boolean) => void;
 }) => {
@@ -32,7 +32,7 @@ const AddAnimeMenu = ({
 			>
 				<AccountNode />
 				<AddAnimeNode
-					onAddAnime={addAnime}
+					onAddAnimes={addAnimes}
 					setIsOpenState={setIsOpenState}
 					className="marginTop"
 				/>

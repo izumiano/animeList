@@ -4,7 +4,7 @@ import { showError, sleepFor } from "../../utils/utils";
 
 export function importAnimes(
 	files: FileList | null,
-	onAnimeSaved: (anime: Anime) => void,
+	onAnimesSaved: (anime: Anime[]) => void,
 ) {
 	if (!files) {
 		return;
@@ -43,7 +43,7 @@ export function importAnimes(
 
 			LocalDB.doTransaction(
 				(store, db) => {
-					const t = animes.map(async (anime, index) => {
+					const animeResponses = animes.map(async (anime, index) => {
 						anime.order = index;
 
 						if (typeof anime.dateStarted === "number") {
@@ -78,28 +78,31 @@ export function importAnimes(
 							justAdded: false,
 						});
 						if (!(newAnime instanceof Anime)) {
-							return { isError: true, value: newAnime.error };
+							return { isError: true as const, value: newAnime.error };
 						}
 
-						let ret: undefined | "done" | Event;
+						let ret:
+							| { isError: true; value?: Event }
+							| { isError: false; value: Anime }
+							| undefined;
 
 						const request = db.saveAnime(newAnime, store);
 						request.onsuccess = () => {
-							onAnimeSaved(newAnime);
-							ret = "done";
+							// onAnimeSaved(newAnime);
+							ret = { isError: false, value: newAnime };
 						};
 						request.onerror = (ex) => {
-							ret = ex;
+							ret = { isError: true, value: ex };
 						};
 
-						while (!ret) {
+						while (ret == null) {
 							await sleepFor(20);
 						}
 
-						return { isError: false, value: ret };
+						return ret;
 					});
 
-					Promise.all(t)
+					Promise.all(animeResponses)
 						.then((values) => {
 							const errors = values
 								.filter((value) => value.isError)
@@ -108,6 +111,12 @@ export function importAnimes(
 							if (errors.length > 0) {
 								handleError(errors);
 							}
+
+							const animes = values
+								.filter((value) => !value.isError)
+								.map((value) => value.value);
+
+							onAnimesSaved(animes);
 						})
 						.catch(handleError);
 

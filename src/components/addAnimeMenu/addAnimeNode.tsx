@@ -27,12 +27,12 @@ import "./addAnimeNode.css";
 type SearchResultsType = SeasonDetails[] | "loading";
 
 export default function AddAnimeNode({
-	onAddAnime,
+	onAddAnimes,
 	setIsOpenState,
 	animeParent,
 	className,
 }: {
-	onAddAnime: (anime: Anime, params?: { doScroll: boolean }) => void;
+	onAddAnimes: (anime: Anime[], params?: { doScroll: boolean }) => void;
 	setIsOpenState: (isOpen: boolean) => void;
 	animeParent?: Anime;
 	className?: string;
@@ -59,7 +59,7 @@ export default function AddAnimeNode({
 		setSearchResultsState([]);
 		setSelectedAnimeIndexState(null);
 		setIsOpenState(false);
-		onAddAnime(anime);
+		onAddAnimes([anime]);
 
 		allSuccess(anime.seasons, {
 			forEach: async (season) =>
@@ -105,8 +105,8 @@ export default function AddAnimeNode({
 					<input
 						type="file"
 						onChange={(event) => {
-							importAnimes(event.target.files, (anime) =>
-								onAddAnime(anime, { doScroll: false }),
+							importAnimes(event.target.files, (animes) =>
+								onAddAnimes(animes, { doScroll: false }),
 							);
 						}}
 					/>
