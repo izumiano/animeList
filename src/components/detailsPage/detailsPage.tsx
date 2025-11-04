@@ -23,7 +23,7 @@ import useTouch, {
 	type OnTouchEndType,
 	type OnTouchMoveType,
 } from "../../utils/useTouch";
-import { fullScreenWidth } from "../../utils/utils";
+import { formatDate, fullScreenWidth } from "../../utils/utils";
 import DetailsPageForm from "./detailsPageForm";
 import useMultipleRef from "../../utils/useMultiple";
 import { useWindowEvent } from "../../utils/useEvents";
@@ -181,6 +181,7 @@ const InternalDetailsPage = ({
 	}, [anime]);
 
 	const [description, setDescriptionState] = useState("");
+	const [airedDate, setAiredDateState] = useState("");
 	const [isExpanded, setIsExpandedState] = useState(false);
 
 	const selectedSeason = index != null ? anime.seasons.at(index) : undefined;
@@ -199,9 +200,11 @@ const InternalDetailsPage = ({
 			]);
 			if (seasonDetails instanceof Error || !seasonDetails) {
 				setDescriptionState("");
+				setAiredDateState("");
 				return;
 			}
 			setDescriptionState(seasonDetails.synopsis ?? "");
+			setAiredDateState(formatDate(seasonDetails.airedDate, "d mmm yyyy", ""));
 		})();
 	}, [selectedSeason]);
 
@@ -221,8 +224,8 @@ const InternalDetailsPage = ({
 						isExpanded ? "expanded" : ""
 					}`}
 				>
-					<div className="flexRow spaceBetween">
-						<div>
+					<div className="flexRow">
+						<div className="flexGrow">
 							<h1 className="title flexGrow">
 								<b>{anime.title}</b>
 								<span style={{ color: "rgb(160, 160, 160)" }}> | </span>
@@ -263,6 +266,7 @@ const InternalDetailsPage = ({
 							alignment="right"
 							className="detailedAnimeCardProgress"
 						/>
+						<span className="airedDate">{airedDate}</span>
 					</div>
 					<ExpandableText
 						isExpanded={isExpanded}

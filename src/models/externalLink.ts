@@ -1,4 +1,7 @@
 import MALRequest from "../external/malRequest";
+import BadResponse from "../external/responses/badResponse";
+import { SeasonDetails } from "../external/responses/SeasonDetails";
+import TMDBRequest from "../external/tmdbRequest";
 import type AnimeSeason from "./animeSeason";
 
 export const ExternalLinkTypeValues = ["MAL", "TMDB", undefined] as const;
@@ -47,14 +50,24 @@ export function externalLinkId(externalLink: ExternalLink, title: string) {
 }
 
 export async function getSeasonDetails(season: AnimeSeason, fields: string[]) {
-	switch (season.externalLink.type) {
+	const externalLink = season.externalLink;
+	switch (externalLink.type) {
 		case "MAL":
 			return await MALRequest.getSeasonDetails(season, fields);
-		// case "TMDB":
-		//     let detailsResponse = await TMDBRequest.getShowDetails(anime, title: title)
-		//     let airedDate = detailsResponse?.seasons.first{ seasonToCheck in
-		//         seasonToCheck.season_number == season.seasonNumber
-		//     }?.airedDate
-		//     return SeasonDetails(synopsis: detailsResponse?.overview, airedDate: airedDate ?? detailsResponse?.airedDate)
+		case "TMDB": {
+			const detailsResponse = await TMDBRequest.getShowDetails(externalLink.id);
+			if (detailsResponse instanceof BadResponse) {
+				return detailsResponse;
+			}
+
+			const airedDate = detailsResponse?.seasons?.find(
+				(seasonToCheck) =>
+					seasonToCheck.season_number === externalLink.seasonId,
+			)?.air_date;
+			return new SeasonDetails({
+				synopsis: detailsResponse?.overview,
+				started_date: airedDate ? new Date(airedDate) : undefined,
+			});
+		}
 	}
 }

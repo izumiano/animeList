@@ -9,6 +9,7 @@ export default interface TMDBSeasonResponse extends IResponse<null> {
 	overview?: string;
 	popularity?: number;
 	first_air_date?: string;
+	air_date?: string;
 	season_number?: number;
 }
 
