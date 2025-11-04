@@ -1,7 +1,8 @@
 import MALRequest from "../external/malRequest";
 import type AnimeSeason from "./animeSeason";
 
-export type ExternalLinkType = "MAL" | "TMDB" | undefined;
+export const ExternalLinkTypeValues = ["MAL", "TMDB", undefined] as const;
+export type ExternalLinkType = (typeof ExternalLinkTypeValues)[number];
 
 export type ExternalLink = { type: ExternalLinkType } & (
 	| { type: "MAL"; id: number }
@@ -49,8 +50,6 @@ export async function getSeasonDetails(season: AnimeSeason, fields: string[]) {
 	switch (season.externalLink.type) {
 		case "MAL":
 			return await MALRequest.getSeasonDetails(season, fields);
-
-		// return SeasonDetails.create(synopsis: detailsResponse?.synopsis, airedDate: detailsResponse?.airedDate)
 		// case "TMDB":
 		//     let detailsResponse = await TMDBRequest.getShowDetails(anime, title: title)
 		//     let airedDate = detailsResponse?.seasons.first{ seasonToCheck in

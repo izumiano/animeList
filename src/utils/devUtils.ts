@@ -40,7 +40,7 @@ async function thing(
 	count?: number,
 ) {
 	const response = AnimeCardFactory.create({
-		animeExternalLink: externalLink,
+		externalLink: externalLink,
 		order: 0,
 		getSequels: false,
 	});

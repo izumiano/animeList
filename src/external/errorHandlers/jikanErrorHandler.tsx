@@ -2,11 +2,8 @@ import type JikanErrorResponse from "../responses/jikanErrorResponse";
 import IErrorHandler from "./IErrorHandler";
 
 export default class JikanErrorHandler extends IErrorHandler<JikanErrorResponse> {
-	message: React.ReactNode;
-
-	constructor(message: React.ReactNode) {
-		super();
-		this.message = message;
+	constructor(message?: React.ReactNode) {
+		super(message);
 	}
 
 	public isSuccess(data: any, acceptStatusCodes: number[]) {

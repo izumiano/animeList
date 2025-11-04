@@ -22,6 +22,11 @@
 
 .progressTask.failed {
 	background-color: var(--colFail);
+
+	hr {
+		background-color: var(--colWeakWhite);
+		width: 100%;
+	}
 }
 
 @keyframes progressTask_hideAnim {

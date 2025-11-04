@@ -3,11 +3,8 @@ import type MalErrorResponse from "../responses/malErrorResponse";
 import IErrorHandler from "./IErrorHandler";
 
 export default class MalErrorHandler extends IErrorHandler<MalErrorResponse> {
-	message: React.ReactNode;
-
-	constructor(message: React.ReactNode) {
-		super();
-		this.message = message;
+	constructor(message?: React.ReactNode) {
+		super(message);
 	}
 
 	public isSuccess(data: any) {

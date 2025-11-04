@@ -209,7 +209,7 @@ export default class MALCardFactory {
 
 	private static async getAnimeData(id: number) {
 		const season = await WebUtil.ratelimitRetryFunc(async () => {
-			return await MALSearch.GetAnimeDataRetry(id);
+			return await MALSearch.getAnimeDataRetry(id);
 		});
 
 		if (season instanceof BadResponse) {

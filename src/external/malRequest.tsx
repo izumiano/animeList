@@ -1,12 +1,11 @@
 import type AnimeSeason from "../models/animeSeason";
 import ActivityTask, { pushTask } from "../utils/activityTask";
 import WebUtil from "../utils/webUtil";
+import { malClientId } from "./auth/malAuth";
 import MalErrorHandler from "./errorHandlers/malErrorHandler";
 import BadResponse from "./responses/badResponse";
 import type { MALSeasonDetails } from "./responses/MALSeasonDetails";
 import { SeasonDetails } from "./responses/SeasonDetails";
-
-const clientId = import.meta.env.VITE_CLIENT_ID;
 
 export default class MALRequest {
 	public static async getSeasonDetails(
@@ -25,7 +24,7 @@ export default class MALRequest {
 					const url = new URL(`https://api.myanimelist.net/v2/anime/${malId}`);
 					url.search = new URLSearchParams({ fields: fieldsString }).toString();
 					const request = new Request(url);
-					request.headers.set("X-MAL-CLIENT-ID", clientId);
+					request.headers.set("X-MAL-CLIENT-ID", malClientId);
 
 					const response = (await WebUtil.fetchProxy(request, "GET", {
 						errorHandler: new MalErrorHandler(
@@ -38,7 +37,10 @@ export default class MALRequest {
 						return new BadResponse("Failed without a status code!", response);
 					}
 					if (statusCode !== 200) {
-						return new BadResponse(`Failed with statusCode: [${statusCode}]`);
+						return new BadResponse(
+							`Failed with statusCode: [${statusCode}]`,
+							response,
+						);
 					}
 
 					return response;
@@ -55,7 +57,7 @@ export default class MALRequest {
 		if (!response.id) {
 			return;
 		}
-		return SeasonDetails.create({
+		return SeasonDetails.createFromMal({
 			mal_id: response.id,
 			synopsis: response.synopsis,
 			aired: response.start_date

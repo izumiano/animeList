@@ -67,7 +67,7 @@ function _parseError(ex: unknown, params?: { showDetails?: boolean }) {
 				<span>{ex.displayMessage}</span>
 				{data ? (
 					<pre className="unimportantText scroll">
-						<i>{JSON.stringify(data, null, 2)}</i>
+						<i>{isValidElement(data) ? data : JSON.stringify(data, null, 2)}</i>
 					</pre>
 				) : null}
 			</>

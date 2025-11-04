@@ -7,22 +7,22 @@ import MALSeasonResponse from "../responses/MALSeasonResponse";
 import { SeasonDetails } from "../responses/SeasonDetails";
 
 export default class MALSearch {
-	public static async GetResults(
+	public static async getResults(
 		query: string,
 		limit: number = 9,
 	): Promise<MALSeasonDetails[] | BadResponse> {
-		const searchResultsData = await this.GetResultsAsyncRetry(query, limit);
+		const searchResultsData = await this.getResultsAsyncRetry(query, limit);
 
 		if (searchResultsData instanceof BadResponse) {
 			return searchResultsData;
 		}
 
-		const result = await this.GetResultsAsync(searchResultsData);
+		const result = await this.getResultsAsync(searchResultsData);
 
 		return result;
 	}
 
-	private static async GetResultsAsync(
+	private static async getResultsAsync(
 		data: MALSearchResponse | MALSeasonResponse,
 	): Promise<MALSeasonDetails[] | BadResponse> {
 		if (data.statusCode !== 200) {
@@ -78,7 +78,7 @@ export default class MALSearch {
 		});
 	}
 
-	private static async GetResultsAsyncRetry(query: string, limit: number) {
+	private static async getResultsAsyncRetry(query: string, limit: number) {
 		let _query = query;
 		const malUrlMatch =
 			/https:\/\/myanimelist\.net\/anime\/(?<malId>\d+)/g.exec(query);
@@ -88,16 +88,16 @@ export default class MALSearch {
 		const id = parseInt(_query);
 		if (!Number.isNaN(id)) {
 			return await WebUtil.ratelimitRetryFunc(async () => {
-				return await this.GetAnimeDataRetry(id);
+				return await this.getAnimeDataRetry(id);
 			});
 		}
 
 		return await WebUtil.ratelimitRetryFunc(async () => {
-			return await this.MyAnimeListSearch(query, limit);
+			return await this.myAnimeListSearch(query, limit);
 		});
 	}
 
-	private static async MyAnimeListSearch(query: string, limit: number) {
+	private static async myAnimeListSearch(query: string, limit: number) {
 		query = encodeURIComponent(query);
 		const animeDataResponse: MALSearchResponse | BadResponse =
 			await WebUtil.fetch(
@@ -115,7 +115,7 @@ export default class MALSearch {
 		return animeDataResponse;
 	}
 
-	public static async GetAnimeDataRetry(id: number) {
+	public static async getAnimeDataRetry(id: number) {
 		try {
 			const response = (await WebUtil.fetch(
 				`https://api.jikan.moe/v4/anime/${id}/full`,

@@ -1,0 +1,41 @@
+.detailsContainer {
+	display: flex;
+	flex-direction: column;
+
+	> .detailsTitle {
+		background-color: var(--colAccent);
+		height: 2rem;
+		display: flex;
+		padding-left: 1rem;
+
+		align-items: center;
+
+		> img {
+			rotate: 0deg;
+			transition: rotate 0.2s;
+		}
+
+		> * {
+			align-content: center;
+		}
+	}
+
+	> .detailsContent {
+		overflow: hidden;
+		max-height: 0;
+
+		transition: max-height 0.75s;
+	}
+
+	&.isOpen {
+		> .detailsTitle {
+			> img {
+				rotate: 180deg;
+			}
+		}
+
+		> .detailsContent {
+			max-height: var(--openMaxHeight);
+		}
+	}
+}

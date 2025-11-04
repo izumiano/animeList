@@ -16,6 +16,7 @@ html {
 	--colNeutral: rgb(26, 29, 36);
 	--colFail: rgb(236, 73, 61);
 	--colWarn: rgb(224, 236, 61);
+	--colWeakWhite: rgba(255, 255, 255, 0.6);
 
 	--toastify-toast-width: 500px;
 
@@ -113,7 +114,11 @@ h2 {
 
 .unimportantText {
 	font-size: small;
-	color: rgba(255, 255, 255, 0.6);
+	color: var(--colWeakWhite);
+
+	b {
+		font-size: large;
+	}
 }
 
 hr {

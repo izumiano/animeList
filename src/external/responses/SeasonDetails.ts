@@ -1,9 +1,14 @@
 import { MediaTypeValues, type MediaType } from "../../models/anime";
 import type { ExternalLink } from "../../models/externalLink";
 import { MALSeasonDetails } from "./MALSeasonDetails";
+import type TMDBSeasonResponse from "./tmdbSeasonResponse";
 
 export type MALSeasonDetailsRequireId = Omit<MALSeasonDetails, "mal_id"> & {
 	mal_id: number;
+};
+
+export type TMDBSeasonDetailsRequireId = Omit<TMDBSeasonResponse, "id"> & {
+	id: number;
 };
 
 export class SeasonDetails {
@@ -27,7 +32,7 @@ export class SeasonDetails {
 		title?: string;
 		episodes?: number;
 		status?: string;
-		media_type?: string;
+		media_type?: MediaType;
 		started_date?: Date;
 	}) {
 		this.synopsis = params.synopsis;
@@ -128,7 +133,7 @@ export class SeasonDetails {
 		};
 	}
 
-	public static create(
+	public static createFromMal(
 		malSeasonDetails: Omit<MALSeasonDetailsRequireId, "statusCode">,
 	) {
 		return new SeasonDetails({
@@ -145,6 +150,32 @@ export class SeasonDetails {
 			status: malSeasonDetails.status,
 			media_type: malSeasonDetails.type,
 			started_date: malSeasonDetails.aired?.from,
+		});
+	}
+
+	public static createFromTmdb(tmdbSeasonDetails: TMDBSeasonDetailsRequireId) {
+		return new SeasonDetails({
+			synopsis: tmdbSeasonDetails.overview,
+			externalLink: { type: "TMDB", id: tmdbSeasonDetails.id },
+			approved: undefined,
+			images: tmdbSeasonDetails.poster_path
+				? {
+						jpg: {
+							large_image_url: `https://image.tmdb.org/t/p/original${tmdbSeasonDetails.poster_path}`,
+						},
+					}
+				: undefined,
+			popularity: tmdbSeasonDetails.popularity,
+			title: SeasonDetails.getTitle({
+				title_english: tmdbSeasonDetails.name,
+				title: tmdbSeasonDetails.original_name,
+			}),
+			episodes: tmdbSeasonDetails.episodes?.length,
+			status: undefined,
+			media_type: "tv",
+			started_date: tmdbSeasonDetails.first_air_date
+				? new Date(tmdbSeasonDetails.first_air_date)
+				: undefined,
 		});
 	}
 }

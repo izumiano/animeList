@@ -9,7 +9,7 @@ import { MALCryptography } from "./malCryptography";
 import { MALUserToken } from "./malUserToken";
 import Signal from "../../utils/signal";
 
-const clientId = import.meta.env.VITE_CLIENT_ID;
+export const malClientId = import.meta.env.VITE_MAL_CLIENT_ID;
 const redirectUri = window.location.origin + "/malAuth";
 
 let acquireUserTokenAbortController = new AbortController();
@@ -68,7 +68,7 @@ export class MALAuth {
 		const url = new URL("https://myanimelist.net/v1/oauth2/authorize");
 		url.search = new URLSearchParams({
 			response_type: "code",
-			client_id: clientId,
+			client_id: malClientId,
 			redirect_uri: redirectUri,
 			code_challenge: codeChallenge,
 		}).toString();
@@ -114,7 +114,7 @@ export class MALAuth {
 					);
 
 					const body = new URLSearchParams({
-						client_id: clientId,
+						client_id: malClientId,
 						code: code,
 						code_verifier: codeChallenge,
 						grant_type: "authorization_code",
@@ -185,7 +185,7 @@ export class MALAuth {
 		}
 
 		const body = new URLSearchParams({
-			client_id: clientId,
+			client_id: malClientId,
 			grant_type: "refresh_token",
 			refresh_token: refreshToken ?? this.userToken?.refreshToken,
 			redirect_uri: redirectUri,

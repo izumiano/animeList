@@ -363,7 +363,7 @@ const AnimeCard = ({
 										className="circleButton refreshButton"
 										onClick={async () => {
 											const response = AnimeCardFactory.create({
-												animeExternalLink: selectedSeason.externalLink,
+												externalLink: selectedSeason.externalLink,
 												order: 0,
 												getSequels: false,
 											});

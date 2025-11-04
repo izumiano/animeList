@@ -193,7 +193,7 @@ export default class AnimeSeason {
 		}
 
 		let updateAnimeDate = false;
-		if (watchedEpisodes === 1 && !this.dateStarted) {
+		if (watchedEpisodes > 0 && !this.dateStarted) {
 			this.dateStarted = new Date();
 			updateAnimeDate = true;
 		}
