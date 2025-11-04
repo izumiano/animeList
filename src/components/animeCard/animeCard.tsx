@@ -190,7 +190,8 @@ const AnimeCard = ({
 									className={`reset hoverableText titleHover ${
 										watched ? "watched" : ""
 									}`}
-									onClick={() => {
+									onClick={(event) => {
+										event.preventDefault();
 										history.pushState(
 											null,
 											"",
@@ -198,6 +199,7 @@ const AnimeCard = ({
 										);
 										setCurrentPageState("details");
 									}}
+									href={`/details/${anime.getAnimeDbId()}/`}
 								>
 									<b>{anime.title}</b>
 								</a>
