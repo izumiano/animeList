@@ -70,7 +70,7 @@ export default class AnimeEpisode {
 		const objCopy: { [key: string]: any } = {};
 		for (const key in this) {
 			if (Object.prototype.hasOwnProperty.call(this, key)) {
-				if (key === "animeDbId") continue;
+				if (key === "animeDbId" || key === "pauseAutoSave") continue;
 
 				objCopy[key] = this[key];
 			}

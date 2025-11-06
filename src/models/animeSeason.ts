@@ -211,7 +211,8 @@ export default class AnimeSeason {
 		const objCopy: { [key: string]: any } = {};
 		for (const key in this) {
 			if (Object.prototype.hasOwnProperty.call(this, key)) {
-				if (key === "animeDbId" || key === "anime") continue;
+				if (key === "animeDbId" || key === "anime" || key === "pauseAutoSave")
+					continue;
 
 				if (key === "episodes") {
 					const episodes = [];

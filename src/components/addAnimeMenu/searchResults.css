@@ -20,10 +20,18 @@
 
 	border-radius: clamp(20px, 3dvw, 30px);
 
+	overflow-x: hidden;
+	overflow-y: scroll;
+
 	color: white;
+
+	> .seasonResult.selected {
+		background-color: white;
+		color: black;
+	}
 }
 
-.searchResultCard > img {
+.searchResultCard > * > img {
 	max-width: 10dvw;
 	max-height: 40dvh;
 }

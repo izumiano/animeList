@@ -1,4 +1,4 @@
-import { useId } from "react";
+import { useId, useState } from "react";
 import type { SeasonDetails } from "../../external/responses/SeasonDetails";
 import { ExternalLinkTypeValues } from "../../models/externalLink";
 import Image from "../generic/image";
@@ -6,15 +6,23 @@ import LoadingSpinner from "../generic/loadingSpinner";
 import type { SearchResultsType, SelectedAnimeInfoType } from "./addAnimeNode";
 import "./searchResults.css";
 import Details from "../generic/details";
+import TMDBRequest from "../../external/tmdbRequest";
+import BadResponse from "../../external/responses/badResponse";
+import { showError } from "../../utils/utils";
+import type TMDBSeasonResponse from "../../external/responses/tmdbSeasonResponse";
 
 const SearchResults = ({
 	searchResults,
 	selectedAnimeInfo,
 	setSelectedAnimeInfoState,
+	getSequels,
 }: {
 	searchResults: SearchResultsType;
 	selectedAnimeInfo: SelectedAnimeInfoType;
-	setSelectedAnimeInfoState: (selectedAnimeInfo: SelectedAnimeInfoType) => void;
+	setSelectedAnimeInfoState: React.Dispatch<
+		React.SetStateAction<SelectedAnimeInfoType>
+	>;
+	getSequels: boolean;
 }) => {
 	const id = useId();
 
@@ -34,6 +42,7 @@ const SearchResults = ({
 							searchResults={searchResults[externalType!]} // we are filtering out undefined in .filter
 							selectedAnimeInfo={selectedAnimeInfo}
 							setSelectedAnimeInfoState={setSelectedAnimeInfoState}
+							getSequels={getSequels}
 						/>
 					</Details>
 				);
@@ -46,47 +55,128 @@ function TypeSearchResults({
 	searchResults,
 	selectedAnimeInfo,
 	setSelectedAnimeInfoState,
+	getSequels,
 }: {
 	searchResults: SeasonDetails[] | "loading";
 	selectedAnimeInfo: SelectedAnimeInfoType;
-	setSelectedAnimeInfoState: (selectedAnimeInfo: SelectedAnimeInfoType) => void;
+	setSelectedAnimeInfoState: React.Dispatch<
+		React.SetStateAction<SelectedAnimeInfoType>
+	>;
+	getSequels: boolean;
 }) {
 	return (
 		<>
 			{searchResults !== "loading" ? (
 				searchResults.map((result, index) => {
-					const isSelectedClass =
-						selectedAnimeInfo?.type === result.externalLink?.type &&
-						selectedAnimeInfo?.index === index
-							? "selected"
-							: "";
 					return (
-						<button
+						<SearchResultCard
 							key={`searchResults:${index}`}
-							className={`searchResultCard ${isSelectedClass}`}
-							onClick={() => {
-								if (
-									selectedAnimeInfo?.type === result.externalLink?.type &&
-									selectedAnimeInfo?.index === index
-								) {
-									setSelectedAnimeInfoState(null);
-									return;
-								}
-								setSelectedAnimeInfoState({
-									index: index,
-									type: result.externalLink?.type,
-								});
-							}}
-						>
-							<Image src={result.images?.jpg?.large_image_url} />
-							<h2>{result.title}</h2>
-						</button>
+							seasonDetails={result}
+							animeIndex={index}
+							selectedAnimeInfo={selectedAnimeInfo}
+							setSelectedAnimeInfoState={setSelectedAnimeInfoState}
+							getSequels={getSequels}
+						/>
 					);
 				})
 			) : (
 				<LoadingSpinner props={{ centered: true }} />
 			)}
 		</>
+	);
+}
+
+function SearchResultCard({
+	seasonDetails,
+	animeIndex,
+	selectedAnimeInfo,
+	setSelectedAnimeInfoState,
+	getSequels,
+}: {
+	seasonDetails: SeasonDetails;
+	animeIndex: number;
+	selectedAnimeInfo: SelectedAnimeInfoType;
+	setSelectedAnimeInfoState: React.Dispatch<
+		React.SetStateAction<SelectedAnimeInfoType>
+	>;
+	getSequels: boolean;
+}) {
+	const [seasons, setSeasons] = useState<
+		TMDBSeasonResponse[] | "loading" | undefined
+	>(undefined);
+
+	const [selectedSeasonIndex, setSelectedSeasonIndex] = useState<number | null>(
+		null,
+	);
+
+	const selected =
+		selectedAnimeInfo?.type === seasonDetails.externalLink?.type &&
+		selectedAnimeInfo?.index === animeIndex;
+
+	const id = useId();
+
+	return (
+		<button className={`searchResultCard ${selected ? "selected" : ""}`}>
+			<div
+				onClick={async () => {
+					if (
+						selectedAnimeInfo?.type === seasonDetails.externalLink?.type &&
+						selectedAnimeInfo?.index === animeIndex
+					) {
+						setSelectedAnimeInfoState(null);
+						return;
+					}
+
+					setSelectedAnimeInfoState({
+						index: animeIndex,
+						type: seasonDetails.externalLink?.type,
+						selectedSeasonId: selectedSeasonIndex,
+					});
+
+					const externalLink = seasonDetails.externalLink;
+					if (
+						!getSequels &&
+						externalLink?.type === "TMDB" &&
+						externalLink.mediaType === "tv"
+					) {
+						const showDetails = await TMDBRequest.getDetails(externalLink);
+						setSeasons("loading");
+						if (showDetails instanceof BadResponse) {
+							showError(showDetails);
+							setSeasons(undefined);
+							setSelectedAnimeInfoState(null);
+							return;
+						}
+						setSeasons(showDetails.seasons);
+					}
+				}}
+			>
+				<Image src={seasonDetails.images?.jpg?.large_image_url} />
+				<h2>{seasonDetails.title}</h2>
+			</div>
+			{selected ? (
+				seasons === "loading" ? (
+					<LoadingSpinner props={{ centered: true }} />
+				) : seasons && seasons.length > 0 ? (
+					seasons.map((season, index) => (
+						<div
+							key={`${id}${index}`}
+							className={`seasonResult ${index === selectedSeasonIndex ? "selected" : ""}`}
+							onClick={() => {
+								setSelectedSeasonIndex(index);
+								setSelectedAnimeInfoState({
+									index: animeIndex,
+									type: seasonDetails.externalLink?.type,
+									selectedSeasonId: season.season_number,
+								});
+							}}
+						>
+							{season.name}
+						</div>
+					))
+				) : null
+			) : null}
+		</button>
 	);
 }
 

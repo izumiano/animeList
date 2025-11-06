@@ -1,8 +1,9 @@
 import Anime from "../../models/anime";
 import AnimeEpisode from "../../models/animeEpisode";
 import AnimeSeason from "../../models/animeSeason";
-import type { ExternalLink } from "../../models/externalLink";
+import type { TMDBExternalLink } from "../../models/externalLink";
 import ActivityTask from "../../utils/activityTask";
+import type { Require } from "../../utils/utils";
 import BadResponse from "../responses/badResponse";
 import TMDBRequest from "../tmdbRequest";
 
@@ -12,9 +13,9 @@ export default class TMDBCardFactory {
 		order,
 		getSequels,
 	}: {
-		externalLink: ExternalLink;
 		order: number;
 		getSequels: boolean;
+		externalLink: TMDBExternalLink;
 	}) {
 		if (externalLink.type !== "TMDB") {
 			return new BadResponse(`Wrong external link type [${externalLink.type}]`);
@@ -27,7 +28,7 @@ export default class TMDBCardFactory {
 			maxProgress: 1,
 			task: async ({ addProgress, addMaxProgress }) => {
 				if (!getSequels) {
-					const season = await this.getSeason(id, externalLink.seasonId);
+					const season = await this.getSeasonOrMovie(externalLink);
 					if (season instanceof BadResponse) {
 						return season;
 					}
@@ -37,14 +38,14 @@ export default class TMDBCardFactory {
 						seasons: [season],
 						watched: false,
 						imageLink: undefined,
-						externalLink: { type: "TMDB", id: id },
+						externalLink: externalLink,
 						order: order,
 						dateStarted: null,
 						dateFinished: null,
 					});
 				}
 
-				const showDetails = await TMDBRequest.getShowDetails(id);
+				const showDetails = await TMDBRequest.getDetails(externalLink);
 				addProgress();
 
 				if (showDetails instanceof BadResponse) {
@@ -55,10 +56,17 @@ export default class TMDBCardFactory {
 
 				const seasonPromises =
 					showDetails.seasons?.map(async (season) => {
-						const seasonResponse = await this.getSeason(
-							id,
-							season.season_number,
-						);
+						if (season.season_number == null) {
+							return {
+								seasonNumber: null,
+								seasonResponse: new BadResponse("Missing season number"),
+							};
+						}
+
+						const seasonResponse = await this.getSeason({
+							...externalLink,
+							seasonId: season.season_number,
+						});
 						addProgress();
 						return { seasonNumber: season.season_number, seasonResponse };
 					}) ?? [];
@@ -69,6 +77,10 @@ export default class TMDBCardFactory {
 					(seasonInfo) => seasonInfo.seasonResponse instanceof BadResponse,
 				);
 				if (failedSeasons.length > 0) {
+					console.error(
+						`Could not get date for every season for id=TMDB${externalLink.id}`,
+						{ failedSeasons },
+					);
 					return new BadResponse(
 						(
 							<span>
@@ -110,19 +122,42 @@ export default class TMDBCardFactory {
 					return 1;
 				});
 
+				const showTitle = showDetails.name ?? "";
+
+				if (seasons.length === 0) {
+					seasons.push(
+						new AnimeSeason({
+							title: showTitle,
+							episodes: [
+								new AnimeEpisode({
+									title: showTitle,
+									episodeNumber: 0,
+									watched: false,
+								}),
+							],
+							watched: false,
+							seasonNumber: 1,
+							mediaType: externalLink.mediaType,
+							externalLink: externalLink,
+							dateStarted: null,
+							dateFinished: null,
+						}),
+					);
+				}
+
 				seasons.forEach((season, index) => {
 					season.seasonNumber = index + 1;
 				});
 
 				const imagePath = showDetails.poster_path;
 				return new Anime({
-					title: showDetails.name ?? "",
+					title: showTitle,
 					seasons: seasons,
 					watched: false,
 					imageLink: imagePath
 						? `https://image.tmdb.org/t/p/original${imagePath}`
 						: undefined,
-					externalLink: { type: "TMDB", id: id },
+					externalLink: externalLink,
 					order: order,
 					dateStarted: null,
 					dateFinished: null,
@@ -131,12 +166,76 @@ export default class TMDBCardFactory {
 		});
 	}
 
-	private static async getSeason(id: number, seasonNumber: number | undefined) {
-		if (seasonNumber == null) {
-			return new BadResponse("Missing season number");
+	private static async getSeasonOrMovie(externalLink: TMDBExternalLink) {
+		switch (externalLink.mediaType) {
+			case "tv":
+				if (externalLink.seasonId == null) {
+					return new BadResponse("Missing season id");
+				}
+				return await this.getSeason({
+					...externalLink,
+					seasonId: externalLink.seasonId,
+				});
+			case "movie":
+				return await this.getMovie(externalLink);
+			default:
+				return new BadResponse(`Invalid media type ${externalLink.mediaType}`);
+		}
+	}
+
+	private static async getMovie(
+		externalLink: Omit<TMDBExternalLink, "seasonId">,
+	) {
+		const mediaType = externalLink.mediaType;
+		if (mediaType !== "movie") {
+			return new BadResponse(
+				`Incorrect mediaType ${mediaType} for movie in getMovie`,
+			);
 		}
 
-		const seasonResponse = await TMDBRequest.getSeasonDetails(id, seasonNumber);
+		const movieResponse = await TMDBRequest.getDetails(externalLink);
+
+		if (movieResponse instanceof BadResponse) {
+			return movieResponse;
+		}
+
+		return new AnimeSeason({
+			title: movieResponse.name ?? "",
+			episodes: [
+				new AnimeEpisode({
+					title: movieResponse.name ?? "",
+					episodeNumber: 0,
+					watched: false,
+				}),
+			],
+			watched: false,
+			seasonNumber: 1,
+			mediaType: "movie",
+			externalLink: externalLink,
+			dateStarted: null,
+			dateFinished: null,
+		});
+	}
+
+	private static async getSeason(
+		externalLink: Require<TMDBExternalLink, "seasonId">,
+	) {
+		const seasonId = externalLink.seasonId;
+		if (seasonId == null) {
+			return new BadResponse("Missing season id in getSeason");
+		}
+		const mediaType = externalLink.mediaType;
+		if (mediaType !== "tv") {
+			return new BadResponse(
+				`Incorrect mediaType ${mediaType} for season in getSeason`,
+			);
+		}
+
+		const seasonResponse = await TMDBRequest.getSeasonDetails({
+			...externalLink,
+			seasonId,
+			mediaType,
+		});
 
 		if (seasonResponse instanceof BadResponse) {
 			return seasonResponse;
@@ -155,10 +254,10 @@ export default class TMDBCardFactory {
 			) ?? [];
 
 		return new AnimeSeason({
-			seasonNumber: seasonNumber,
+			seasonNumber: seasonId,
 			episodes: episodes,
 			watched: false,
-			externalLink: { type: "TMDB", id: id, seasonId: seasonNumber },
+			externalLink: externalLink,
 			title: seasonResponse.name,
 			dateStarted: null,
 			dateFinished: null,

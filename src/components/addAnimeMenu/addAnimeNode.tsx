@@ -10,6 +10,7 @@ import Anime from "../../models/anime";
 import {
 	ExternalLinkTypeValues,
 	newExternalLink,
+	type ExternalLink,
 	type ExternalLinkType,
 } from "../../models/externalLink";
 import AnimeCardFactory from "../../external/factories/animeCardFactory";
@@ -27,6 +28,7 @@ import ExternalSync from "../../external/externalSync";
 import fileUploadIcon from "../../assets/fileUpload.png";
 import fileDownloadIcon from "../../assets/fileDownload.png";
 import "./addAnimeNode.css";
+import type ActivityTask from "../../utils/activityTask";
 
 export type SearchResultsType = {
 	[K in Exclude<ExternalLinkType, undefined>]: SeasonDetails[] | "loading";
@@ -35,6 +37,7 @@ export type SearchResultsType = {
 export type SelectedAnimeInfoType = {
 	index: number;
 	type: ExternalLinkType;
+	selectedSeasonId: number | null | undefined;
 } | null;
 
 export default function AddAnimeNode({
@@ -104,6 +107,36 @@ export default function AddAnimeNode({
 		});
 	}
 
+	const addButtonEnabled = (() => {
+		if (selectedAnimeInfo?.index == null || !selectedAnimeInfo.type) {
+			return false;
+		}
+
+		if (!animeParent || selectedAnimeInfo.type !== "TMDB") {
+			return true;
+		}
+
+		const selectedAnime = searchResults[selectedAnimeInfo.type].at(
+			selectedAnimeInfo.index,
+		);
+		if (!selectedAnime || typeof selectedAnime === "string") {
+			return false;
+		}
+		const externalLink = selectedAnime.externalLink;
+		if (!externalLink) {
+			return false;
+		}
+		if (externalLink.type !== "TMDB" || externalLink.mediaType !== "tv") {
+			return true;
+		}
+
+		if (selectedAnimeInfo.selectedSeasonId == null) {
+			return false;
+		}
+
+		return true;
+	})();
+
 	return (
 		<div className={`${animeParent ? "" : "scroll"} ${className}`}>
 			<div className="addAnimeInputs flexRow">
@@ -168,12 +201,13 @@ export default function AddAnimeNode({
 					searchResults={searchResults}
 					selectedAnimeInfo={selectedAnimeInfo}
 					setSelectedAnimeInfoState={setSelectedAnimeInfoState}
+					getSequels={!animeParent}
 				/>
 				<div className="addButtonSpacer addButtonProps"></div>
 			</div>
 			<ProgressButton
 				state={addAnimeProgressState}
-				disabled={selectedAnimeInfo?.index == null}
+				disabled={!addButtonEnabled}
 				className={`addButton addButtonProps ${
 					addAnimeProgressState.state === "loading" ? "loading" : ""
 				}`}
@@ -188,57 +222,71 @@ export default function AddAnimeNode({
 						return;
 					}
 
+					async function handleCreateAnime(
+						createAnimeTask: ActivityTask<Anime> | BadResponse,
+						resolve: (_: null) => void,
+					) {
+						if (createAnimeTask instanceof BadResponse) {
+							showError(createAnimeTask, null, { showInProgressNode: true });
+							resolve(null);
+							return;
+						}
+
+						createAnimeTask.onProgressUpdate = ({ progress, maxProgress }) => {
+							setAddAnimeProgressState({
+								progress: progress / (maxProgress - 1), // remove 1 from max so we can actually see progress bar reach the end
+								state: "loading",
+							});
+						};
+
+						const anime = await createAnimeTask.start();
+
+						if (anime instanceof Error || !anime) {
+							setAddAnimeProgressState({ progress: 0, state: "enabled" });
+							showError(anime, null, { showInProgressNode: true });
+							resolve(null);
+							return;
+						}
+
+						await sleepFor(500);
+
+						if (animeParent) {
+							addAnime(anime);
+							return;
+						}
+
+						LocalDB.doTransaction(
+							(store, db) => {
+								return db.saveAnime(anime, store);
+							},
+							{
+								onSuccess: () => {
+									addAnime(anime);
+								},
+							},
+						);
+						resolve(null);
+					}
+
 					new Promise((resolve) => {
 						(async () => {
-							const createAnimeTask = AnimeCardFactory.create({
-								externalLink: newExternalLink(selectedAnime.externalLink),
-								order: AppData.animes.size,
+							if (
+								!selectedAnime.externalLink ||
+								selectedAnime.externalLink.id == null
+							) {
+								showError(selectedAnime.externalLink, "Invalid external link", {
+									showInProgressNode: true,
+								});
+								return;
+							}
+
+							const createAnimeTask = getCreateAnimeTask({
+								externalLink: selectedAnime.externalLink,
 								getSequels: !animeParent,
+								seasonId: selectedAnimeInfo?.selectedSeasonId,
 							});
 
-							if (createAnimeTask instanceof BadResponse) {
-								showError(createAnimeTask, null, { showInProgressNode: true });
-								resolve(null);
-								return;
-							}
-
-							createAnimeTask.onProgressUpdate = ({
-								progress,
-								maxProgress,
-							}) => {
-								setAddAnimeProgressState({
-									progress: progress / (maxProgress - 1), // remove 1 from max so we can actually see progress bar reach the end
-									state: "loading",
-								});
-							};
-
-							const anime = await createAnimeTask.start();
-
-							if (anime instanceof Error || !anime) {
-								setAddAnimeProgressState({ progress: 0, state: "enabled" });
-								showError(anime, null, { showInProgressNode: true });
-								resolve(null);
-								return;
-							}
-
-							await sleepFor(500);
-
-							if (animeParent) {
-								addAnime(anime);
-								return;
-							}
-
-							LocalDB.doTransaction(
-								(store, db) => {
-									return db.saveAnime(anime, store);
-								},
-								{
-									onSuccess: () => {
-										addAnime(anime);
-									},
-								},
-							);
-							resolve(null);
+							handleCreateAnime(createAnimeTask, resolve);
 						})();
 					});
 				}}
@@ -247,6 +295,65 @@ export default function AddAnimeNode({
 			</ProgressButton>
 		</div>
 	);
+}
+
+function getCreateAnimeTask({
+	externalLink,
+	getSequels,
+	seasonId,
+}: {
+	externalLink: ExternalLink;
+	getSequels: boolean;
+	seasonId: number | null | undefined;
+}) {
+	switch (externalLink.type) {
+		case "MAL":
+			return AnimeCardFactory.create({
+				externalLink: externalLink,
+				order: AppData.animes.size,
+				getSequels: getSequels,
+			});
+		case "TMDB":
+			switch (externalLink.mediaType) {
+				case "tv":
+					if (getSequels) {
+						return AnimeCardFactory.create({
+							externalLink: externalLink,
+							order: AppData.animes.size,
+							getSequels: true,
+						});
+					} else {
+						if (seasonId == null) {
+							return new BadResponse("Missing season id in getCreateAnimeTask");
+						}
+						return AnimeCardFactory.create({
+							externalLink: {
+								...externalLink,
+								type: "TMDB",
+								mediaType: "tv",
+								seasonId: seasonId,
+							},
+							order: AppData.animes.size,
+							getSequels: getSequels,
+						});
+					}
+				case "movie":
+					return AnimeCardFactory.create({
+						externalLink: {
+							...externalLink,
+							type: "TMDB",
+							mediaType: "movie",
+						},
+						order: AppData.animes.size,
+						getSequels: getSequels,
+					});
+				default:
+					return new BadResponse("Invalid media type");
+			}
+
+		default:
+			return new BadResponse("Invalid external link type");
+	}
 }
 
 function getSelectedAnime(
@@ -269,19 +376,32 @@ function getSelectedAnime(
 		toast.error("Selection has no title");
 		return;
 	}
-
-	console.log({
-		title: selectedAnime.title,
-		type: selectedAnime.externalLink?.type,
-		obj: selectedAnime,
-	});
+	const selectedExtLink = selectedAnime.externalLink;
+	if (!selectedExtLink) {
+		toast.error("Selection has external link");
+		return;
+	}
 
 	const alreadyExistingAnime = animeParent
-		? animeParent.seasons.find(
-				(season) =>
-					season.externalLink.id === selectedAnime.externalLink?.id &&
-					season.externalLink.type === selectedAnime.externalLink?.type,
-			)
+		? animeParent.seasons.find((season) => {
+				const seasonExtLink = season.externalLink;
+
+				if (seasonExtLink.type !== "TMDB" || selectedExtLink.type !== "TMDB") {
+					return (
+						seasonExtLink.id === selectedExtLink.id &&
+						seasonExtLink.type === selectedExtLink.type
+					);
+				}
+
+				console.log({ seasonExtLink, selectedExtLink });
+				return (
+					seasonExtLink.id === selectedExtLink.id &&
+					seasonExtLink.type === selectedExtLink.type &&
+					seasonExtLink.mediaType === selectedExtLink.mediaType &&
+					seasonExtLink.seasonId ===
+						(selectedAnimeInfo.selectedSeasonId ?? undefined)
+				);
+			})
 		: AppData.animes.get(
 				Anime.getAnimeDbId(
 					newExternalLink(selectedAnime.externalLink),

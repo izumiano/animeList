@@ -1,4 +1,10 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import {
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+	type ReactNode,
+} from "react";
 import "./dropdown.css";
 import { useOutsideClick } from "../../utils/useEvents";
 import type { Property } from "csstype";
@@ -142,20 +148,24 @@ const Dropdown = ({
 	forceStaticPosition ??= false;
 
 	const isOpenClass = isOpen ? "show" : "hide";
-	function setIsOpen(isOpen: boolean) {
-		onOpenChange?.call(null, isOpen);
-		setIsOpenState(isOpen);
-	}
+	const setIsOpen = useCallback(
+		(isOpen: boolean) => {
+			console.log("now");
+			onOpenChange?.call(null, isOpen);
+			setIsOpenState(isOpen);
+		},
+		[onOpenChange],
+	);
 
 	return (
 		<div
-			ref={useOutsideClick(() => setIsOpen(false))}
+			ref={useOutsideClick(useCallback(() => setIsOpen(false), [setIsOpen]))}
 			className={`dropdown ${className} ${forceStaticPosition ? "forceStatic" : ""}`}
 		>
 			{useDefaultButtonStyle ? (
 				<button
 					className={buttonClass}
-					onClick={() => setIsOpen(!isOpen)}
+					onClick={() => setIsOpenState(!isOpen)}
 					{...buttonProps}
 				>
 					{dropdownButton}

@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import {
 	SortByValues,
 	type AnimeFilterState,
@@ -63,7 +64,10 @@ const AnimeFilterNode = ({
 					scrollToTop();
 					setAnimeFilterState(animeFilter.newWith("sortBy", value as SortBy));
 				}}
-				onOpenChange={(isOpen) => setParentScrollEnabled(!isOpen)}
+				onOpenChange={useCallback(
+					(isOpen: boolean) => setParentScrollEnabled(!isOpen),
+					[setParentScrollEnabled],
+				)}
 				label={"Sort By"}
 			>
 				{SortByValues.map((option) => (

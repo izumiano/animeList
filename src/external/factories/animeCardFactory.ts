@@ -1,7 +1,12 @@
 import MALCardFactory from "./malCardFactory";
 import BadResponse from "../responses/badResponse";
-import type { ExternalLink } from "../../models/externalLink";
+import type {
+	ExternalLink,
+	MALExternalLink,
+	TMDBExternalLink,
+} from "../../models/externalLink";
 import TMDBCardFactory from "./tmdbCardFactory";
+import type { Require } from "../../utils/utils";
 
 export default class AnimeCardFactory {
 	public static create({
@@ -9,10 +14,16 @@ export default class AnimeCardFactory {
 		order,
 		getSequels,
 	}: {
-		externalLink: ExternalLink;
 		order: number;
-		getSequels: boolean;
-	}) {
+	} & (
+		| { getSequels: true; externalLink: ExternalLink }
+		| ({ getSequels: false } & {
+				externalLink:
+					| MALExternalLink
+					| (Omit<TMDBExternalLink, "mediaType"> & { mediaType: "movie" })
+					| Require<TMDBExternalLink, "seasonId">;
+		  })
+	)) {
 		switch (externalLink?.type) {
 			case "MAL":
 				return MALCardFactory.create({

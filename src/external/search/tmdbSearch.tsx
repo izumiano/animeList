@@ -36,21 +36,49 @@ export default class TMDBSearch {
 		}
 		const id = parseInt(_query);
 		if (!Number.isNaN(id)) {
-			const showDetailsResponse = await TMDBRequest.getShowDetails(id);
+			const showDetailsResponse = TMDBRequest.getDetails({
+				type: "TMDB",
+				id: id,
+				mediaType: "tv",
+			});
+			const movieDetailsResponse = TMDBRequest.getDetails({
+				type: "TMDB",
+				id: id,
+				mediaType: "movie",
+			});
 
-			if (showDetailsResponse instanceof BadResponse) {
-				return showDetailsResponse;
+			const responses = await Promise.allSettled([
+				showDetailsResponse,
+				movieDetailsResponse,
+			]);
+
+			if (
+				responses.every(
+					(response) =>
+						response.status === "rejected" ||
+						response.value instanceof BadResponse ||
+						response.value.statusCode !== 200,
+				)
+			) {
+				responses.map((response) => {
+					if (response.status === "rejected") {
+						return new BadResponse(response.reason);
+					}
+					return new BadResponse(response.value.name, { ...response.value });
+				});
 			}
 
 			return {
 				data: null,
-				statusCode: showDetailsResponse.statusCode,
-				results: showDetailsResponse.seasons,
+				statusCode: 200,
+				results: responses
+					.filter((response) => response.status === "fulfilled")
+					.map((response) => response.value),
 			} as TMDBSearchResponse;
 		}
 
 		const url = new URL(
-			`https://api.themoviedb.org/3/search/tv?query=${query}`,
+			`https://api.themoviedb.org/3/search/multi?query=${query}`,
 		);
 		const request = new Request(url);
 		request.headers.set("Authorization", `Bearer ${tmdbClientId}`);

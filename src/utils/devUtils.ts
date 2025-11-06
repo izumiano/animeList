@@ -40,9 +40,13 @@ async function thing(
 	count?: number,
 ) {
 	const response = AnimeCardFactory.create({
-		externalLink: externalLink,
 		order: 0,
-		getSequels: false,
+		getSequels: true,
+		externalLink: {
+			...externalLink,
+			type: externalLink.type ?? "MAL",
+			id: externalLink.id ?? 1,
+		},
 	});
 	if (response instanceof BadResponse) {
 		toast.error("Failed adding anime");

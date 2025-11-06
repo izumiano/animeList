@@ -147,8 +147,9 @@ export default class LocalDB {
 	}
 
 	public saveAnime(anime: Anime, store: IDBObjectStore) {
-		console.debug("Saving to local database: ", anime);
-		const request = store.put(anime.toIndexedDBObj(), anime.getAnimeDbId());
+		const animeToSave = anime.toIndexedDBObj();
+		console.debug("Saving to local database: ", animeToSave);
+		const request = store.put(animeToSave, anime.getAnimeDbId());
 
 		request.addEventListener("error", (event) => {
 			console.error(event);

@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import type { AnimeFilterState } from "../../models/animeFilter";
 import { sleepFor } from "../../utils/utils";
 import Dropdown from "../generic/dropdown";
@@ -48,12 +49,19 @@ const MainMenuBar = ({
 				useDefaultButtonStyle={false}
 				dropdownButton={<AnimeFilterButton />}
 			>
-				{({ setParentScrollEnabled }) => (
-					<AnimeFilterNode
-						animeFilterState={[animeFilter, setAnimeFilterState]}
-						setParentScrollEnabled={setParentScrollEnabled}
-						fullScreenScrollContainerRef={fullScreenScrollContainerRef}
-					/>
+				{useCallback(
+					({
+						setParentScrollEnabled,
+					}: {
+						setParentScrollEnabled: (enabled: boolean) => void;
+					}) => (
+						<AnimeFilterNode
+							animeFilterState={[animeFilter, setAnimeFilterState]}
+							setParentScrollEnabled={setParentScrollEnabled}
+							fullScreenScrollContainerRef={fullScreenScrollContainerRef}
+						/>
+					),
+					[animeFilter, fullScreenScrollContainerRef, setAnimeFilterState],
 				)}
 			</Dropdown>
 		</div>

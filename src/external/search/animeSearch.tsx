@@ -79,10 +79,7 @@ export default class AnimeSearch {
 
 			callback({
 				seasons: results.results
-					.slice(0, limit)
-					.map((result) =>
-						SeasonDetails.createFromTmdb(result as TMDBSeasonDetailsRequireId),
-					)
+					.filter((result) => result.media_type !== "person")
 					.sort((lhs, rhs) => {
 						if (
 							lhs.popularity &&
@@ -92,7 +89,11 @@ export default class AnimeSearch {
 							return -1;
 						}
 						return 1;
-					}),
+					})
+					.slice(0, limit)
+					.map((result) =>
+						SeasonDetails.createFromTmdb(result as TMDBSeasonDetailsRequireId),
+					),
 				externalType: "TMDB",
 			});
 		});

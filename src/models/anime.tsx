@@ -248,6 +248,7 @@ export default class Anime {
 				type: season.externalLink?.type,
 				id: season.externalLink?.id,
 				seasonId: season.externalLink?.seasonId,
+				mediaType: season.externalLink?.mediaType,
 			});
 
 			const episodes: AnimeEpisode[] = [];
@@ -300,6 +301,7 @@ export default class Anime {
 			externalLink: newExternalLink({
 				type: animeData.externalLink?.type,
 				id: animeData.externalLink?.id,
+				mediaType: animeData.externalLink?.mediaType,
 			}),
 			order: animeData.order,
 			dateStarted: animeData.dateStarted,
@@ -320,7 +322,7 @@ export default class Anime {
 		const objCopy: { [key: string]: any } = {};
 		for (const key in this) {
 			if (Object.prototype.hasOwnProperty.call(this, key)) {
-				if (key === "justAdded") {
+				if (key === "justAdded" || key === "pauseAutoSave") {
 					continue;
 				}
 

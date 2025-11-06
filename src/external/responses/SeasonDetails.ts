@@ -154,9 +154,18 @@ export class SeasonDetails {
 	}
 
 	public static createFromTmdb(tmdbSeasonDetails: TMDBSeasonDetailsRequireId) {
+		const mediaType =
+			tmdbSeasonDetails.media_type !== "person"
+				? tmdbSeasonDetails.media_type
+				: "tv";
+
 		return new SeasonDetails({
 			synopsis: tmdbSeasonDetails.overview,
-			externalLink: { type: "TMDB", id: tmdbSeasonDetails.id },
+			externalLink: {
+				type: "TMDB",
+				id: tmdbSeasonDetails.id,
+				mediaType: mediaType ?? "tv",
+			},
 			approved: undefined,
 			images: tmdbSeasonDetails.poster_path
 				? {
@@ -167,8 +176,9 @@ export class SeasonDetails {
 				: undefined,
 			popularity: tmdbSeasonDetails.popularity,
 			title: SeasonDetails.getTitle({
-				title_english: tmdbSeasonDetails.name,
-				title: tmdbSeasonDetails.original_name,
+				title_english: tmdbSeasonDetails.name ?? tmdbSeasonDetails.title,
+				title:
+					tmdbSeasonDetails.original_name ?? tmdbSeasonDetails.original_title,
 			}),
 			episodes: tmdbSeasonDetails.episodes?.length,
 			status: undefined,

@@ -389,3 +389,7 @@ export function downloadObjectAsFile({
 	a.click();
 	document.body.removeChild(a);
 }
+
+export type Require<T extends object, Incl extends keyof T> = Omit<T, Incl> & {
+	[Key in Incl]-?: T[Incl];
+};
