@@ -150,7 +150,6 @@ const Dropdown = ({
 	const isOpenClass = isOpen ? "show" : "hide";
 	const setIsOpen = useCallback(
 		(isOpen: boolean) => {
-			console.log("now");
 			onOpenChange?.call(null, isOpen);
 			setIsOpenState(isOpen);
 		},

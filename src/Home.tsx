@@ -5,15 +5,15 @@ import { useEffect, useRef, useState } from "react";
 import AppData, { devUtils } from "./appData";
 import AddAnimeMenu from "./components/addAnimeMenu/addAnimeMenu";
 import MainPage from "./components/mainPage";
-import DetailsPage from "./components/detailsPage/detailsPage";
 import LoadingSpinner from "./components/generic/loadingSpinner";
 import { showError } from "./utils/utils";
+import PageManager from "./components/generic/pageManager";
+import DetailsPage from "./components/detailsPage/detailsPage";
+import { detailsPageValid } from "./components/detailsPage/detailsPageConsts";
 
 export type Page = "main" | "details";
 
 function Home({ startPage }: { startPage?: Page }) {
-	const [currentPage, setCurrentPageState] = useState(startPage ?? "main");
-
 	const [animes, setAnimesState] = useState<Map<string, Anime> | undefined>();
 	const [addAnimeMenuIsOpen, setAddAnimeMenuIsOpenState] = useState(false);
 	const fullScreenScrollContainerRef = useRef<HTMLDivElement>(null);
@@ -65,8 +65,6 @@ function Home({ startPage }: { startPage?: Page }) {
 		})();
 	}, []);
 
-	useHandlePageState(currentPage, setCurrentPageState);
-
 	if (!animes) {
 		return (
 			<div className="flexRow horizontalCenterItems verticalCenterItems fullScreenScrollContainer">
@@ -74,61 +72,38 @@ function Home({ startPage }: { startPage?: Page }) {
 			</div>
 		);
 	}
-
 	AppData.animes = animes;
 
 	return (
 		<div>
-			<DetailsPage
-				animes={animes}
-				currentPage={currentPage}
-				setCurrentPageState={setCurrentPageState}
-			/>
-
-			<AddAnimeMenu
-				addAnimes={addAnimes}
-				isOpen={addAnimeMenuIsOpen}
-				setIsOpenState={setAddAnimeMenuIsOpenState}
-			/>
-
-			<MainPage
-				animes={Array.from(animes.values())}
-				reloadAnimes={reloadAnimes}
-				setIsOpenState={setAddAnimeMenuIsOpenState}
-				fullScreenScrollContainerRef={fullScreenScrollContainerRef}
-				setCurrentPageState={setCurrentPageState}
-			/>
+			<PageManager startPage={startPage}>
+				{({ setCurrentPage, pageFailed }) => ({
+					main: {
+						node: (
+							<>
+								<AddAnimeMenu
+									addAnimes={addAnimes}
+									isOpen={addAnimeMenuIsOpen}
+									setIsOpenState={setAddAnimeMenuIsOpenState}
+								/>
+								<MainPage
+									animes={Array.from(animes.values())}
+									reloadAnimes={reloadAnimes}
+									setIsOpenState={setAddAnimeMenuIsOpenState}
+									fullScreenScrollContainerRef={fullScreenScrollContainerRef}
+									setCurrentPageState={setCurrentPage}
+								/>
+							</>
+						),
+					},
+					details: {
+						checkValidity: detailsPageValid,
+						node: <DetailsPage animes={animes} pageFailed={pageFailed} />,
+					},
+				})}
+			</PageManager>
 		</div>
 	);
-}
-
-function useHandlePageState(
-	currentPage: Page,
-	setCurrentPageState: (page: Page) => void,
-) {
-	useEffect(() => {
-		const checkPath = () => {
-			if (
-				/\/details\/(?<id>[^/?#]+)/g.exec(window.location.pathname)?.groups?.id
-			) {
-				if (currentPage !== "details") {
-					setCurrentPageState("details");
-				}
-			} else {
-				if (currentPage !== "main") {
-					setCurrentPageState("main");
-				}
-			}
-		};
-
-		checkPath();
-
-		window.addEventListener("popstate", checkPath);
-
-		return () => {
-			window.removeEventListener("popstate", checkPath);
-		};
-	}, [currentPage, setCurrentPageState]);
 }
 
 async function loadAnimes(

@@ -1,0 +1,34 @@
+.pageManager {
+	position: relative;
+	width: 100dvw;
+	height: 100vh;
+	background-color: var(--colBackground);
+	z-index: 4;
+
+	transition: left 1s;
+
+	display: block;
+
+	&.hidden {
+		width: 0;
+		overflow: hidden;
+	}
+}
+
+.pageManager > div {
+	height: 100vh;
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+.pageManager.show {
+	left: 0;
+}
+
+.pageManager.hide {
+	left: 100dvw;
+}
+
+.pageManager.disableTransition {
+	transition: none;
+}

@@ -1,13 +1,6 @@
-import type { Page } from "../../Home";
 import type Anime from "../../models/anime";
 import Image from "../generic/image";
-import {
-	useCallback,
-	useEffect,
-	useRef,
-	useState,
-	type ReactNode,
-} from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import SeasonPicker from "../animeCard/seasonPicker";
 import {
 	getExternalLogo,
@@ -17,61 +10,38 @@ import {
 import ProgressNode from "../generic/progress/progressNode";
 import "./detailsPage.css";
 import ExpandableText from "../generic/expandableText";
-import { toast } from "react-toastify";
-import useTouch, {
-	type OnTouchEndType,
-	type OnTouchMoveType,
-} from "../../utils/useTouch";
-import { formatDate, fullScreenWidth } from "../../utils/utils";
+import { formatDate } from "../../utils/utils";
 import DetailsPageForm from "./detailsPageForm";
-import useMultipleRef from "../../utils/useMultiple";
-import { useWindowEvent } from "../../utils/useEvents";
 import TabsNode from "../generic/tabsNode";
 import detailsIcon from "assets/details.png";
 import listIcon from "assets/list.png";
 import EpisodeList from "../animeCard/episodeList";
+import { detailsPageValid } from "./detailsPageConsts";
 
-const DetailsPage = ({
+export default function DetailsPage({
 	animes,
-	currentPage,
-	setCurrentPageState,
+	pageFailed,
 }: {
 	animes: Map<string, Anime>;
-	currentPage: Page;
-	setCurrentPageState: (page: Page) => void;
-}) => {
+	pageFailed: (errorMessage?: ReactNode) => void;
+}) {
 	const anime = useRef<Anime>(null);
 	const detailsPageRef = useRef<HTMLDivElement>(null);
-
-	const goToMain = useCallback(
-		(errorMessage?: ReactNode) => {
-			if (errorMessage) {
-				toast.error(errorMessage);
-			}
-
-			if (currentPage === "details") {
-				history.pushState(null, "", "/");
-				setCurrentPageState("main");
-			}
-		},
-		[currentPage, setCurrentPageState],
-	);
 
 	function setCurrentAnime() {
 		if (!window.location.pathname.startsWith("/details/")) {
 			return false;
 		}
 
-		const id = /\/details\/(?<id>[^/?#]+)/g.exec(window.location.pathname)
-			?.groups?.id;
+		const id = detailsPageValid(window.location.pathname).value;
 		if (!id) {
-			goToMain(<span>Missing id in url</span>);
+			pageFailed(<span>Missing id in url</span>);
 			return false;
 		}
 
 		const currentAnime = animes.get(id);
 		if (!currentAnime) {
-			goToMain(
+			pageFailed(
 				<span>
 					Invalid id <b>{id}</b> in url
 				</span>,
@@ -84,69 +54,19 @@ const DetailsPage = ({
 		return true;
 	}
 
-	const didUpdateAnime = setCurrentAnime();
-
-	const [touchOffset, setTouchOffsetState] = useState<number | null>(null);
+	setCurrentAnime();
 
 	return (
-		<div
-			className={`detailsPage ${
-				currentPage === "details" && didUpdateAnime ? "show" : "hide"
-			} ${touchOffset === null ? "" : "disableTransition"}`}
-			style={
-				touchOffset
-					? {
-							left: `${touchOffset && touchOffset > 0 ? touchOffset : 0}px`,
-						}
-					: {}
-			}
-			ref={useMultipleRef(
-				useTouch({
-					onMove: useCallback<OnTouchMoveType>(({ totalMove }) => {
-						setTouchOffsetState(totalMove.x);
-					}, []),
-					onEnd: useCallback<OnTouchEndType>(
-						({ currentTouches, speed }) => {
-							if (currentTouches.size === 0) {
-								setTouchOffsetState(null);
-								if (
-									(touchOffset && touchOffset > fullScreenWidth / 2) ||
-									speed.x > fullScreenWidth / 900
-								) {
-									goToMain();
-								}
-							}
-						},
-						[touchOffset, goToMain],
-					),
-					minX: { positive: fullScreenWidth / 60 },
-				}),
-				useWindowEvent(
-					"scroll",
-					useCallback(() => {
-						const obj = {
-							visual: window.visualViewport?.height,
-							actual: window.outerHeight,
-						};
-
-						if ((obj.visual ?? Infinity) > obj.actual / 2) {
-							window.scrollTo({ top: 0, behavior: "instant" });
-						}
-					}, []),
-				),
-			)}
-		>
-			<div ref={detailsPageRef}>
-				{anime.current ? (
-					<InternalDetailsPage
-						anime={anime.current}
-						scrollParent={detailsPageRef}
-					></InternalDetailsPage>
-				) : null}
-			</div>
+		<div ref={detailsPageRef}>
+			{anime.current ? (
+				<InternalDetailsPage
+					anime={anime.current}
+					scrollParent={detailsPageRef}
+				></InternalDetailsPage>
+			) : null}
 		</div>
 	);
-};
+}
 
 const InternalDetailsPage = ({
 	anime,
@@ -297,5 +217,3 @@ const InternalDetailsPage = ({
 		</>
 	);
 };
-
-export default DetailsPage;

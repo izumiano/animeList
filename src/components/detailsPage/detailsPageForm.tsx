@@ -9,7 +9,6 @@ import { externalLinkId } from "../../models/externalLink";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import DatePicker from "../generic/form/datePicker";
-import { useEffect } from "react";
 
 const DetailsPageForm = ({
 	anime,
@@ -22,10 +21,6 @@ const DetailsPageForm = ({
 	const seasonId = season
 		? externalLinkId(season.externalLink, season.title)
 		: null;
-
-	useEffect(() => {
-		console.log("now");
-	}, [anime.watched, season?.watched]);
 
 	return (
 		<LocalizationProvider dateAdapter={AdapterDayjs}>

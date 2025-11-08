@@ -27,12 +27,12 @@ import {
 	getUrlFromExternalLink,
 } from "../../models/externalLink";
 import ExternalSync from "../../external/externalSync";
-import type { Page } from "../../Home";
 import AddAnimeNode from "../addAnimeMenu/addAnimeNode";
 import AnimeCardFactory from "../../external/factories/animeCardFactory";
 import BadResponse from "../../external/responses/badResponse";
 import { toast } from "react-toastify";
 import RefreshButton from "../generic/progress/refreshButton";
+import type { Page } from "../../Home";
 
 const isOnScreenTolerance = remToPx(17);
 
