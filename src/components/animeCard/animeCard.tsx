@@ -4,11 +4,11 @@ import Anime from "../../models/anime";
 import EpisodeList from "./episodeList";
 import SeasonPicker from "./seasonPicker";
 import { useEffect, useRef, useState } from "react";
-import malLogo from "../../assets/malLogo.png";
-import tmdbLogo from "../../assets/tmdbLogo.png";
-import trashIcon from "../../assets/bin.png";
-import plusIcon from "../../assets/plus.png";
-import minusIcon from "../../assets/minus.png";
+import malLogo from "assets/malLogo.png";
+import tmdbLogo from "assets/tmdbLogo.png";
+import trashIcon from "assets/bin.png";
+import plusIcon from "assets/plus.png";
+import minusIcon from "assets/minus.png";
 import LocalDB from "../../indexedDb/indexedDb";
 import type AnimeFilter from "../../models/animeFilter";
 import {

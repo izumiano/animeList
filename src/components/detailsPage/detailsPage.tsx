@@ -8,8 +8,8 @@ import {
 	useState,
 	type ReactNode,
 } from "react";
-import malLogo from "../../assets/malLogo.png";
-import tmdbLogo from "../../assets/tmdbLogo.png";
+import malLogo from "assets/malLogo.png";
+import tmdbLogo from "assets/tmdbLogo.png";
 import SeasonPicker from "../animeCard/seasonPicker";
 import {
 	getSeasonDetails,
@@ -28,8 +28,8 @@ import DetailsPageForm from "./detailsPageForm";
 import useMultipleRef from "../../utils/useMultiple";
 import { useWindowEvent } from "../../utils/useEvents";
 import TabsNode from "../generic/tabsNode";
-import detailsIcon from "../../assets/details.png";
-import listIcon from "../../assets/list.png";
+import detailsIcon from "assets/details.png";
+import listIcon from "assets/list.png";
 import EpisodeList from "../animeCard/episodeList";
 
 const DetailsPage = ({

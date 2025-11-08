@@ -25,8 +25,8 @@ import {
 } from "../../utils/utils";
 import LocalDB from "../../indexedDb/indexedDb";
 import ExternalSync from "../../external/externalSync";
-import fileUploadIcon from "../../assets/fileUpload.png";
-import fileDownloadIcon from "../../assets/fileDownload.png";
+import fileUploadIcon from "assets/fileUpload.png";
+import fileDownloadIcon from "assets/fileDownload.png";
 import "./addAnimeNode.css";
 import type ActivityTask from "../../utils/activityTask";
 

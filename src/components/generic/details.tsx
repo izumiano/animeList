@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
-import dropdownIcon from "../../assets/dropdown.png";
+import dropdownIcon from "assets/dropdown.png";
 import "./details.css";
 import { useDomEvent } from "../../utils/useEvents";
 import useMultipleRef from "../../utils/useMultiple";

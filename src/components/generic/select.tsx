@@ -8,7 +8,7 @@ import {
 import Dropdown from "./dropdown";
 import "./select.css";
 import { type Alignment } from "../../utils/utils";
-import dropdownIcon from "../../assets/dropdown.png";
+import dropdownIcon from "assets/dropdown.png";
 import type { Property } from "csstype";
 
 type OptionProp<T extends ValueType> = {

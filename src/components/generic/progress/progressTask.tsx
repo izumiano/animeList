@@ -3,7 +3,7 @@ import type ActivityTask from "../../../utils/activityTask";
 import { parseError, type UUIDType } from "../../../utils/utils";
 import ProgressBar from "./progressBar";
 import "./progressTask.css";
-import warnIcon from "../../../assets/warning.png";
+import warnIcon from "assets/warning.png";
 
 const ProgressTask = ({
 	task,

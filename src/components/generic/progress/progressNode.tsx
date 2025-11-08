@@ -7,7 +7,7 @@ import { clamp, type Alignment, type UUIDType } from "../../../utils/utils";
 import Dropdown from "../dropdown";
 import "./progressNode.css";
 import ProgressTask from "./progressTask";
-import warnIcon from "../../../assets/warningYellow.png";
+import warnIcon from "assets/warningYellow.png";
 
 const ProgressNode = ({
 	size,

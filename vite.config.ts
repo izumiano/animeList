@@ -9,6 +9,7 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			csstype: "csstype/index.d.ts",
+			assets: "/src/assets",
 		},
 	},
 });

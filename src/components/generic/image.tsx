@@ -1,4 +1,4 @@
-import missingImage from "../../assets/missingImage.png";
+import missingImage from "assets/missingImage.png";
 
 const Image = ({
 	src,

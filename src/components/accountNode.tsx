@@ -5,7 +5,7 @@ import { MALAuth } from "../external/auth/malAuth";
 import BadResponse from "../external/responses/badResponse";
 import "./accountNode.css";
 import Dropdown from "./generic/dropdown";
-import dropdownIcon from "../assets/dropdown.png";
+import dropdownIcon from "assets/dropdown.png";
 import useSignal from "../utils/useSignal";
 import { FullSizeButtonList } from "./generic/fullSizeButtonList";
 

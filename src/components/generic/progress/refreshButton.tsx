@@ -1,6 +1,6 @@
 import "./refreshButton.css";
 import { useRef, useState } from "react";
-import refreshIcon from "../../../assets/refresh.png";
+import refreshIcon from "assets/refresh.png";
 import { sleepFor } from "../../../utils/utils";
 
 export default function RefreshButton({
