@@ -4,8 +4,6 @@ import Anime from "../../models/anime";
 import EpisodeList from "./episodeList";
 import SeasonPicker from "./seasonPicker";
 import { useEffect, useRef, useState } from "react";
-import malLogo from "assets/malLogo.png";
-import tmdbLogo from "assets/tmdbLogo.png";
 import trashIcon from "assets/bin.png";
 import plusIcon from "assets/plus.png";
 import minusIcon from "assets/minus.png";
@@ -24,7 +22,10 @@ import {
 import Dropdown from "../generic/dropdown";
 import ConfirmationDropdown from "../generic/confirmationDropdown";
 import { useOtherElementEvent } from "../../utils/useEvents";
-import { getUrlFromExternalLink } from "../../models/externalLink";
+import {
+	getExternalLogo,
+	getUrlFromExternalLink,
+} from "../../models/externalLink";
 import ExternalSync from "../../external/externalSync";
 import type { Page } from "../../Home";
 import AddAnimeNode from "../addAnimeMenu/addAnimeNode";
@@ -213,11 +214,7 @@ const AnimeCard = ({
 										target="_blank"
 										rel="noopener noreferrer"
 									>
-										<img
-											src={
-												seasonExternalLink.type === "MAL" ? malLogo : tmdbLogo
-											}
-										></img>
+										<img src={getExternalLogo(seasonExternalLink.type)}></img>
 									</a>
 								) : null}
 							</h1>

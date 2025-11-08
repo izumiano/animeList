@@ -4,6 +4,8 @@ import BadResponse from "../external/responses/badResponse";
 import { SeasonDetails } from "../external/responses/SeasonDetails";
 import TMDBRequest from "../external/tmdbRequest";
 import type AnimeSeason from "./animeSeason";
+import malLogo from "assets/malLogo.png";
+import tmdbLogo from "assets/tmdbLogo.png";
 
 export const ExternalLinkTypeValues = ["MAL", "TMDB", undefined] as const;
 export type ExternalLinkType = (typeof ExternalLinkTypeValues)[number];
@@ -89,5 +91,17 @@ export async function getSeasonDetails(season: AnimeSeason, fields: string[]) {
 				started_date: airedDate ? new Date(airedDate) : undefined,
 			});
 		}
+	}
+}
+
+export function getExternalLogo(externalLinkType: ExternalLinkType) {
+	switch (externalLinkType) {
+		case "MAL":
+			return malLogo;
+		case "TMDB":
+			return tmdbLogo;
+
+		default:
+			return;
 	}
 }

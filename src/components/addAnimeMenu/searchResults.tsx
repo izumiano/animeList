@@ -1,6 +1,9 @@
 import { useId, useState } from "react";
 import type { SeasonDetails } from "../../external/responses/SeasonDetails";
-import { ExternalLinkTypeValues } from "../../models/externalLink";
+import {
+	ExternalLinkTypeValues,
+	getExternalLogo,
+} from "../../models/externalLink";
 import Image from "../generic/image";
 import LoadingSpinner from "../generic/loadingSpinner";
 import type { SearchResultsType, SelectedAnimeInfoType } from "./addAnimeNode";
@@ -34,7 +37,7 @@ const SearchResults = ({
 				return (
 					<Details
 						key={`${id}${externalType}`}
-						title={externalType}
+						title={<img src={getExternalLogo(externalType)} width={25} />}
 						defaultIsOpen={true}
 						contentClassName="typeSearchResults"
 					>

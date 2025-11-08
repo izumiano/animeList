@@ -8,10 +8,9 @@ import {
 	useState,
 	type ReactNode,
 } from "react";
-import malLogo from "assets/malLogo.png";
-import tmdbLogo from "assets/tmdbLogo.png";
 import SeasonPicker from "../animeCard/seasonPicker";
 import {
+	getExternalLogo,
 	getSeasonDetails,
 	getUrlFromExternalLink,
 } from "../../models/externalLink";
@@ -238,11 +237,7 @@ const InternalDetailsPage = ({
 										target="_blank"
 										rel="noopener noreferrer"
 									>
-										<img
-											src={
-												seasonExternalLink.type === "MAL" ? malLogo : tmdbLogo
-											}
-										></img>
+										<img src={getExternalLogo(seasonExternalLink.type)}></img>
 									</a>
 								) : null}
 							</h1>
