@@ -50,13 +50,19 @@ export function dvhToPx(dvhValue: number) {
 	return pixelValue;
 }
 
-function _parseError(ex: unknown, params?: { showDetails?: boolean }) {
+function _parseError(
+	ex: unknown,
+	params?: { showDetails?: boolean; handleScroll?: boolean },
+) {
+	const showDetails = params?.showDetails ?? false;
+	const handleScroll = params?.handleScroll ?? true;
+
 	if (ex == null) {
 		return null;
 	} else if (typeof ex === "string") {
 		return ex;
 	} else if (ex instanceof BadResponse) {
-		if (!params?.showDetails) {
+		if (!showDetails) {
 			return ex.displayMessage;
 		}
 
@@ -66,28 +72,32 @@ function _parseError(ex: unknown, params?: { showDetails?: boolean }) {
 			<>
 				<span>{ex.displayMessage}</span>
 				{data ? (
-					<pre className="unimportantText scroll">
+					<pre className={`unimportantText ${handleScroll ? "scroll" : ""}`}>
 						<i>{isValidElement(data) ? data : JSON.stringify(data, null, 2)}</i>
 					</pre>
 				) : null}
 			</>
 		);
 	} else if (ex instanceof Error) {
-		if (!params?.showDetails) {
+		if (!showDetails) {
 			return ex.message;
 		}
 
 		return (
 			<>
-				<span>{ex.message}</span>
-				<pre className="unimportantText scroll">
+				<span>
+					<b>{ex.name}</b>: {ex.message}
+				</span>
+				<span
+					className={`unimportantText preWrap ${handleScroll ? "scroll" : ""}`}
+				>
 					<i>{ex.stack}</i>
-				</pre>
+				</span>
 			</>
 		);
 	} else if (Array.isArray(ex)) {
 		return (
-			<span className="scroll">
+			<span className={`${handleScroll ? "scroll" : ""}`}>
 				{" "}
 				{ex.map((ex) => (
 					<span key={uuid()} className="flexGrow">
@@ -110,10 +120,10 @@ function _parseError(ex: unknown, params?: { showDetails?: boolean }) {
 
 export function parseError(
 	ex: unknown,
-	params?: { title?: ReactNode; showDetails?: boolean },
+	params?: { title?: ReactNode; showDetails?: boolean; handleScroll?: boolean },
 ) {
 	return (
-		<div className="flexColumn breakWord" style={{ height: "100%" }}>
+		<div className="flexColumn breakWord fullHeight">
 			{params?.title ? <span>{params.title}</span> : null}
 			{_parseError(ex, params)}
 		</div>

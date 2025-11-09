@@ -4,11 +4,13 @@ import "./index.css";
 import App from "./App.tsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./Home.tsx";
+import MyErrorBoundary from "./routeErrorPage.tsx";
 
 const router = createBrowserRouter([
 	{
 		path: import.meta.env.BASE_URL,
 		element: <App />,
+		errorElement: <MyErrorBoundary />,
 		children: [
 			{ index: true, element: <Home /> },
 			{ path: "malAuth", element: <Home /> },

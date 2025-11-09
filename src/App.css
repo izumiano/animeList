@@ -108,6 +108,11 @@ h2 {
 	font-weight: 600;
 }
 
+h3 {
+	font-size: 1rem;
+	font-weight: 600;
+}
+
 .smallText {
 	font-size: small;
 }
@@ -144,7 +149,6 @@ hr {
 }
 
 .verticalCenterItems {
-	align-content: center;
 	align-items: center;
 }
 
@@ -228,7 +232,7 @@ hr {
 }
 
 .scroll {
-	overflow: scroll;
+	overflow: auto;
 }
 
 .overflowHidden {
@@ -260,6 +264,10 @@ hr {
 	overflow-wrap: break-word;
 }
 
+.preWrap {
+	white-space: pre-wrap;
+}
+
 .hoverableText {
 	background-color: transparent;
 	cursor: pointer;
@@ -283,6 +291,10 @@ hr {
 
 .fullWidth {
 	width: 100%;
+}
+
+.fullHeight {
+	height: 100%;
 }
 
 .circleButton {
