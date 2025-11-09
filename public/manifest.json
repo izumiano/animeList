@@ -1,0 +1,20 @@
+{
+	"short_name": "Anime List",
+	"name": "Anime List",
+	"icons": [
+		{
+			"src": "/androidIcon192.png",
+			"sizes": "192x192",
+			"type": "image/png"
+		},
+		{
+			"src": "/androidIcon512.png",
+			"sizes": "512x512",
+			"type": "image/png"
+		}
+	],
+	"start_url": ".",
+	"display": "standalone",
+	"theme_color": "#3A2A32",
+	"background_color": "#1E0A14"
+}
