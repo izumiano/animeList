@@ -14,8 +14,6 @@
 
 	--arrowHeight: 1rem;
 	--maxHeight: 100%;
-
-	translate: 0 calc(var(--offset) * -1);
 }
 
 .dropdownMenu.leftAlign {

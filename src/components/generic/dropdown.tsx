@@ -48,24 +48,15 @@ const Dropdown = ({
 }) => {
 	const [isOpen, setIsOpenState] = useState(false);
 	const dropdownContentRef = useRef<HTMLDivElement>(null);
-	const dropdownContentScrollRef = useRef<HTMLDivElement>(null);
 	const dropdownWrapperRef = useRef<HTMLDivElement>(null);
-	const [dropdownContentScroll, setDropdownContentScroll] = useState(0);
 	const [dropdownMaxHeight, setDropdownMaxHeight] = useState(0);
 	const [dropdownWrapperHeight, setDropdownWrapperHeight] = useState(0);
 	const [scrollEnabled, setScrollEnabledState] = useState(true);
 
 	useEffect(() => {
-		const currentContentScroll = dropdownContentScrollRef.current;
 		const currentWrapper = dropdownWrapperRef.current;
 		const currentList = listRef?.current ?? window;
 		const currentScrollElement = scrollElementRef?.current ?? document;
-
-		const handleScroll = () => {
-			if (currentContentScroll) {
-				setDropdownContentScroll(currentContentScroll.scrollTop);
-			}
-		};
 
 		const handleMove = () => {
 			if (currentWrapper) {
@@ -87,9 +78,6 @@ const Dropdown = ({
 			});
 		});
 
-		if (currentContentScroll) {
-			currentContentScroll.addEventListener("scroll", handleScroll);
-		}
 		if (currentWrapper) {
 			sizeObserverHandleSize.observe(currentWrapper);
 		}
@@ -109,14 +97,10 @@ const Dropdown = ({
 			}
 		}
 
-		handleScroll();
 		handleMove();
 		handleSize();
 
 		return () => {
-			if (currentContentScroll) {
-				currentContentScroll.removeEventListener("scroll", handleScroll);
-			}
 			if (currentWrapper) {
 				sizeObserverHandleSize.disconnect();
 			}
@@ -124,17 +108,16 @@ const Dropdown = ({
 				currentScrollElement.removeEventListener("scroll", handleMove);
 			}
 			if (currentList) {
-				sizeObserverHandleMove.disconnect();
+				if (currentList instanceof Window) {
+					currentList.removeEventListener("resize", handleMove);
+				} else {
+					sizeObserverHandleMove.disconnect();
+				}
 			}
 		};
 	}, [listRef, scrollElementRef]);
 
-	const requiresScroll = isOpen && dropdownMaxHeight <= dropdownWrapperHeight;
-
-	dropdownContentRef.current?.style.setProperty(
-		"--offset",
-		`${dropdownContentScroll}px`,
-	);
+	const requiresScroll = dropdownMaxHeight <= dropdownWrapperHeight;
 
 	dropdownContentRef.current?.style.setProperty(
 		"--maxHeight",
@@ -184,7 +167,7 @@ const Dropdown = ({
 					</div>
 				</div>
 			</div>
-			<div className={`dropdownMenu ${isOpenClass} ${alignment}Align test`}>
+			<div className={`dropdownMenu ${isOpenClass} ${alignment}Align`}>
 				<div ref={dropdownWrapperRef} className="dropdownWrapper">
 					<div
 						ref={dropdownContentRef}
@@ -194,7 +177,6 @@ const Dropdown = ({
 						}}
 					>
 						<div
-							ref={dropdownContentScrollRef}
 							className={`${scrollEnabled && requiresScroll ? "scroll" : ""}`}
 						>
 							{typeof children === "function"
