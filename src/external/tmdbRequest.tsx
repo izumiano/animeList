@@ -4,6 +4,8 @@ import WebUtil from "../utils/webUtil";
 import { tmdbClientId } from "./auth/tmdbAuth";
 import TMDBErrorHandler from "./errorHandlers/tmdbErrorHandler";
 import BadResponse from "./responses/badResponse";
+import type TMDBCreateRequestTokenResponse from "./responses/tmdbCreateRequestTokenResponse";
+import type TMDBCreateSessionResponse from "./responses/tmdbCreateSessionResponse";
 import type TMDBSeasonResponse from "./responses/tmdbSeasonResponse";
 import type TMDBShowResponse from "./responses/tmdbShowResponse";
 
@@ -60,5 +62,32 @@ export default class TMDBRequest {
 				),
 			})) as TMDBSeasonResponse | BadResponse;
 		});
+	}
+
+	public static async createRequestToken() {
+		const url = new URL(
+			"https://api.themoviedb.org/3/authentication/token/new",
+		);
+		const request = new Request(url);
+		request.headers.set("Authorization", `Bearer ${tmdbClientId}`);
+
+		return (await WebUtil.fetch(request, "GET", {
+			errorHandler: new TMDBErrorHandler(
+				<span>Failed creating request token</span>,
+			),
+		})) as TMDBCreateRequestTokenResponse | BadResponse;
+	}
+
+	public static async createSession(requestToken: string) {
+		const url = new URL(
+			"https://api.themoviedb.org/3/authentication/session/new",
+		);
+		const request = new Request(url);
+		request.headers.set("Authorization", `Bearer ${tmdbClientId}`);
+		request.headers.set("content-type", "application/json");
+
+		return (await WebUtil.fetch(request, "POST", {
+			bodyObj: { request_token: requestToken },
+		})) as TMDBCreateSessionResponse | BadResponse;
 	}
 }

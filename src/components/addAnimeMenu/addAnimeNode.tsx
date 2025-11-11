@@ -11,6 +11,7 @@ import {
 	ExternalLinkTypeValues,
 	newExternalLink,
 	type ExternalLink,
+	type ExternalLinkToValueType,
 	type ExternalLinkType,
 } from "../../models/externalLink";
 import AnimeCardFactory from "../../external/factories/animeCardFactory";
@@ -30,9 +31,9 @@ import fileDownloadIcon from "assets/fileDownload.png";
 import "./addAnimeNode.css";
 import type ActivityTask from "../../utils/activityTask";
 
-export type SearchResultsType = {
-	[K in Exclude<ExternalLinkType, undefined>]: SeasonDetails[] | "loading";
-};
+export type SearchResultsType = ExternalLinkToValueType<
+	SeasonDetails[] | "loading"
+>;
 
 export type SelectedAnimeInfoType = {
 	index: number;

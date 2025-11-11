@@ -8,6 +8,14 @@ import { sleepFor } from "./utils";
 
 export type RequestMethod = "GET" | "POST" | "PUT" | "DELETE";
 
+type FetchParams<TErrorHandler> = {
+	body?: BodyInit;
+	bodyObj?: object;
+	acceptStatusCodes?: number[];
+	errorHandler?: TErrorHandler;
+	requestInit?: RequestInit;
+};
+
 const MAX_RATELIMIT_ITERATIONS = 40;
 
 export default class WebUtil {
@@ -98,15 +106,15 @@ export default class WebUtil {
 	>(
 		request: RequestInfo,
 		method?: RequestMethod,
-		params?: {
-			body?: BodyInit;
-			acceptStatusCodes?: number[];
-			errorHandler?: TErrorHandler;
-			requestInit?: RequestInit;
-		},
+		params?: FetchParams<TErrorHandler>,
 	) {
+		const bodyObj = params?.bodyObj;
+
 		return await this.doRequest<TData, TReturn, TErrorType, TErrorHandler>(
-			new Request(request, { method: method ?? "GET", body: params?.body }),
+			new Request(request, {
+				method: method ?? "GET",
+				body: bodyObj ? JSON.stringify(bodyObj) : params?.body,
+			}),
 			params,
 		);
 	}
@@ -119,12 +127,7 @@ export default class WebUtil {
 	>(
 		request: Request | URL,
 		method?: RequestMethod,
-		params?: {
-			body?: BodyInit;
-			acceptStatusCodes?: number[];
-			errorHandler?: TErrorHandler;
-			requestInit?: RequestInit;
-		},
+		params?: FetchParams<TErrorHandler>,
 	) {
 		params ??= {};
 		params.requestInit ??= { cache: "no-store" };

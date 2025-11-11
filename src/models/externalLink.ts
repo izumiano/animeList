@@ -105,3 +105,19 @@ export function getExternalLogo(externalLinkType: ExternalLinkType) {
 			return;
 	}
 }
+
+export function getExternalHomepage(externalLinkType: ExternalLinkType) {
+	switch (externalLinkType) {
+		case "MAL":
+			return "https://myanimelist.net";
+		case "TMDB":
+			return "https://www.themoviedb.org";
+
+		default:
+			return;
+	}
+}
+
+export type ExternalLinkToValueType<T> = {
+	[K in Exclude<ExternalLinkType, undefined>]: T;
+};

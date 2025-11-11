@@ -9,10 +9,26 @@
 }
 
 .accountDropdownMenu {
-	min-width: 10rem;
+	width: min(50vw, 26rem);
+
+	> :not(.listIgnore, hr),
+	> .listIgnore > :not(hr) {
+		padding: var(--padding);
+	}
 }
 
 .accountImage {
 	width: 2rem;
 	height: 2rem;
+
+	border-radius: 0.5rem;
+}
+
+.externalLinksGrid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+
+	> * {
+		white-space: nowrap;
+	}
 }

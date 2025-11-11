@@ -8,10 +8,12 @@ import "./App.css";
 import { Outlet } from "react-router-dom";
 import { MALAuth } from "./external/auth/malAuth";
 import { useEffect } from "react";
+import { TMDBAuth } from "./external/auth/tmdbAuth";
 
 function App() {
 	useEffect(() => {
 		MALAuth.instance.init();
+		TMDBAuth.instance.init();
 	}, []);
 
 	return (

@@ -36,13 +36,6 @@ html {
 	background-color: var(--colBackground);
 }
 
-button {
-	box-sizing: border-box;
-	border-radius: 1rem;
-	color: white;
-	background-color: var(--colAccent);
-}
-
 #root {
 	position: relative;
 	width: 100%;
@@ -334,4 +327,12 @@ hr {
 .circle {
 	background-color: black;
 	border-radius: 100vw;
+}
+
+a.staticStyle {
+	text-decoration-color: white;
+
+	> * {
+		color: white;
+	}
 }

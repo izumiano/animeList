@@ -8,6 +8,7 @@ import type MALUserTokenResponse from "../responses/MALUserTokenResponse";
 import { MALCryptography } from "./malCryptography";
 import { MALUserToken } from "./malUserToken";
 import Signal from "../../utils/signal";
+import type IAuth from "./IAuth";
 
 export const malClientId = import.meta.env.VITE_MAL_CLIENT_ID;
 const redirectUri = window.location.origin + "/malAuth";
@@ -15,14 +16,13 @@ const redirectUri = window.location.origin + "/malAuth";
 let acquireUserTokenAbortController = new AbortController();
 let refreshTokenAbortController = new AbortController();
 
-export class MALAuth {
+export class MALAuth implements IAuth {
 	public static readonly instance = new MALAuth();
 	public static get accessToken() {
 		return this.instance.userToken?.accessToken;
 	}
 
 	private readonly cryptography: MALCryptography = new MALCryptography();
-	// public userToken: MALUserToken | undefined;
 	private _userToken: MALUserToken | undefined;
 	public get userToken() {
 		return this._userToken;
@@ -36,11 +36,14 @@ export class MALAuth {
 
 	public init() {
 		(async () => {
-			const code = new URLSearchParams(window.location.search).get("code");
-			if (code) {
-				const token = await MALAuth.instance.acquireUserToken(code);
-				if (!token) {
-					return;
+			if (window.location.pathname === "/malAuth") {
+				const code = new URLSearchParams(window.location.search).get("code");
+				history.replaceState(null, "", import.meta.env.BASE_URL);
+				if (code) {
+					const token = await MALAuth.instance.acquireUserToken(code);
+					if (!token || token instanceof Error) {
+						return;
+					}
 				}
 			}
 			MALAuth.instance.authorize();
@@ -49,7 +52,7 @@ export class MALAuth {
 
 	public authorize() {
 		const tempUserToken = MALUserToken.create();
-		if (tempUserToken) {
+		if (!(tempUserToken instanceof BadResponse)) {
 			if (tempUserToken.isExpired()) {
 				this.refreshUserToken(tempUserToken.refreshToken);
 			} else {
@@ -73,7 +76,7 @@ export class MALAuth {
 			code_challenge: codeChallenge,
 		}).toString();
 
-		localStorage.setItem("codeChallenge", codeChallenge);
+		localStorage.setItem("mal_codeChallenge", codeChallenge);
 		window.location.assign(url.toString());
 	}
 
@@ -96,7 +99,7 @@ export class MALAuth {
 				label: "Acquiring User Token",
 				task: async () => {
 					const url = "https://myanimelist.net/v1/oauth2/token";
-					const codeChallenge = localStorage.getItem("codeChallenge");
+					const codeChallenge = localStorage.getItem("mal_codeChallenge");
 					if (!codeChallenge) {
 						return new BadResponse(
 							"Tried acquiring user token, but no code challenge was saved.",
@@ -133,8 +136,7 @@ export class MALAuth {
 					if (userToken instanceof BadResponse) {
 						return userToken;
 					}
-					localStorage.removeItem("codeChallenge");
-					history.replaceState(null, "", import.meta.env.BASE_URL);
+					localStorage.removeItem("mal_codeChallenge");
 					this.userToken = userToken;
 					return userToken;
 				},
@@ -208,8 +210,8 @@ export class MALAuth {
 		}
 
 		const token = MALUserToken.create(response);
-		if (!token) {
-			return new BadResponse("Failed creating new mal user token.");
+		if (token instanceof BadResponse) {
+			return token;
 		}
 		this.userToken = token;
 		console.debug("successfully refreshed user token", token.accessToken);

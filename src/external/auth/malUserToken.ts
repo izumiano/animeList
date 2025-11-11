@@ -39,9 +39,9 @@ export class MALUserToken {
 		let refreshToken;
 		let expiresAt;
 		if (!data) {
-			accessToken = localStorage.getItem("accessToken");
-			refreshToken = localStorage.getItem("refreshToken");
-			const expiresAtStr = localStorage.getItem("expiresAt");
+			accessToken = localStorage.getItem("mal_accessToken");
+			refreshToken = localStorage.getItem("mal_refreshToken");
+			const expiresAtStr = localStorage.getItem("mal_expiresAt");
 			expiresAt = expiresAtStr ? new Date(parseInt(expiresAtStr)) : null;
 		} else {
 			accessToken = data.access_token;
@@ -52,12 +52,14 @@ export class MALUserToken {
 		}
 
 		if (!accessToken || !refreshToken || !expiresAt) {
-			return;
+			return new BadResponse("Missing accessToken, refreshToken or expiresAt", {
+				data: { accessToken, refreshToken, expiresAt },
+			});
 		}
 
-		localStorage.setItem("accessToken", accessToken);
-		localStorage.setItem("refreshToken", refreshToken);
-		localStorage.setItem("expiresAt", String(expiresAt.getTime()));
+		localStorage.setItem("mal_accessToken", accessToken);
+		localStorage.setItem("mal_refreshToken", refreshToken);
+		localStorage.setItem("mal_expiresAt", String(expiresAt.getTime()));
 
 		return new MALUserToken({
 			accessToken: accessToken,
@@ -67,9 +69,9 @@ export class MALUserToken {
 	}
 
 	public static clear() {
-		localStorage.removeItem("accessToken");
-		localStorage.removeItem("refreshToken");
-		localStorage.removeItem("expiresAt");
+		localStorage.removeItem("mal_accessToken");
+		localStorage.removeItem("mal_refreshToken");
+		localStorage.removeItem("mal_expiresAt");
 	}
 
 	public isExpired() {

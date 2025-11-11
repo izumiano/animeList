@@ -1,6 +1,5 @@
-.fullSizeButtonList > :is(button, a) {
+.fullSizeButtonList :is(button, a):not(.listIgnore) {
 	border: 1px solid transparent;
-	padding: 0.6em 1.2em;
 	font-size: 1em;
 	font-weight: 500;
 	font-family: inherit;
@@ -11,7 +10,6 @@
 	text-decoration: none;
 
 	border-radius: 0;
-	width: 100%;
 	background-color: transparent;
 
 	transition: background-color 0.2s, outline 0.2s, border-color 0.25s;
@@ -27,13 +25,15 @@
 	border-bottom-right-radius: var(--dropdownContentBorderRadius);
 }
 
-.fullSizeButtonList > :is(button, a):hover {
+.fullSizeButtonList :is(button, a):not(.listIgnore, .staticStyle):hover {
 	border-color: #646cff;
 	background-color: var(--colAccent);
 }
 
-.fullSizeButtonList > :is(button, a):focus,
-.fullSizeButtonList > :is(button, a):focus-visible {
+.fullSizeButtonList :is(button, a):not(.listIgnore,
+	.staticStyle):focus,
+.fullSizeButtonList :is(button, a):not(.listIgnore,
+	.staticStyle):focus-visible {
 	background-color: var(--colAccent);
 	outline: 4px auto -webkit-focus-ring-color;
 }
