@@ -213,6 +213,7 @@ export default function AccountNode() {
 												onClick={() => {
 													externalLinkData.authInstance.login();
 												}}
+												className="listIgnore transparentBackground"
 											>
 												Login
 											</button>
