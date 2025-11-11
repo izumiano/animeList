@@ -215,7 +215,7 @@ export default function AccountNode() {
 												}}
 												className="listIgnore transparentBackground"
 											>
-												Login
+												Log In
 											</button>
 										)}
 									</div>
