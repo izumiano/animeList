@@ -37,8 +37,32 @@ export class MALAuth implements IAuth {
 	public init() {
 		(async () => {
 			if (window.location.pathname === "/malAuth") {
-				const code = new URLSearchParams(window.location.search).get("code");
+				const searchParams = new URLSearchParams(window.location.search);
+				const code = searchParams.get("code");
+				const error = searchParams.get("error");
+
 				history.replaceState(null, "", import.meta.env.BASE_URL);
+
+				if (error) {
+					console.error("MAL Authentication was denied");
+
+					await sleepFor(1000);
+					showError(
+						new BadResponse("MAL Authentication was denied", {
+							data: {
+								error,
+								message: decodeURIComponent(searchParams.get("message") ?? ""),
+								hint: decodeURIComponent(searchParams.get("hint") ?? ""),
+							},
+						}),
+						null,
+						{
+							showInProgressNode: true,
+						},
+					);
+					return;
+				}
+
 				if (code) {
 					const token = await MALAuth.instance.acquireUserToken(code);
 					if (!token || token instanceof Error) {
