@@ -10,7 +10,6 @@ import Anime from "../../models/anime";
 import {
 	ExternalLinkTypeValues,
 	newExternalLink,
-	type ExternalLink,
 	type ExternalLinkToValueType,
 	type ExternalLinkType,
 } from "../../models/externalLink";
@@ -281,10 +280,10 @@ export default function AddAnimeNode({
 								return;
 							}
 
-							const createAnimeTask = getCreateAnimeTask({
+							const createAnimeTask = AnimeCardFactory.create({
 								externalLink: selectedAnime.externalLink,
+								order: 0,
 								getSequels: !animeParent,
-								seasonId: selectedAnimeInfo?.selectedSeasonId,
 							});
 
 							handleCreateAnime(createAnimeTask, resolve);
@@ -296,65 +295,6 @@ export default function AddAnimeNode({
 			</ProgressButton>
 		</div>
 	);
-}
-
-function getCreateAnimeTask({
-	externalLink,
-	getSequels,
-	seasonId,
-}: {
-	externalLink: ExternalLink;
-	getSequels: boolean;
-	seasonId: number | null | undefined;
-}) {
-	switch (externalLink.type) {
-		case "MAL":
-			return AnimeCardFactory.create({
-				externalLink: externalLink,
-				order: AppData.animes.size,
-				getSequels: getSequels,
-			});
-		case "TMDB":
-			switch (externalLink.mediaType) {
-				case "tv":
-					if (getSequels) {
-						return AnimeCardFactory.create({
-							externalLink: externalLink,
-							order: AppData.animes.size,
-							getSequels: true,
-						});
-					} else {
-						if (seasonId == null) {
-							return new BadResponse("Missing season id in getCreateAnimeTask");
-						}
-						return AnimeCardFactory.create({
-							externalLink: {
-								...externalLink,
-								type: "TMDB",
-								mediaType: "tv",
-								seasonId: seasonId,
-							},
-							order: AppData.animes.size,
-							getSequels: getSequels,
-						});
-					}
-				case "movie":
-					return AnimeCardFactory.create({
-						externalLink: {
-							...externalLink,
-							type: "TMDB",
-							mediaType: "movie",
-						},
-						order: AppData.animes.size,
-						getSequels: getSequels,
-					});
-				default:
-					return new BadResponse("Invalid media type");
-			}
-
-		default:
-			return new BadResponse("Invalid external link type");
-	}
 }
 
 function getSelectedAnime(

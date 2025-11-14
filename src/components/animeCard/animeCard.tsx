@@ -361,14 +361,12 @@ const AnimeCard = ({
 									<RefreshButton
 										className="circleButton refreshButton"
 										onClick={async () => {
-											const response =
-												selectedSeason.externalLink.type === "MAL"
-													? AnimeCardFactory.create({
-															externalLink: selectedSeason.externalLink,
-															order: 0,
-															getSequels: false,
-														})
-													: new BadResponse("not implemented refresh");
+											const response = AnimeCardFactory.create({
+												externalLink: selectedSeason.externalLink,
+												order: 0,
+												getSequels: false,
+											});
+
 											const onError = (error?: Error | null | undefined) => {
 												showError(
 													error,

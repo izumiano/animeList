@@ -12,11 +12,18 @@ export default class TMDBCardFactory {
 		externalLink,
 		order,
 		getSequels,
-	}: {
-		order: number;
-		getSequels: boolean;
-		externalLink: TMDBExternalLink;
-	}) {
+	}: { order: number } & (
+		| {
+				getSequels: true;
+				externalLink: TMDBExternalLink;
+		  }
+		| {
+				getSequels: false;
+				externalLink:
+					| (Omit<TMDBExternalLink, "mediaType"> & { mediaType: "movie" })
+					| Require<TMDBExternalLink, "seasonId">;
+		  }
+	)) {
 		if (externalLink.type !== "TMDB") {
 			return new BadResponse(`Wrong external link type [${externalLink.type}]`);
 		}
