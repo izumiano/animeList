@@ -282,7 +282,7 @@ export default function AddAnimeNode({
 
 							const createAnimeTask = AnimeCardFactory.create({
 								externalLink: selectedAnime.externalLink,
-								order: 0,
+								order: AppData.animes.size,
 								getSequels: !animeParent,
 							});
 
