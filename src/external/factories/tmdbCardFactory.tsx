@@ -146,6 +146,7 @@ export default class TMDBCardFactory {
 							seasonNumber: 1,
 							mediaType: externalLink.mediaType,
 							externalLink: externalLink,
+							score: null,
 							dateStarted: null,
 							dateFinished: null,
 						}),
@@ -219,6 +220,7 @@ export default class TMDBCardFactory {
 			seasonNumber: 1,
 			mediaType: "movie",
 			externalLink: externalLink,
+			score: null,
 			dateStarted: null,
 			dateFinished: null,
 		});
@@ -266,9 +268,10 @@ export default class TMDBCardFactory {
 			watched: false,
 			externalLink: externalLink,
 			title: seasonResponse.name,
+			mediaType: "tv",
+			score: null,
 			dateStarted: null,
 			dateFinished: null,
-			mediaType: "tv",
 		});
 	}
 }

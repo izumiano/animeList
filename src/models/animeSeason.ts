@@ -11,6 +11,7 @@ export default class AnimeSeason {
 	seasonNumber: number;
 	mediaType: MediaType | undefined;
 	externalLink: ExternalLink;
+	score: number | null;
 	dateStarted: Date | null;
 	dateFinished: Date | null;
 
@@ -26,6 +27,7 @@ export default class AnimeSeason {
 		seasonNumber: number;
 		mediaType: MediaType | undefined;
 		externalLink: ExternalLink;
+		score: number | null;
 		dateStarted: Date | number | null;
 		dateFinished: Date | number | null;
 		anime?: Anime;
@@ -46,6 +48,7 @@ export default class AnimeSeason {
 		this.watched = params.watched;
 		this.seasonNumber = params.seasonNumber;
 		this.mediaType = params.mediaType;
+		this.score = params.score;
 
 		this.dateStarted = !params.dateStarted
 			? null

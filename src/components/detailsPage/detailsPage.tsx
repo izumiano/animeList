@@ -1,6 +1,12 @@
 import type Anime from "../../models/anime";
 import Image from "../generic/image";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import {
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+	type ReactNode,
+} from "react";
 import SeasonPicker from "../animeCard/seasonPicker";
 import {
 	getExternalLogo,
@@ -17,6 +23,7 @@ import detailsIcon from "assets/details.png";
 import listIcon from "assets/list.png";
 import EpisodeList from "../animeCard/episodeList";
 import { detailsPageValid } from "./detailsPageConsts";
+import StarRating from "../generic/starRating";
 
 export default function DetailsPage({
 	animes,
@@ -131,6 +138,16 @@ const InternalDetailsPage = ({
 		setSelectedSeasonWatchedState(selectedSeason?.watched ?? false);
 	}, [selectedSeason?.watched]);
 
+	const setSelectedSeasonScore = useCallback(
+		(score: number | null) => {
+			if (!selectedSeason) {
+				return;
+			}
+			selectedSeason.score = score;
+		},
+		[selectedSeason],
+	);
+
 	return (
 		<>
 			<div className="cardBase detailedCard">
@@ -162,18 +179,25 @@ const InternalDetailsPage = ({
 								) : null}
 							</h1>
 							{selectedSeason ? (
-								<SeasonPicker
-									animeTitle={anime.title}
-									seasons={anime.seasons}
-									selectedSeason={selectedSeason}
-									watched={selectedSeasonWatched}
-									onSelect={(seasonNumber) => {
-										setIndex(seasonNumber - 1);
-										const newSelectedSeason = anime.seasons[seasonNumber - 1];
-										newSelectedSeason.checkWatchedAll(newSelectedSeason);
-										setSelectedSeasonWatchedState(newSelectedSeason.watched);
-									}}
-								/>
+								<div className="flexRow">
+									<SeasonPicker
+										animeTitle={anime.title}
+										seasons={anime.seasons}
+										selectedSeason={selectedSeason}
+										watched={selectedSeasonWatched}
+										onSelect={(seasonNumber) => {
+											setIndex(seasonNumber - 1);
+											const newSelectedSeason = anime.seasons[seasonNumber - 1];
+											newSelectedSeason.checkWatchedAll(newSelectedSeason);
+											setSelectedSeasonWatchedState(newSelectedSeason.watched);
+										}}
+									/>
+									<StarRating
+										defaultValue={selectedSeason.score}
+										onChange={setSelectedSeasonScore}
+										className="mediumMargin-horizontal"
+									/>
+								</div>
 							) : null}
 						</div>
 						<ProgressNode

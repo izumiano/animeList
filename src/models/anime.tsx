@@ -280,6 +280,7 @@ export default class Anime {
 					seasonNumber: season.seasonNumber,
 					mediaType: season.mediaType,
 					externalLink: seasonExternalLink,
+					score: season.score ?? null,
 					dateStarted: season.dateStarted,
 					dateFinished: season.dateFinished,
 				}),

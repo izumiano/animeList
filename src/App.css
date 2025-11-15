@@ -212,6 +212,46 @@ hr {
 	margin: var(--smallMargin);
 }
 
+.largeMargin-horizontal {
+	margin-left: var(--largeMargin);
+	margin-right: var(--largeMargin);
+}
+
+.margin-horizontal {
+	margin-left: var(--margin);
+	margin-right: var(--margin);
+}
+
+.mediumMargin-horizontal {
+	margin-left: var(--mediumMargin);
+	margin-right: var(--mediumMargin);
+}
+
+.smallMargin-horizontal {
+	margin-left: var(--smallMargin);
+	margin-right: var(--smallMargin);
+}
+
+.largeMargin-vertical {
+	margin-top: var(--largeMargin);
+	margin-bottom: var(--largeMargin);
+}
+
+.margin-vertical {
+	margin-top: var(--margin);
+	margin-bottom: var(--margin);
+}
+
+.mediumMargin-vertical {
+	margin-top: var(--mediumMargin);
+	margin-bottom: var(--mediumMargin);
+}
+
+.smallMargin-vertical {
+	margin-top: var(--smallMargin);
+	margin-bottom: var(--smallMargin);
+}
+
 .gap {
 	gap: var(--margin);
 }

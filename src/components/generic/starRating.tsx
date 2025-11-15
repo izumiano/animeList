@@ -1,5 +1,6 @@
 import {
 	useCallback,
+	useEffect,
 	useId,
 	useRef,
 	useState,
@@ -13,29 +14,42 @@ import useDrag from "../../utils/useDrag";
 export default function StarRating({
 	defaultValue,
 	starCount,
+	onChange,
+	className,
 }: {
-	defaultValue?: number;
+	defaultValue?: number | null;
 	starCount?: number;
+	onChange?: (value: number | null) => void;
+	className?: string;
 }) {
 	starCount ??= 5;
-	defaultValue ??= 2.5;
 
 	const starRatingContainerRef = useRef<HTMLDivElement>(null);
 
-	const [value, setValueState] = useState(defaultValue);
-	const [hoverValue, setHoverValueState] = useState(defaultValue);
+	const [value, setValueState] = useState(defaultValue ?? null);
+	const [hoverValue, setHoverValueState] = useState(defaultValue ?? 0);
 
 	const id = useId();
 
 	const _valueWrapper = useRef(value);
 	_valueWrapper.current = value;
-	const setValue = useCallback((newValue: number) => {
-		setHoverValueState(newValue);
-		if (newValue === _valueWrapper.current) {
-			return;
-		}
-		setValueState(newValue);
-	}, []);
+	const setValue = useCallback(
+		(newValue: number | null) => {
+			setHoverValueState(newValue ?? 0);
+			if (newValue === _valueWrapper.current) {
+				return;
+			}
+			onChange?.call(null, newValue);
+			setValueState(newValue);
+		},
+		[onChange],
+	);
+
+	useEffect(() => {
+		setValue(defaultValue ?? null);
+	}, [defaultValue, setValue]);
+
+	const hasValue = value != null;
 
 	return (
 		<div
@@ -63,19 +77,22 @@ export default function StarRating({
 				}),
 			)}
 			onMouseLeave={() => {
-				setHoverValueState(value);
+				setHoverValueState(value ?? 0);
 			}}
-			className="flexRow starRatingContainer margin"
+			className={`flexRow starRatingContainer verticalCenter ${className}`}
 		>
 			{new Array(starCount).fill(null).map((_, index) => {
 				const backgroundFillAmount = clamp(hoverValue - index, {
 					min: 0,
 					max: 1,
 				});
-				const mainFillAmount = clamp(value - index, {
-					min: 0,
-					max: 1,
-				});
+				const mainFillAmount =
+					value != null
+						? clamp(value - index, {
+								min: 0,
+								max: 1,
+							})
+						: 0;
 
 				return (
 					<StarIcon
@@ -85,6 +102,9 @@ export default function StarRating({
 						}}
 						backgroundStarProps={{
 							fillAmount: clamp(backgroundFillAmount, { min: mainFillAmount }),
+						}}
+						outlineStarProps={{
+							color: hasValue ? "#eee" : "var(--colAccent)",
 						}}
 					/>
 				);
@@ -119,7 +139,7 @@ function StarIcon({
 type EmptyStarProps = { color?: string };
 
 function EmptyStar({ color }: EmptyStarProps) {
-	color ??= "white";
+	color ??= "#eee";
 
 	return (
 		<svg
@@ -149,8 +169,8 @@ interface FilledStarCSSProperties extends CSSProperties {
 type FilledStarProps = { color?: string; fillAmount?: number };
 
 function FilledStar({ color, fillAmount }: FilledStarProps) {
-	color ??= "white";
-	fillAmount ??= 1;
+	color ??= "#eee";
+	fillAmount ??= 0;
 
 	return (
 		<svg

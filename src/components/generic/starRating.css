@@ -1,5 +1,8 @@
 .starRatingContainer {
 	width: fit-content;
+	height: fit-content;
+
+	position: relative;
 
 	> .starIcon {
 		position: relative;

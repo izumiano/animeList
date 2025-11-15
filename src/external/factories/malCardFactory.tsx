@@ -183,6 +183,7 @@ export default class MALCardFactory {
 					watched: false,
 					externalLink: newExternalLink({ type: "MAL", id: seasonId }),
 					mediaType: seasonData.type ?? "tv",
+					score: null,
 					dateStarted: null,
 					dateFinished: null,
 				}),
