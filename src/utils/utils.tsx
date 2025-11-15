@@ -403,3 +403,11 @@ export function downloadObjectAsFile({
 export type Require<T extends object, Incl extends keyof T> = Omit<T, Incl> & {
 	[Key in Incl]-?: T[Incl];
 };
+
+export function roundToNearestDecimal(number: number, decimal: number) {
+	return Math.round(number / decimal) * decimal;
+}
+
+export function ceilToNearestDecimal(number: number, decimal: number) {
+	return Math.ceil(number / decimal) * decimal;
+}

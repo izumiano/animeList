@@ -1,0 +1,21 @@
+.starRatingContainer {
+	width: fit-content;
+
+	> .starIcon {
+		position: relative;
+
+		width: 24px;
+		height: 24px;
+
+		> .star-filled,
+		> .star-empty {
+			position: absolute;
+			left: 0;
+			top: 0;
+		}
+
+		> .star-filled {
+			clip-path: polygon(0 0, var(--fillAmount) 0, var(--fillAmount) 100%, 0% 100%);
+		}
+	}
+}

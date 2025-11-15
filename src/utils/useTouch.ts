@@ -16,16 +16,19 @@ function calculateSpeed(
 	return { x: delta.x / deltaTime, y: delta.y / deltaTime };
 }
 
-export type OnTouchStartType = (
-	currentTouches: Map<number, TouchWithTimestamp>,
-) => void;
+export type OnTouchStartType = (params: {
+	currentTouches: Map<number, TouchWithTimestamp>;
+	event: TouchEvent;
+}) => void;
 export type OnTouchMoveType = (params: {
 	totalMove: { x: number; y: number };
 	speed: { x: number; y: number };
+	event: TouchEvent;
 }) => void;
 export type OnTouchEndType = (params: {
 	currentTouches: Map<number, TouchWithTimestamp>;
 	speed: { x: number; y: number };
+	event: TouchEvent;
 }) => void;
 
 export default function useTouch<T extends HTMLElement>({
@@ -73,7 +76,10 @@ export default function useTouch<T extends HTMLElement>({
 					time: performance.now(),
 				});
 			}
-			onStart?.call(touchElemRef, touches.current);
+			onStart?.call(touchElemRef, {
+				currentTouches: touches.current,
+				event: event,
+			});
 		};
 		currentElem.addEventListener("touchstart", handleStart);
 
@@ -104,7 +110,11 @@ export default function useTouch<T extends HTMLElement>({
 			}
 			hasStartedTouch.current = true;
 			event.preventDefault();
-			onMove?.call(touchElemRef, { totalMove: totalMove, speed: totalSpeed });
+			onMove?.call(touchElemRef, {
+				totalMove: totalMove,
+				speed: totalSpeed,
+				event: event,
+			});
 		};
 		currentElem.addEventListener("touchmove", handleMove);
 
@@ -130,6 +140,7 @@ export default function useTouch<T extends HTMLElement>({
 			onEnd?.call(touchElemRef, {
 				currentTouches: touches.current,
 				speed: totalSpeed,
+				event: event,
 			});
 
 			if (touches.current.size === 0) {
