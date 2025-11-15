@@ -1,6 +1,5 @@
 import {
 	useCallback,
-	useEffect,
 	useId,
 	useRef,
 	useState,
@@ -9,7 +8,7 @@ import {
 import "./starRating.css";
 import { ceilToNearestDecimal, clamp } from "../../utils/utils";
 import useMultipleRef from "../../utils/useMultiple";
-import useTouch, { type OnTouchStartType } from "../../utils/useTouch";
+import useDrag from "../../utils/useDrag";
 
 export default function StarRating({
 	defaultValue,
@@ -26,30 +25,7 @@ export default function StarRating({
 	const [value, setValueState] = useState(defaultValue);
 	const [hoverValue, setHoverValueState] = useState(defaultValue);
 
-	const isClicking = useRef(false);
-	const isTouching = useRef(false);
-
 	const id = useId();
-
-	const getValueFromMouseEvent = useCallback(
-		(
-			event: React.MouseEvent<HTMLDivElement, MouseEvent> | MouseEvent | Touch,
-		) => {
-			if (!starRatingContainerRef.current) {
-				return;
-			}
-
-			const boundingRect =
-				starRatingContainerRef.current.getBoundingClientRect();
-			const value =
-				((event.clientX - boundingRect.left) / boundingRect.width) * starCount;
-			if (value < 0.25) {
-				return 0;
-			}
-			return clamp(ceilToNearestDecimal(value, 0.5), { max: starCount });
-		},
-		[starCount],
-	);
 
 	const _valueWrapper = useRef(value);
 	_valueWrapper.current = value;
@@ -61,81 +37,35 @@ export default function StarRating({
 		setValueState(newValue);
 	}, []);
 
-	useEffect(() => {
-		const handleMouseMove = (event: MouseEvent) => {
-			if (isClicking.current) {
-				const newValue = getValueFromMouseEvent(event);
-				if (newValue == null) {
-					return;
-				}
-				setValue(newValue);
-			}
-		};
-		const handleMouseUp = () => {
-			isClicking.current = false;
-		};
-
-		const handleTouchMove = (event: TouchEvent) => {
-			if (isTouching.current) {
-				const newValue = getValueFromMouseEvent(event.touches[0]);
-				if (newValue == null) {
-					return;
-				}
-				setValue(newValue);
-			}
-		};
-
-		const handleTouchEnd = () => {
-			isTouching.current = false;
-		};
-
-		document.addEventListener("mousemove", handleMouseMove);
-		document.addEventListener("mouseup", handleMouseUp);
-
-		document.addEventListener("touchmove", handleTouchMove);
-		document.addEventListener("touchend", handleTouchEnd);
-		document.addEventListener("touchcancel", handleTouchEnd);
-
-		return () => {
-			document.removeEventListener("mousemove", handleMouseMove);
-			document.removeEventListener("mouseup", handleMouseUp);
-
-			document.removeEventListener("touchmove", handleTouchMove);
-			document.removeEventListener("touchend", handleTouchEnd);
-			document.removeEventListener("touchcancel", handleTouchEnd);
-		};
-	}, [getValueFromMouseEvent, setValue]);
-
 	return (
 		<div
 			ref={useMultipleRef(
 				starRatingContainerRef,
-				useTouch({
-					onStart: useCallback<OnTouchStartType>(({ event }) => {
-						event.stopImmediatePropagation();
-						isTouching.current = true;
-					}, []),
+				useDrag({
+					onValueChange: useCallback(
+						({ horizontal, isConfirm }) => {
+							let value = horizontal * starCount;
+							if (value < 0.25) {
+								value = 0;
+							}
+							value = clamp(ceilToNearestDecimal(value, 0.5), {
+								max: starCount,
+							});
+
+							if (isConfirm) {
+								setValue(value);
+							} else {
+								setHoverValueState(value);
+							}
+						},
+						[starCount, setValue],
+					),
 				}),
 			)}
-			className="flexRow starRatingContainer margin"
-			onMouseMove={(event) => {
-				const relativeMousePos = getValueFromMouseEvent(event);
-				if (relativeMousePos == null) {
-					return;
-				}
-				setHoverValueState(relativeMousePos);
-			}}
 			onMouseLeave={() => {
 				setHoverValueState(value);
 			}}
-			onMouseDown={(event) => {
-				isClicking.current = true;
-				const relativeMousePos = getValueFromMouseEvent(event);
-				if (relativeMousePos == null) {
-					return;
-				}
-				setValue(relativeMousePos);
-			}}
+			className="flexRow starRatingContainer margin"
 		>
 			{new Array(starCount).fill(null).map((_, index) => {
 				const backgroundFillAmount = clamp(hoverValue - index, {
