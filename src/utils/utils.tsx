@@ -413,3 +413,10 @@ export function roundToNearestDecimal(number: number, decimal: number) {
 export function ceilToNearestDecimal(number: number, decimal: number) {
 	return Math.ceil(number / decimal) * decimal;
 }
+
+export class CanceledOperation {
+	public reason?: string;
+	constructor(reason?: string) {
+		this.reason = reason;
+	}
+}

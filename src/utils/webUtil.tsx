@@ -34,23 +34,27 @@ export default class WebUtil {
 	) {
 		const acceptedStatusCodes = params?.acceptStatusCodes ?? [200, 429, 401];
 
+		let statusCode: number | undefined;
+
 		try {
 			const response = await fetch(request, params?.requestInit);
+			statusCode = response.status;
 			const data: TReturn | TErrorType = await response.json();
 
 			if (
-				!acceptedStatusCodes.includes(response.status) ||
+				!acceptedStatusCodes.includes(statusCode) ||
 				!(params?.errorHandler?.isSuccess(data, acceptedStatusCodes) ?? true)
 			) {
+				console.warn("1");
 				return new BadResponse(
 					getFailMessage({
 						message: params?.errorHandler?.getFailureMessage(
 							request.url,
 							data as TErrorType,
 						),
-						statusCode: response.status,
+						statusCode: statusCode,
 					}),
-					{ data: data, statusCode: response.status },
+					{ data: data, statusCode: statusCode },
 				);
 			}
 
@@ -60,8 +64,11 @@ export default class WebUtil {
 			return ret;
 		} catch (ex) {
 			return new BadResponse(
-				getFailMessage({ message: (ex as Error).message }),
-				{ data: ex },
+				getFailMessage({
+					message: (ex as Error).message,
+					statusCode: statusCode,
+				}),
+				{ data: ex, statusCode: statusCode },
 			);
 		}
 
@@ -74,23 +81,22 @@ export default class WebUtil {
 		}) {
 			if (!message || typeof message === "string") {
 				return (
-					<span>
-						{message ? (
-							<>{message}</>
-						) : (
-							<>
-								Failed getting <b>{request.url}</b>
-							</>
-						)}
+					<div className="flexColumn">
+						<span>
+							{message ? (
+								message
+							) : (
+								<>
+									Failed getting <b>{request.url}</b>
+								</>
+							)}
+						</span>
 						{statusCode ? (
-							<>
-								{" "}
-								with status code <b>{statusCode}</b>
-							</>
-						) : (
-							<></>
-						)}
-					</span>
+							<span>
+								Status code <b>{statusCode}</b>
+							</span>
+						) : null}
+					</div>
 				);
 			}
 

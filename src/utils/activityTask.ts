@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import type BadResponse from "../external/responses/badResponse";
-import { type UUIDType } from "./utils";
+import { showError, type ShowErrorParams, type UUIDType } from "./utils";
 import { v4 as uuid } from "uuid";
 
 export type ActivityTaskQueueType = Map<UUIDType, ActivityTask<unknown>>;
@@ -11,7 +11,7 @@ type ActivityTaskObserver = (args: {
 	isDeletion: boolean;
 }) => void;
 
-export function pushTask<T>(
+export async function pushTask<T>(
 	task: ActivityTask<T> | { label: ReactNode; value: T; isError?: boolean },
 ) {
 	if (!(task instanceof ActivityTask)) {
@@ -24,7 +24,8 @@ export function pushTask<T>(
 	}
 
 	taskQueue.set(task.id, task);
-	return task.start();
+	await task.start();
+	return task;
 }
 
 class ActivityTaskListener {
@@ -62,7 +63,8 @@ export default class ActivityTask<T> {
 	maxProgress: number;
 	task?: ActivityTaskType<T>;
 
-	result: { value: ActivityTaskReturnType<T>; failed: boolean } | undefined;
+	result: ActivityTaskReturnType<T> | undefined;
+	failed: boolean;
 
 	private started = false;
 
@@ -84,8 +86,11 @@ export default class ActivityTask<T> {
 		this.maxProgress = params.maxProgress ?? 1;
 		this.task = params.task;
 
+		this.failed = false;
+
 		if (!params.task) {
-			this.result = { value: params.value, failed: !!params.failed };
+			this.result = params.value;
+			this.failed = !!params.failed;
 		}
 	}
 
@@ -98,7 +103,7 @@ export default class ActivityTask<T> {
 	}
 
 	public async start() {
-		if (this.started) return this.result?.value;
+		if (this.started) return this.result;
 		this.started = true;
 
 		if (taskQueue.has(this.id)) {
@@ -111,7 +116,7 @@ export default class ActivityTask<T> {
 		});
 
 		if (this.result) {
-			return this.result.value;
+			return this.result;
 		}
 
 		let taskResult;
@@ -145,7 +150,8 @@ export default class ActivityTask<T> {
 		} else {
 			this.progress = this.maxProgress;
 		}
-		this.result = { value: taskResult, failed: failed };
+		this.result = taskResult;
+		this.failed = failed;
 		this._onProgressUpdate({
 			progress: this.progress,
 			maxProgress: this.maxProgress,
@@ -156,5 +162,9 @@ export default class ActivityTask<T> {
 		}
 
 		return taskResult;
+	}
+
+	public showError(params?: ShowErrorParams) {
+		showError(this.result, this.label, params);
 	}
 }

@@ -1,5 +1,6 @@
 import AppData from "../appData";
 import ExternalSync from "../external/externalSync";
+import type Anime from "./anime";
 import type AnimeSeason from "./animeSeason";
 
 export default class AnimeEpisode {
@@ -20,7 +21,7 @@ export default class AnimeEpisode {
 		title: string;
 		episodeNumber: number;
 		watched: boolean;
-		seasonInfo?: { season: AnimeSeason; animeTitle?: string };
+		seasonInfo?: { season: AnimeSeason; anime: Anime | undefined };
 	}) {
 		this.title = title;
 		this.episodeNumber = episodeNumber;
@@ -47,10 +48,17 @@ export default class AnimeEpisode {
 
 							if (property === "watched" && seasonInfo) {
 								seasonInfo.season.updateDate();
-								ExternalSync.updateAnimeSeasonStatus(
-									seasonInfo.season,
-									seasonInfo.animeTitle,
-								);
+
+								if (seasonInfo.season.externalLink.type === "MAL") {
+									ExternalSync.updateSeasonStatus(
+										seasonInfo.season,
+										seasonInfo.anime,
+									).then((task) => {
+										if (task.failed) {
+											task.showError();
+										}
+									});
+								}
 							}
 						}
 					}

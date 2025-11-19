@@ -7,7 +7,7 @@ export default class TMDBErrorHandler extends IErrorHandler<TMDBErrorResponse> {
 	}
 
 	public isSuccess(data: any) {
-		return !data.status_message || !data.status_code || data.success == null;
+		return data.success === true || !data.status_message || !data.status_code;
 	}
 
 	public getFailureMessage(_url: string, data: TMDBErrorResponse) {

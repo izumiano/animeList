@@ -12,7 +12,7 @@ export default class MALRequest {
 		season: AnimeSeason,
 		fields: string[] = [],
 	) {
-		const response = await pushTask(
+		const task = await pushTask(
 			new ActivityTask({
 				label: "Getting Anime Details",
 				task: async () => {
@@ -47,6 +47,8 @@ export default class MALRequest {
 				},
 			}),
 		);
+
+		const response = task.result;
 
 		if (response instanceof Error) {
 			return response;

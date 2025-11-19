@@ -87,6 +87,7 @@ export class MALUserToken {
 		const data: MALUpdateMyListStatus = {
 			status: "plan_to_watch",
 			num_watched_episodes: episodesWatched,
+			score: (season.score ?? 0) * 2,
 		};
 
 		const isCompleted = episodesWatched >= season.episodes.length;
@@ -165,6 +166,7 @@ export class MALUserToken {
 				.join("&"),
 			errorHandler: new MalErrorHandler("Failed updating"),
 		})) as MALMyListStatusResponse | BadResponse;
+
 		if (response instanceof BadResponse) {
 			return response;
 		}

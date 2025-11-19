@@ -9,6 +9,7 @@ import {
 } from "react";
 import SeasonPicker from "../animeCard/seasonPicker";
 import {
+	externalLinkId,
 	getExternalLogo,
 	getSeasonDetails,
 	getUrlFromExternalLink,
@@ -16,7 +17,7 @@ import {
 import ProgressNode from "../generic/progress/progressNode";
 import "./detailsPage.css";
 import ExpandableText from "../generic/expandableText";
-import { formatDate } from "../../utils/utils";
+import { CanceledOperation, formatDate } from "../../utils/utils";
 import DetailsPageForm from "./detailsPageForm";
 import TabsNode from "../generic/tabsNode";
 import detailsIcon from "assets/details.png";
@@ -24,6 +25,8 @@ import listIcon from "assets/list.png";
 import EpisodeList from "../animeCard/episodeList";
 import { detailsPageValid } from "./detailsPageConsts";
 import StarRating from "../generic/starRating";
+import LoadingSpinner from "../generic/loadingSpinner";
+import ExternalSync from "../../external/externalSync";
 
 export default function DetailsPage({
 	animes,
@@ -116,6 +119,8 @@ const InternalDetailsPage = ({
 	);
 	const seasonExternalLink = selectedSeason?.externalLink;
 
+	const [updatingScoreIds, setUpdatingScoreIdsState] = useState(new Set());
+
 	useEffect(() => {
 		if (!selectedSeason) return;
 
@@ -138,14 +143,37 @@ const InternalDetailsPage = ({
 		setSelectedSeasonWatchedState(selectedSeason?.watched ?? false);
 	}, [selectedSeason?.watched]);
 
+	const id = externalLinkId(selectedSeason?.externalLink, anime.title);
 	const setSelectedSeasonScore = useCallback(
-		(score: number | null) => {
+		async (score: number | null) => {
 			if (!selectedSeason) {
 				return;
 			}
 			selectedSeason.score = score;
+
+			setUpdatingScoreIdsState((prev) => {
+				const newSet = new Set(prev);
+				newSet.add(id);
+				return newSet;
+			});
+			const task = await ExternalSync.updateSeasonStatus(
+				selectedSeason,
+				anime,
+				{ doPushTask: false, showToastOnSuccess: false },
+			);
+			if (task.failed) {
+				task.showError();
+			}
+			if (task.result instanceof CanceledOperation) {
+				return;
+			}
+			setUpdatingScoreIdsState((prev) => {
+				const newSet = new Set(prev);
+				newSet.delete(id);
+				return newSet;
+			});
 		},
-		[selectedSeason],
+		[selectedSeason, anime, id],
 	);
 
 	return (
@@ -196,6 +224,11 @@ const InternalDetailsPage = ({
 										defaultValue={selectedSeason.score}
 										onChange={setSelectedSeasonScore}
 									/>
+									{updatingScoreIds.size > 0 ? (
+										<LoadingSpinner
+											props={{ size: "0.5rem", centered: true }}
+										/>
+									) : null}
 								</div>
 							) : null}
 						</div>

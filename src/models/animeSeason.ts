@@ -41,7 +41,7 @@ export default class AnimeSeason {
 				...episode,
 				...{
 					animeDbId: params.animeDbId,
-					seasonInfo: { season: this, animeTitle: params.anime?.title },
+					seasonInfo: { season: this, anime: params.anime },
 				},
 			});
 		});
@@ -140,7 +140,7 @@ export default class AnimeSeason {
 					...{
 						episodeNumber: index + atIndex,
 						animeDbId: this.anime?.getAnimeDbId(),
-						seasonInfo: { season: this, animeTitle: this.anime?.title },
+						seasonInfo: { season: this, anime: this.anime },
 					},
 				});
 			});

@@ -41,7 +41,7 @@ const ProgressNode = ({
 			const newTasks = Array.from(newTasksMap.values());
 
 			const progresses = newTasks.map((item) => {
-				if (item.result?.failed === true) return 1;
+				if (item.failed === true) return 1;
 
 				return item.progress / item.maxProgress;
 			});
@@ -69,7 +69,7 @@ const ProgressNode = ({
 
 	const tasksArr = Array.from(tasks.values());
 
-	const hasFailure = tasksArr.some((task) => task.result?.failed === true);
+	const hasFailure = tasksArr.some((task) => task.failed === true);
 
 	return (
 		<Dropdown

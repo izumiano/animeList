@@ -90,7 +90,7 @@ export default function AddAnimeNode({
 
 		allSuccess(anime.seasons, {
 			forEach: async (season) =>
-				ExternalSync.updateAnimeSeasonStatus(season, anime.title, {
+				await ExternalSync.updateSeasonStatus(season, anime, {
 					showToastOnSuccess: false,
 					allowAbort: false,
 				}),

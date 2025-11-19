@@ -13,7 +13,7 @@ const ProgressTask = ({
 	onDelete: (id: UUIDType) => void;
 }) => {
 	const [forceClose, setForceCloseState] = useState(false);
-	const failed = task.result?.failed === true;
+	const failed = task.failed === true;
 
 	const doClose =
 		(task.progress / task.maxProgress === 1 && !failed) || forceClose;
@@ -34,7 +34,7 @@ const ProgressTask = ({
 				<div className="progressLabel spaceBetween flexRow flexGrow">
 					<span style={{ flex: "1 1 0px", width: "0" }}>
 						{failed
-							? parseError(task.result!.value, {
+							? parseError(task.result, {
 									showDetails: true,
 									title: task.label,
 								})

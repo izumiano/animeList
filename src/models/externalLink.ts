@@ -38,6 +38,24 @@ export function newExternalLink(
 	}
 }
 
+export function externalLinkEq(lhs: ExternalLink, rhs: ExternalLink) {
+	switch (lhs.type) {
+		case "MAL":
+			return lhs.type === rhs.type && lhs.id === rhs.id;
+		case "TMDB":
+			return (
+				lhs.type === rhs.type &&
+				lhs.id === rhs.id &&
+				lhs.mediaType === rhs.mediaType
+			);
+		case undefined:
+			return lhs.type === rhs.type;
+		default:
+			console.warn(`Unknown external link type ${(lhs as any).type}`);
+			return false;
+	}
+}
+
 export function getUrlFromExternalLink(externalLink: ExternalLink) {
 	switch (externalLink.type) {
 		case "MAL":
@@ -52,18 +70,15 @@ export function getUrlFromExternalLink(externalLink: ExternalLink) {
 	}
 }
 
-export function externalLinkId(externalLink: ExternalLink, title: string) {
-	switch (externalLink.type) {
+export function externalLinkId(
+	externalLink: ExternalLink | undefined,
+	title: string,
+) {
+	switch (externalLink?.type) {
 		case "MAL":
 			return `MAL${externalLink.id}`;
 
 		case "TMDB":
-			if (!externalLink.mediaType) {
-				console.warn(externalLink);
-				console.warn(
-					`TMDB_${externalLink.mediaType}${externalLink.id}${externalLink.seasonId ?? ""}`,
-				);
-			}
 			return `TMDB${externalLink.mediaType}${externalLink.id}${externalLink.seasonId ?? ""}`;
 		default:
 			return `NONE${title}`;

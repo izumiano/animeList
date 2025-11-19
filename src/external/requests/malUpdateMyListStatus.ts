@@ -9,4 +9,5 @@ export default interface MALUpdateMyListStatus {
 	num_watched_episodes?: number;
 	start_date?: string;
 	finish_date?: string;
+	score?: number;
 }

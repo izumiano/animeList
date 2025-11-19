@@ -239,13 +239,10 @@ const AnimeCard = ({
 													onSuccess: () => {
 														allSuccess(seasons, {
 															forEach: async (season) =>
-																ExternalSync.deleteAnimeSeason(
-																	season,
-																	anime.title,
-																	{
-																		showToastOnSuccess: false,
-																	},
-																),
+																ExternalSync.deleteAnimeSeason(season, anime, {
+																	showToastOnSuccess: false,
+																	forceDelete: true,
+																}),
 															successMessage: (
 																<span>
 																	Successfully deleted <b>{anime.title}</b> from{" "}
@@ -335,10 +332,7 @@ const AnimeCard = ({
 												dismissMessage="Keep"
 												closeDropdown={closeDropdown}
 												onConfirm={() => {
-													ExternalSync.deleteAnimeSeason(
-														selectedSeason,
-														anime.title,
-													);
+													ExternalSync.deleteAnimeSeason(selectedSeason, anime);
 
 													anime.removeSeasonAtIndex(index);
 													setSeasonsState(anime.seasons);

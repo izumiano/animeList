@@ -33,21 +33,31 @@ export default function StarRating({
 
 	const _valueWrapper = useRef(value);
 	_valueWrapper.current = value;
-	const setValue = useCallback(
-		(newValue: number | null) => {
-			setHoverValueState(newValue ?? 0);
-			if (newValue === _valueWrapper.current) {
-				return;
-			}
-			onChange?.call(null, newValue);
-			setValueState(newValue);
-		},
-		[onChange],
-	);
+	const setValue = useCallback((newValue: number | null) => {
+		if (newValue === _valueWrapper.current) {
+			return;
+		}
+		setHoverValueState(newValue ?? 0);
+		setValueState(newValue);
+	}, []);
 
 	useEffect(() => {
-		setValue(defaultValue ?? null);
+		setValueState(defaultValue ?? null);
+		setHoverValueState(defaultValue ?? 0);
 	}, [defaultValue, setValue]);
+
+	const calculateValueFromXPos = useCallback(
+		(x: number) => {
+			let value = x * starCount;
+			if (value < 0.25) {
+				value = 0;
+			}
+			return clamp(ceilToNearestDecimal(value, 0.5), {
+				max: starCount,
+			});
+		},
+		[starCount],
+	);
 
 	const hasValue = !!value;
 
@@ -56,23 +66,34 @@ export default function StarRating({
 			ref={useMultipleRef(
 				starRatingContainerRef,
 				useDrag({
-					onValueChange: useCallback(
-						({ horizontal, isConfirm }) => {
-							let value = horizontal * starCount;
-							if (value < 0.25) {
-								value = 0;
-							}
-							value = clamp(ceilToNearestDecimal(value, 0.5), {
-								max: starCount,
-							});
+					onClick: useCallback(
+						({ x }) => {
+							const value = calculateValueFromXPos(x);
 
-							if (isConfirm) {
+							setValue(value);
+						},
+						[calculateValueFromXPos, setValue],
+					),
+					onMove: useCallback(
+						({ x, isClicking }) => {
+							const value = calculateValueFromXPos(x);
+
+							if (isClicking) {
 								setValue(value);
 							} else {
 								setHoverValueState(value);
 							}
 						},
-						[starCount, setValue],
+						[calculateValueFromXPos, setValue],
+					),
+					onRelease: useCallback(
+						({ x }) => {
+							const value = calculateValueFromXPos(x);
+
+							setValue(value);
+							onChange?.call(null, value);
+						},
+						[setValue, onChange, calculateValueFromXPos],
 					),
 				}),
 			)}

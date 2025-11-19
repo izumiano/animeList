@@ -1,13 +1,15 @@
 import { useCallback, useEffect, useRef } from "react";
 
+type ClickProps = { x: number; y: number };
+
 export default function useDrag({
-	onValueChange,
+	onClick,
+	onMove,
+	onRelease,
 }: {
-	onValueChange: (props: {
-		horizontal: number;
-		vertical: number;
-		isConfirm: boolean;
-	}) => void;
+	onClick: (props: ClickProps) => void;
+	onMove: (props: ClickProps & { isClicking: boolean }) => void;
+	onRelease: (props: ClickProps) => void;
 }) {
 	const isClicking = useRef(false);
 	const isTouching = useRef(false);
@@ -25,8 +27,8 @@ export default function useDrag({
 
 			const boundingRect = currElem.getBoundingClientRect();
 			return {
-				horizontal: (event.clientX - boundingRect.left) / boundingRect.width,
-				vertical: (event.clientY - boundingRect.top) / boundingRect.height,
+				x: (event.clientX - boundingRect.left) / boundingRect.width,
+				y: (event.clientY - boundingRect.top) / boundingRect.height,
 			};
 		},
 		[element],
@@ -35,14 +37,14 @@ export default function useDrag({
 	useEffect(() => {
 		const currElem = element.current;
 
-		const hanldeMouseDown = (event: MouseEvent) => {
+		const handleMouseDown = (event: MouseEvent) => {
 			event.preventDefault();
 			isClicking.current = true;
 			const relativeMousePos = getValueFromEvent(event);
 			if (relativeMousePos == null) {
 				return;
 			}
-			onValueChange({ ...relativeMousePos, isConfirm: true });
+			onClick(relativeMousePos);
 		};
 
 		const handleMouseMove = (event: MouseEvent) => {
@@ -50,7 +52,7 @@ export default function useDrag({
 			if (relativeMousePos == null) {
 				return;
 			}
-			onValueChange({ ...relativeMousePos, isConfirm: isClicking.current });
+			onMove({ ...relativeMousePos, isClicking: isClicking.current });
 		};
 
 		const handleTouchStart = (event: TouchEvent) => {
@@ -61,11 +63,11 @@ export default function useDrag({
 			if (relativeMousePos == null) {
 				return;
 			}
-			onValueChange({ ...relativeMousePos, isConfirm: true });
+			onClick(relativeMousePos);
 		};
 
 		if (currElem) {
-			currElem.addEventListener("mousedown", hanldeMouseDown);
+			currElem.addEventListener("mousedown", handleMouseDown);
 			currElem.addEventListener("mousemove", handleMouseMove);
 
 			currElem.addEventListener("touchstart", handleTouchStart);
@@ -73,13 +75,13 @@ export default function useDrag({
 
 		return () => {
 			if (currElem) {
-				currElem.removeEventListener("mousedown", hanldeMouseDown);
+				currElem.removeEventListener("mousedown", handleMouseDown);
 				currElem.removeEventListener("mousemove", handleMouseMove);
 
 				currElem.removeEventListener("touchstart", handleTouchStart);
 			}
 		};
-	}, [element, getValueFromEvent, onValueChange]);
+	}, [element, getValueFromEvent, onClick, onMove]);
 
 	useEffect(() => {
 		const handleMouseMove = (event: MouseEvent) => {
@@ -88,10 +90,17 @@ export default function useDrag({
 				if (newValue == null) {
 					return;
 				}
-				onValueChange({ ...newValue, isConfirm: isClicking.current });
+				onMove({ ...newValue, isClicking: true });
 			}
 		};
-		const handleMouseUp = () => {
+		const handleMouseUp = (event: MouseEvent) => {
+			if (isClicking.current) {
+				const newValue = getValueFromEvent(event);
+				if (newValue == null) {
+					return;
+				}
+				onRelease(newValue);
+			}
 			isClicking.current = false;
 		};
 
@@ -101,11 +110,18 @@ export default function useDrag({
 				if (newValue == null) {
 					return;
 				}
-				onValueChange({ ...newValue, isConfirm: isTouching.current });
+				onMove({ ...newValue, isClicking: isTouching.current });
 			}
 		};
 
-		const handleTouchEnd = () => {
+		const handleTouchEnd = (event: TouchEvent) => {
+			if (isTouching.current) {
+				const newValue = getValueFromEvent(event.changedTouches[0]);
+				if (newValue == null) {
+					return;
+				}
+				onRelease(newValue);
+			}
 			isTouching.current = false;
 		};
 
@@ -124,7 +140,7 @@ export default function useDrag({
 			document.removeEventListener("touchend", handleTouchEnd);
 			document.removeEventListener("touchcancel", handleTouchEnd);
 		};
-	}, [getValueFromEvent, onValueChange]);
+	}, [getValueFromEvent, onClick, onMove, onRelease]);
 
 	return element;
 }
