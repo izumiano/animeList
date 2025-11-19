@@ -49,7 +49,7 @@ export default function StarRating({
 		setValue(defaultValue ?? null);
 	}, [defaultValue, setValue]);
 
-	const hasValue = value != null;
+	const hasValue = !!value;
 
 	return (
 		<div
