@@ -179,7 +179,7 @@ const InternalDetailsPage = ({
 								) : null}
 							</h1>
 							{selectedSeason ? (
-								<div className="flexRow">
+								<div className="flexRow mediumGap">
 									<SeasonPicker
 										animeTitle={anime.title}
 										seasons={anime.seasons}
@@ -195,7 +195,6 @@ const InternalDetailsPage = ({
 									<StarRating
 										defaultValue={selectedSeason.score}
 										onChange={setSelectedSeasonScore}
-										className="mediumMargin-horizontal"
 									/>
 								</div>
 							) : null}
