@@ -227,7 +227,7 @@ export default function AddAnimeNode({
 						resolve: (_: null) => void,
 					) {
 						if (createAnimeTask instanceof BadResponse) {
-							showError(createAnimeTask, null, { showInProgressNode: true });
+							showError(createAnimeTask);
 							resolve(null);
 							return;
 						}
@@ -243,7 +243,7 @@ export default function AddAnimeNode({
 
 						if (anime instanceof Error || !anime) {
 							setAddAnimeProgressState({ progress: 0, state: "enabled" });
-							showError(anime, null, { showInProgressNode: true });
+							showError(anime);
 							resolve(null);
 							return;
 						}

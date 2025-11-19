@@ -30,7 +30,6 @@ function Home({ startPage }: { startPage?: Page }) {
 					<i>{<b>animes</b>} map was undefined.</i>{" "}
 					<span>The following will not show until refresh:</span>
 				</span>,
-				{ showInProgressNode: true },
 			);
 			return;
 		}

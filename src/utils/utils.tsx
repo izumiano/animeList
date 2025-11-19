@@ -130,14 +130,16 @@ export function parseError(
 	);
 }
 
+export type ShowErrorParams = { showInProgressNode?: boolean };
+
 export function showError(
 	ex: unknown,
 	title?: ReactNode,
-	params?: { showInProgressNode?: boolean },
+	params?: ShowErrorParams,
 ) {
 	toast.error(parseError(ex, { title: title }));
 
-	const showInProgressNode = params?.showInProgressNode ?? false;
+	const showInProgressNode = params?.showInProgressNode ?? true;
 	if (showInProgressNode) {
 		pushTask({ label: title, value: ex, isError: true });
 	}

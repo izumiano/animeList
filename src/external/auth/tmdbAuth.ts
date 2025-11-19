@@ -70,7 +70,7 @@ export class TMDBAuth implements IAuth {
 	public async login() {
 		const requestTokenResponse = await TMDBRequest.createRequestToken();
 		if (requestTokenResponse instanceof BadResponse) {
-			showError(requestTokenResponse, null, { showInProgressNode: true });
+			showError(requestTokenResponse);
 			return;
 		}
 		if (!requestTokenResponse.request_token) {
