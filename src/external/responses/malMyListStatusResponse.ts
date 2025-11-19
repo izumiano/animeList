@@ -8,4 +8,5 @@ export default interface MALMyListStatusResponse
 export interface MALMyListStatus extends IResponseData {
 	start_date?: string;
 	finish_date?: string;
+	score?: number;
 }
