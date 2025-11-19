@@ -65,12 +65,12 @@ export default class AnimeSeason {
 					value: any,
 				) {
 					if (target[property] !== value) {
+						const prevValue = target[property];
 						Reflect.set(target, property, value);
-
 						if (!target.pauseAutoSave && property !== "pauseAutoSave") {
 							console.debug(
 								`AnimeSeason Property in '${params.title}' '${property}' changed from'`,
-								target[property],
+								prevValue,
 								"to",
 								value,
 							);

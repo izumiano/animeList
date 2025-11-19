@@ -88,8 +88,8 @@ export default class Anime {
 			return new Proxy(this, {
 				set: function (target: Anime, property: keyof Anime, value: any) {
 					if (target[property] !== value) {
+						const prevValue = target[property];
 						Reflect.set(target, property, value);
-
 						if (
 							!target.pauseAutoSave &&
 							property !== "justAdded" &&
@@ -97,7 +97,7 @@ export default class Anime {
 						) {
 							console.debug(
 								`Anime Property in '${params.title}' '${property}' changed from'`,
-								target[property],
+								prevValue,
 								"to",
 								value,
 							);
