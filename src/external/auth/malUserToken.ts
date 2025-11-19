@@ -95,7 +95,7 @@ export class MALUserToken {
 			const listStatus = await new ActivityTask({
 				label: "Checking if start/finish date is already set",
 				task: async () => {
-					const listStatus = await this.getListStatus(season, title);
+					const listStatus = await this.getSeasonListStatus(season, title);
 					if (listStatus instanceof BadResponse) {
 						return listStatus;
 					}
@@ -194,7 +194,7 @@ export class MALUserToken {
 		return { success: true };
 	}
 
-	private async getListStatus(
+	public async getSeasonListStatus(
 		season: AnimeSeason,
 		title: string | undefined,
 	): Promise<MALMyListStatus | BadResponse | undefined> {
@@ -208,7 +208,7 @@ export class MALUserToken {
 		request.headers.set("Authorization", `Bearer ${this.accessToken}`);
 
 		const response = (await WebUtil.fetchProxy(request, "GET", {
-			errorHandler: new MalErrorHandler("Failed getting list status"),
+			errorHandler: new MalErrorHandler("Failed getting season list status"),
 		})) as MALMyListStatusResponse | BadResponse;
 
 		if (response instanceof BadResponse) {
@@ -229,7 +229,7 @@ export class MALUserToken {
 				MALAuth.instance.authorize();
 				return;
 			}
-			return await newToken.getListStatus(season, title);
+			return await newToken.getSeasonListStatus(season, title);
 		}
 		if (statusCode !== 200) {
 			return new BadResponse(`Failed with status code: [${statusCode}]`);
