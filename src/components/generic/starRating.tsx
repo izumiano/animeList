@@ -1,15 +1,15 @@
 import {
+	type CSSProperties,
 	useCallback,
 	useEffect,
 	useId,
 	useRef,
 	useState,
-	type CSSProperties,
 } from "react";
 import "./starRating.css";
-import { ceilToNearestDecimal, clamp } from "../../utils/utils";
-import useMultipleRef from "../../utils/useMultiple";
 import useDrag from "../../utils/useDrag";
+import useMultipleRef from "../../utils/useMultiple";
+import { ceilToNearestDecimal, clamp } from "../../utils/utils";
 
 export default function StarRating({
 	defaultValue,

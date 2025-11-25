@@ -1,21 +1,21 @@
 import { toast } from "react-toastify";
 import ActivityTask, { pushTask } from "../../utils/activityTask";
+import Signal from "../../utils/signal";
 import { showError, sleepFor } from "../../utils/utils";
 import BadResponse from "../responses/badResponse";
-import Signal from "../../utils/signal";
-import { TMDBUserToken } from "./tmdbUserToken";
 import TMDBRequest from "../tmdbRequest";
 import type IAuth from "./IAuth";
+import { TMDBUserToken } from "./tmdbUserToken";
 
 export const tmdbClientId = import.meta.env.VITE_TMDB_CLIENT_ID;
-const redirectUri = window.location.origin + "/tmdbAuth";
+const redirectUri = `${window.location.origin}/tmdbAuth`;
 
 let acquireUserTokenAbortController = new AbortController();
 
 export class TMDBAuth implements IAuth {
 	public static readonly instance = new TMDBAuth();
 	public static get accessToken() {
-		return this.instance.userToken?.accessToken;
+		return TMDBAuth.instance.userToken?.accessToken;
 	}
 
 	private _userToken: TMDBUserToken | undefined;

@@ -1,8 +1,10 @@
 import type Anime from "./models/anime";
 
-export default class AppData {
-	static animes: Map<string, Anime>;
-}
+const AppData: { animes: Map<string, Anime> } = {
+	animes: new Map(),
+};
+
+export default AppData;
 
 export const externalSyncEnabled =
 	import.meta.env.VITE_EXTERNAL_SYNC_ENABLED === "true";

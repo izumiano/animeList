@@ -4,7 +4,7 @@ import {
 	MenuItem as MuiMenuItem,
 	Select as MuiSelect,
 } from "@mui/material";
-import { useEffect, useId, useState, type ReactNode } from "react";
+import { type ReactNode, useEffect, useId, useState } from "react";
 import type { MuiProps } from "./params";
 import "./form.css";
 
@@ -51,7 +51,7 @@ export default function FormSelect<T extends string>({
 			<InputLabel id={labelId}>{label}</InputLabel>
 			<MuiSelect
 				variant={variant}
-				label="Media Type"
+				label="Media Type" // TODO: is this wrong?
 				value={value ?? ""}
 				ref={ref}
 				inputRef={inputRef}
@@ -65,7 +65,9 @@ export default function FormSelect<T extends string>({
 			>
 				{children.map((child) => {
 					return (
-						<MuiMenuItem value={child.value}>{child.children}</MuiMenuItem>
+						<MuiMenuItem value={child.value} key={`${labelId}${child.value}`}>
+							{child.children}
+						</MuiMenuItem>
 					);
 				})}
 			</MuiSelect>

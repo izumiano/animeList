@@ -1,5 +1,12 @@
 import { toast } from "react-toastify";
+import { externalSyncEnabled } from "../appData";
+import type Anime from "../models/anime";
 import type AnimeSeason from "../models/animeSeason";
+import {
+	type ExternalLink,
+	externalLinkEq,
+	externalLinkId,
+} from "../models/externalLink";
 import ActivityTask, { pushTask } from "../utils/activityTask";
 import {
 	CanceledOperation as AbortedOperation,
@@ -7,20 +14,13 @@ import {
 	sleepFor,
 } from "../utils/utils";
 import { MALAuth } from "./auth/malAuth";
-import { externalSyncEnabled } from "../appData";
-import {
-	externalLinkEq,
-	externalLinkId,
-	type ExternalLink,
-} from "../models/externalLink";
 import { TMDBAuth } from "./auth/tmdbAuth";
-import type Anime from "../models/anime";
 import BadResponse from "./responses/badResponse";
 
 const abortControllers: Map<string, AbortController> = new Map();
 
-export default class ExternalSync {
-	public static async updateSeasonStatus(
+const ExternalSync = {
+	async updateSeasonStatus(
 		season: AnimeSeason,
 		anime: Anime | undefined,
 		params?: {
@@ -44,14 +44,14 @@ export default class ExternalSync {
 				</span>
 			),
 			task: async () => {
-				if (!this.isConnected(season.externalLink)) {
+				if (!ExternalSync.isConnected(season.externalLink)) {
 					return new AbortedOperation();
 				}
 
 				if (params.allowAbort) {
 					const id = externalLinkId(
 						season.externalLink,
-						anime?.title ?? "" + season.title,
+						anime?.title ?? season.title,
 					);
 					abortControllers.get(id)?.abort();
 					const abortController = new AbortController();
@@ -138,9 +138,9 @@ export default class ExternalSync {
 		await task.start();
 
 		return task;
-	}
+	},
 
-	public static async deleteAnimeSeason(
+	async deleteAnimeSeason(
 		season: AnimeSeason,
 		anime: Anime,
 		params?: {
@@ -149,7 +149,7 @@ export default class ExternalSync {
 			forceDelete?: boolean;
 		},
 	) {
-		if (!this.isConnected(season.externalLink)) return;
+		if (!ExternalSync.isConnected(season.externalLink)) return;
 
 		params ??= {};
 		params.showToastOnSuccess ??= true;
@@ -242,9 +242,9 @@ export default class ExternalSync {
 		await task.start();
 
 		return task;
-	}
+	},
 
-	private static isConnected(externalLink: ExternalLink) {
+	isConnected(externalLink: ExternalLink) {
 		if (!externalSyncEnabled) return false;
 
 		switch (externalLink.type) {
@@ -255,5 +255,7 @@ export default class ExternalSync {
 			default:
 				return false;
 		}
-	}
-}
+	},
+};
+
+export default ExternalSync;

@@ -1,6 +1,6 @@
-import { MediaTypeValues, type MediaType } from "../../models/anime";
+import { type MediaType, MediaTypeValues } from "../../models/anime";
 import type { ExternalLink } from "../../models/externalLink";
-import { MALSeasonDetails } from "./MALSeasonDetails";
+import type { MALSeasonDetails } from "./MALSeasonDetails";
 import type TMDBSeasonResponse from "./tmdbSeasonResponse";
 
 export type MALSeasonDetailsRequireId = Omit<MALSeasonDetails, "mal_id"> & {
@@ -97,14 +97,14 @@ export class SeasonDetails {
 		let titleStart = "";
 
 		for (const char of titleRemovedSeason) {
-			if (isNaN(parseInt(char))) {
+			if (Number.isNaN(parseInt(char))) {
 				break;
 			}
 			titleStart += char;
 		}
 
 		let seasonNumber = parseInt(titleRemovedSeason === "" ? "0" : titleStart);
-		if (isNaN(seasonNumber)) {
+		if (Number.isNaN(seasonNumber)) {
 			const regexRes =
 				/\bseason\s+(?<seasonPrefix1>\d+)|(?<seasonPrefix2>\d+)(?:st|nd|rd|th)\s+season/gi.exec(
 					title,
@@ -121,7 +121,7 @@ export class SeasonDetails {
 					return { title: title };
 				}
 			}
-			if (isNaN(seasonNumber)) {
+			if (Number.isNaN(seasonNumber)) {
 				return { title: `${seasonPrefix} Season` };
 			}
 		}

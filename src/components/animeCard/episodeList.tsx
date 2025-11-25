@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useId, useRef, useState } from "react";
-import AnimeSeason from "../../models/animeSeason";
+import type AnimeSeason from "../../models/animeSeason";
 import "./episodeList.css";
+import type Anime from "../../models/anime";
+import type AnimeEpisode from "../../models/animeEpisode";
+import { externalLinkId } from "../../models/externalLink";
 import {
 	AddEpisodeNode,
 	DetailedEpisodeNode,
 	EpisodeNode,
 } from "./episodeNode";
-import type AnimeEpisode from "../../models/animeEpisode";
-import type Anime from "../../models/anime";
-import { externalLinkId } from "../../models/externalLink";
 
 const EpisodeList = (
 	params: {
@@ -58,6 +58,7 @@ const EpisodeList = (
 		<ul ref={listRef} className={`episodeList ${type} ${params.className}`}>
 			{season ? (
 				<>
+					{/** biome-ignore lint/suspicious/useIterableCallbackReturn: <switch statement is exhaustive> */}
 					{episodes?.map((episode, index) => {
 						switch (type) {
 							case "regular":

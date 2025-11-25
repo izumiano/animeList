@@ -1,17 +1,17 @@
 import {
+	type CSSProperties,
 	isValidElement,
+	type ReactNode,
 	useCallback,
 	useEffect,
 	useId,
 	useRef,
 	useState,
-	type CSSProperties,
-	type ReactNode,
 } from "react";
 import "./tabsNode.css";
-import useMultipleRef from "../../utils/useMultiple";
+import type Signal from "../../utils/signal";
 import { useDomEvent } from "../../utils/useEvents";
-import Signal from "../../utils/signal";
+import useMultipleRef from "../../utils/useMultiple";
 import useSignal from "../../utils/useSignal";
 
 interface TabsNodeStyle extends CSSProperties {
@@ -110,6 +110,10 @@ export default function TabsNode({
 	);
 }
 
+interface TabContentCSSProperties extends CSSProperties {
+	"--tabIndex": number;
+}
+
 function TabContent({
 	index,
 	tabHeights,
@@ -147,7 +151,7 @@ function TabContent({
 			style={
 				{
 					"--tabIndex": index,
-				} as any
+				} as TabContentCSSProperties
 			}
 		>
 			{children}

@@ -7,11 +7,8 @@ import BadResponse from "./responses/badResponse";
 import type { MALSeasonDetails } from "./responses/MALSeasonDetails";
 import { SeasonDetails } from "./responses/SeasonDetails";
 
-export default class MALRequest {
-	public static async getSeasonDetails(
-		season: AnimeSeason,
-		fields: string[] = [],
-	) {
+const MALRequest = {
+	async getSeasonDetails(season: AnimeSeason, fields: string[] = []) {
 		const task = await pushTask(
 			new ActivityTask({
 				label: "Getting Anime Details",
@@ -20,7 +17,7 @@ export default class MALRequest {
 					if (!malId) {
 						return new BadResponse("malId was undefined");
 					}
-					const fieldsString = fields.reduce((prev, curr) => prev + "," + curr);
+					const fieldsString = fields.reduce((prev, curr) => `${prev},${curr}`);
 					const url = new URL(`https://api.myanimelist.net/v2/anime/${malId}`);
 					url.search = new URLSearchParams({ fields: fieldsString }).toString();
 					const request = new Request(url);
@@ -66,5 +63,7 @@ export default class MALRequest {
 				? { from: new Date(response.start_date ?? "") }
 				: undefined,
 		});
-	}
-}
+	},
+};
+
+export default MALRequest;

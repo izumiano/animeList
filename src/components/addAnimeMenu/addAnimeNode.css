@@ -20,7 +20,9 @@
 	border-radius: 100vw;
 	border: 2px solid transparent;
 
-	transition: background-color 0.15s, border 0.15s;
+	transition:
+		background-color 0.15s,
+		border 0.15s;
 }
 
 .fileButton:hover {
@@ -83,7 +85,6 @@ label.fileButton > input {
 		background-color 0.5s,
 		color 0.5s,
 		translate 0.7s cubic-bezier(0.47, 1.64, 0.41, 0.8);
-
 
 	& .progress__content {
 		background-color: white;

@@ -1,17 +1,17 @@
 import { toast } from "react-toastify";
 import ActivityTask, { pushTask } from "../../utils/activityTask";
+import Signal from "../../utils/signal";
 import { showError, sleepFor } from "../../utils/utils";
 import WebUtil from "../../utils/webUtil";
 import MalErrorHandler from "../errorHandlers/malErrorHandler";
 import BadResponse from "../responses/badResponse";
 import type MALUserTokenResponse from "../responses/MALUserTokenResponse";
+import type IAuth from "./IAuth";
 import { MALCryptography } from "./malCryptography";
 import { MALUserToken } from "./malUserToken";
-import Signal from "../../utils/signal";
-import type IAuth from "./IAuth";
 
 export const malClientId = import.meta.env.VITE_MAL_CLIENT_ID;
-const redirectUri = window.location.origin + "/malAuth";
+const redirectUri = `${window.location.origin}/malAuth`;
 
 let acquireUserTokenAbortController = new AbortController();
 let refreshTokenAbortController = new AbortController();
@@ -19,7 +19,7 @@ let refreshTokenAbortController = new AbortController();
 export class MALAuth implements IAuth {
 	public static readonly instance = new MALAuth();
 	public static get accessToken() {
-		return this.instance.userToken?.accessToken;
+		return MALAuth.instance.userToken?.accessToken;
 	}
 
 	private readonly cryptography: MALCryptography = new MALCryptography();

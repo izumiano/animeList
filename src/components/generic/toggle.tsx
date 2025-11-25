@@ -1,6 +1,6 @@
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 import "./toggle.css";
-import { type Property } from "csstype";
+import type { Property } from "csstype";
 
 const Toggle = ({
 	label,

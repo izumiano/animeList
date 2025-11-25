@@ -3,10 +3,7 @@ import type MalErrorResponse from "../responses/malErrorResponse";
 import IErrorHandler from "./IErrorHandler";
 
 export default class MalErrorHandler extends IErrorHandler<MalErrorResponse> {
-	constructor(message?: React.ReactNode) {
-		super(message);
-	}
-
+	// biome-ignore lint/suspicious/noExplicitAny: <we dont know what data is>
 	public isSuccess(data: any) {
 		return !data.error;
 	}

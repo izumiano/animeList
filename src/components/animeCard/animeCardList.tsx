@@ -1,7 +1,7 @@
 import { useRef } from "react";
-import Anime from "../../models/anime";
-import type { SortBy } from "../../models/animeFilter";
+import type Anime from "../../models/anime";
 import type AnimeFilter from "../../models/animeFilter";
+import type { SortBy } from "../../models/animeFilter";
 import AnimeCard from "./animeCard";
 import "./animeCardList.css";
 import type { Page } from "../../Home";

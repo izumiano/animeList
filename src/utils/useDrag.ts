@@ -31,7 +31,7 @@ export default function useDrag({
 				y: (event.clientY - boundingRect.top) / boundingRect.height,
 			};
 		},
-		[element],
+		[],
 	);
 
 	useEffect(() => {
@@ -81,7 +81,7 @@ export default function useDrag({
 				currElem.removeEventListener("touchstart", handleTouchStart);
 			}
 		};
-	}, [element, getValueFromEvent, onClick, onMove]);
+	}, [getValueFromEvent, onClick, onMove]);
 
 	useEffect(() => {
 		const handleMouseMove = (event: MouseEvent) => {
@@ -140,7 +140,7 @@ export default function useDrag({
 			document.removeEventListener("touchend", handleTouchEnd);
 			document.removeEventListener("touchcancel", handleTouchEnd);
 		};
-	}, [getValueFromEvent, onClick, onMove, onRelease]);
+	}, [getValueFromEvent, onMove, onRelease]);
 
 	return element;
 }

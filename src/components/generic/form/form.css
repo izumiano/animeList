@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/style/noDescendingSpecificity: <complex selectors of mui library> */
 .baseFormItem {
 	--borderRadius: 1rem;
 	--primaryMain: #1976d2;
@@ -5,7 +6,6 @@
 	--textColor: white;
 
 	& .MuiOutlinedInput-root {
-
 		border-radius: var(--borderRadius);
 		background-color: rgb(from white r g b / 0.1);
 
@@ -24,7 +24,6 @@
 		&.Mui-focused {
 			color: var(--primaryMain);
 		}
-
 	}
 
 	& .MuiIconButton-root {
@@ -138,7 +137,6 @@ div:has(> .formDatePicker) {
 		}
 
 		& .MuiDayCalendar-monthContainer {
-
 			& * {
 				color: var(--textColor);
 			}
@@ -150,11 +148,9 @@ div:has(> .formDatePicker) {
 	}
 
 	& .MuiYearCalendar-root {
-
 		& > button {
 			padding: 0;
 			color: rgb(from var(--textColor) r g b / 0.5);
-
 
 			&.Mui-disabled {
 				color: rgb(from var(--textColor) r g b / 0.2);

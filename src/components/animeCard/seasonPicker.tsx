@@ -1,4 +1,4 @@
-import AnimeSeason from "../../models/animeSeason";
+import type AnimeSeason from "../../models/animeSeason";
 import Select from "../generic/select";
 import "./seasonPicker.css";
 

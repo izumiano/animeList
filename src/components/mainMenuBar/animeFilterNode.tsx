@@ -1,8 +1,8 @@
 import { useCallback } from "react";
 import {
-	SortByValues,
 	type AnimeFilterState,
 	type SortBy,
+	SortByValues,
 } from "../../models/animeFilter";
 import { dialogifyKey } from "../../utils/utils";
 import Select from "../generic/select";

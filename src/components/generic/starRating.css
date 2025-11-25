@@ -18,7 +18,12 @@
 		}
 
 		> .star-filled {
-			clip-path: polygon(0 0, var(--fillAmount) 0, var(--fillAmount) 100%, 0% 100%);
+			clip-path: polygon(
+				0 0,
+				var(--fillAmount) 0,
+				var(--fillAmount) 100%,
+				0% 100%
+			);
 		}
 	}
 }

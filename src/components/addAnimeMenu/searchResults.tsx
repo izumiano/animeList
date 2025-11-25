@@ -2,17 +2,18 @@ import { useId, useState } from "react";
 import type { SeasonDetails } from "../../external/responses/SeasonDetails";
 import {
 	ExternalLinkTypeValues,
+	externalLinkId,
 	getExternalLogo,
 } from "../../models/externalLink";
 import Image from "../generic/image";
 import LoadingSpinner from "../generic/loadingSpinner";
 import type { SearchResultsType, SelectedAnimeInfoType } from "./addAnimeNode";
 import "./searchResults.css";
-import Details from "../generic/details";
-import TMDBRequest from "../../external/tmdbRequest";
 import BadResponse from "../../external/responses/badResponse";
-import { showError } from "../../utils/utils";
 import type TMDBSeasonResponse from "../../external/responses/tmdbSeasonResponse";
+import TMDBRequest from "../../external/tmdbRequest";
+import { showError } from "../../utils/utils";
+import Details from "../generic/details";
 
 const SearchResults = ({
 	searchResults,
@@ -42,7 +43,8 @@ const SearchResults = ({
 						contentClassName="typeSearchResults"
 					>
 						<TypeSearchResults
-							searchResults={searchResults[externalType!]} // we are filtering out undefined in .filter
+							// biome-ignore lint/style/noNonNullAssertion: <we are filtering out undefined in .filter>
+							searchResults={searchResults[externalType!]}
 							selectedAnimeInfo={selectedAnimeInfo}
 							setSelectedAnimeInfoState={setSelectedAnimeInfoState}
 							getSequels={getSequels}
@@ -73,7 +75,7 @@ function TypeSearchResults({
 				searchResults.map((result, index) => {
 					return (
 						<SearchResultCard
-							key={`searchResults:${index}`}
+							key={`searchResults:${externalLinkId(result.externalLink, `${index}`)}`}
 							seasonDetails={result}
 							animeIndex={index}
 							selectedAnimeInfo={selectedAnimeInfo}

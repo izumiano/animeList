@@ -149,6 +149,6 @@
 	min-width: 45rem;
 }
 
-.refreshButton > img {
+.refreshButton:not(a) > img {
 	width: calc(var(--size) * 0.8);
 }

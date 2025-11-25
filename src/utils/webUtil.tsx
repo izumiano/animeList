@@ -18,8 +18,8 @@ type FetchParams<TErrorHandler> = {
 
 const MAX_RATELIMIT_ITERATIONS = 40;
 
-export default class WebUtil {
-	private static async doRequest<
+const WebUtil = {
+	async doRequest<
 		TData extends IResponseDataType,
 		TReturn extends IResponse<TData>,
 		TErrorType,
@@ -102,9 +102,9 @@ export default class WebUtil {
 
 			return message;
 		}
-	}
+	},
 
-	public static async fetch<
+	async fetch<
 		TData extends IResponseDataType,
 		TReturn extends IResponse<TData>,
 		TErrorType,
@@ -116,16 +116,16 @@ export default class WebUtil {
 	) {
 		const bodyObj = params?.bodyObj;
 
-		return await this.doRequest<TData, TReturn, TErrorType, TErrorHandler>(
+		return await WebUtil.doRequest<TData, TReturn, TErrorType, TErrorHandler>(
 			new Request(request, {
 				method: method ?? "GET",
 				body: bodyObj ? JSON.stringify(bodyObj) : params?.body,
 			}),
 			params,
 		);
-	}
+	},
 
-	public static async fetchProxy<
+	async fetchProxy<
 		TData extends IResponseDataType,
 		TReturn extends IResponse<TData>,
 		TErrorType,
@@ -139,7 +139,7 @@ export default class WebUtil {
 		params.requestInit ??= { cache: "no-store" };
 		const url = request instanceof URL ? request : request.url;
 
-		return await this.fetch<TData, TReturn, TErrorType, TErrorHandler>(
+		return await WebUtil.fetch<TData, TReturn, TErrorType, TErrorHandler>(
 			new Request(
 				`https://cors-header-proxy.izumiano.workers.dev/?url=${url}`,
 				request instanceof URL ? undefined : request,
@@ -147,9 +147,9 @@ export default class WebUtil {
 			method,
 			params,
 		);
-	}
+	},
 
-	public static async ratelimitRetryFunc<
+	async ratelimitRetryFunc<
 		TData extends IResponseDataType,
 		TReturn extends IResponse<TData>,
 	>(callback: () => Promise<TReturn>) {
@@ -177,5 +177,7 @@ export default class WebUtil {
 				return new BadResponse(err.message);
 			}
 		}
-	}
-}
+	},
+};
+
+export default WebUtil;

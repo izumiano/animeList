@@ -35,8 +35,8 @@ export default function useTouch<T extends HTMLElement>({
 	onStart,
 	onMove,
 	onEnd,
-	minX,
-	minY,
+	minX: _minX,
+	minY: _minY,
 }: {
 	onStart?: OnTouchStartType;
 	onMove?: OnTouchMoveType;
@@ -49,19 +49,19 @@ export default function useTouch<T extends HTMLElement>({
 
 	const hasStartedTouch = useRef(false);
 
-	minX ??= 0;
-	minY ??= 0;
+	let minX: { positive: number; negative: number };
+	let minY: { positive: number; negative: number };
 
-	if (typeof minX !== "object") {
-		minX = { positive: minX, negative: minX };
+	if (typeof _minX !== "object") {
+		minX = { positive: _minX ?? 0, negative: _minX ?? 0 };
+	} else {
+		minX = { positive: _minX.positive ?? 0, negative: _minX.negative ?? 0 };
 	}
-	if (typeof minY !== "object") {
-		minY = { positive: minY, negative: minY };
+	if (typeof _minY !== "object") {
+		minY = { positive: _minY ?? 0, negative: _minY ?? 0 };
+	} else {
+		minY = { positive: _minY.positive ?? 0, negative: _minY.negative ?? 0 };
 	}
-	minX.positive ??= Infinity;
-	minX.negative ??= Infinity;
-	minY.positive ??= Infinity;
-	minY.negative ??= Infinity;
 
 	useEffect(() => {
 		const currentElem = touchElemRef.current;
@@ -103,8 +103,8 @@ export default function useTouch<T extends HTMLElement>({
 
 			if (
 				!hasStartedTouch.current &&
-				((totalMove.x < minX.positive! && totalMove.x > -minX.negative!) ||
-					(totalMove.y < minY.positive! && totalMove.y > -minY.negative!))
+				((totalMove.x < minX.positive && totalMove.x > -minX.negative) ||
+					(totalMove.y < minY.positive && totalMove.y > -minY.negative))
 			) {
 				return;
 			}

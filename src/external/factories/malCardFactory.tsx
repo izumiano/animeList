@@ -1,3 +1,4 @@
+import React from "react";
 import Anime from "../../models/anime";
 import AnimeEpisode from "../../models/animeEpisode";
 import AnimeSeason from "../../models/animeSeason";
@@ -8,13 +9,12 @@ import JikanErrorHandler from "../errorHandlers/jikanErrorHandler";
 import BadResponse from "../responses/badResponse";
 import type EpisodesResponse from "../responses/MALEpisodesResponse";
 import type { EpisodeDetails } from "../responses/MALEpisodesResponse";
-import { MALSeasonDetails } from "../responses/MALSeasonDetails";
+import type { MALSeasonDetails } from "../responses/MALSeasonDetails";
 import { SeasonDetails } from "../responses/SeasonDetails";
 import MALSearch from "../search/malSearch";
-import React from "react";
 
-export default class MALCardFactory {
-	public static create({
+const MALCardFactory = {
+	create({
 		id,
 		order,
 		getSequels,
@@ -31,7 +31,7 @@ export default class MALCardFactory {
 			),
 			maxProgress: 3,
 			task: async ({ addProgress, addMaxProgress }) => {
-				const animeData = await this.getAnimeData(id);
+				const animeData = await MALCardFactory.getAnimeData(id);
 				addProgress();
 				if (animeData == null) {
 					return new BadResponse("animeData was null or undefined");
@@ -42,7 +42,7 @@ export default class MALCardFactory {
 
 				let seasonsData: MALSeasonDetails[] | BadResponse;
 				if (getSequels) {
-					seasonsData = await this.getSeasons(animeData);
+					seasonsData = await MALCardFactory.getSeasons(animeData);
 				} else {
 					seasonsData = [animeData];
 				}
@@ -52,7 +52,7 @@ export default class MALCardFactory {
 					return seasonsData;
 				}
 
-				return await this.createAnimeCard({
+				return await MALCardFactory.createAnimeCard({
 					seasonsData: seasonsData,
 					order: order,
 					id: id,
@@ -62,9 +62,9 @@ export default class MALCardFactory {
 				});
 			},
 		});
-	}
+	},
 
-	private static async createAnimeCard({
+	async createAnimeCard({
 		seasonsData,
 		order,
 		id,
@@ -91,11 +91,9 @@ export default class MALCardFactory {
 
 		if (!animeTitle) {
 			return new BadResponse(
-				(
-					<span>
-						Missing title for id <b>{id}</b>
-					</span>
-				),
+				<span>
+					Missing title for id <b>{id}</b>
+				</span>,
 			);
 		}
 
@@ -113,7 +111,8 @@ export default class MALCardFactory {
 
 			const episodes = [];
 
-			const episodesData = await this.getPaginatedEpisodes(seasonData);
+			const episodesData =
+				await MALCardFactory.getPaginatedEpisodes(seasonData);
 			if (episodesData instanceof BadResponse) {
 				return episodesData;
 			}
@@ -138,12 +137,10 @@ export default class MALCardFactory {
 				});
 				if (!title) {
 					return new BadResponse(
-						(
-							<span>
-								Missing title for episode in season <b>{index}</b> of id{" "}
-								<b>{id}</b>
-							</span>
-						),
+						<span>
+							Missing title for episode in season <b>{index}</b> of id{" "}
+							<b>{id}</b>
+						</span>,
 					);
 				}
 				episodes.push(
@@ -206,9 +203,9 @@ export default class MALCardFactory {
 		});
 
 		return animeToSave;
-	}
+	},
 
-	private static async getAnimeData(id: number) {
+	async getAnimeData(id: number) {
 		const season = await WebUtil.ratelimitRetryFunc(async () => {
 			return await MALSearch.getAnimeDataRetry(id);
 		});
@@ -222,14 +219,17 @@ export default class MALCardFactory {
 			return new BadResponse("Did not find anime status");
 		}
 		return season.data;
-	}
+	},
 
-	private static async getSeasons(season: MALSeasonDetails) {
+	async getSeasons(season: MALSeasonDetails) {
 		const seasonData = [];
 		seasonData.push(season);
 
 		let currentAnimeData: MALSeasonDetails | BadResponse | null = season;
-		while ((currentAnimeData = await this.getSequel(currentAnimeData))) {
+		while (
+			// biome-ignore lint/suspicious/noAssignInExpressions: <intentional assignment>
+			(currentAnimeData = await MALCardFactory.getSequel(currentAnimeData))
+		) {
 			if (currentAnimeData instanceof BadResponse) {
 				return currentAnimeData;
 			}
@@ -238,18 +238,18 @@ export default class MALCardFactory {
 		console.debug(`found ${seasonData.length} seasons`);
 
 		return seasonData;
-	}
+	},
 
-	private static async getSequel(season: MALSeasonDetails) {
-		const sequelId = this.getSequelId(season);
+	async getSequel(season: MALSeasonDetails) {
+		const sequelId = MALCardFactory.getSequelId(season);
 		if (!sequelId) {
 			console.debug("no sequel");
 			return null;
 		}
-		return await this.getAnimeData(sequelId);
-	}
+		return await MALCardFactory.getAnimeData(sequelId);
+	},
 
-	private static getSequelId(season: MALSeasonDetails) {
+	getSequelId(season: MALSeasonDetails) {
 		const relations = season.relations;
 		if (!relations) {
 			console.warn("did not find relations");
@@ -293,9 +293,9 @@ export default class MALCardFactory {
 		}
 
 		return null;
-	}
+	},
 
-	private static async getPaginatedEpisodes(season: MALSeasonDetails) {
+	async getPaginatedEpisodes(season: MALSeasonDetails) {
 		const id = season.mal_id;
 		if (!id) {
 			return new BadResponse("did not find mal_id");
@@ -306,7 +306,7 @@ export default class MALCardFactory {
 		let pageStartIndex = 1;
 		let possiblePageOne: EpisodeDetails[] = [];
 		if (pageCount < 1) {
-			const pageData = await this.getPaginatedEpisodesSlow(id);
+			const pageData = await MALCardFactory.getPaginatedEpisodesSlow(id);
 			if (pageData instanceof BadResponse) {
 				return pageData;
 			}
@@ -320,7 +320,7 @@ export default class MALCardFactory {
 			episodePromises.push(
 				new Promise<EpisodeDetails[]>((resolve, reject) => {
 					(async () => {
-						const episodeResponse = await this.getEpisodesPage({
+						const episodeResponse = await MALCardFactory.getEpisodesPage({
 							id: id,
 							pageIndex: i,
 						});
@@ -365,10 +365,10 @@ export default class MALCardFactory {
 			const err = ex as Error;
 			return new BadResponse(err.message, { data: err });
 		}
-	}
+	},
 
-	private static async getPaginatedEpisodesSlow(id: number) {
-		const episodeResponse = await this.getEpisodesPage({
+	async getPaginatedEpisodesSlow(id: number) {
+		const episodeResponse = await MALCardFactory.getEpisodesPage({
 			id: id,
 			pageIndex: 1,
 		});
@@ -388,15 +388,9 @@ export default class MALCardFactory {
 		}
 
 		return { data: data, lastVisiblePage: lastVisiblePage };
-	}
+	},
 
-	private static async getEpisodesPage({
-		id,
-		pageIndex,
-	}: {
-		id: number;
-		pageIndex: number;
-	}) {
+	async getEpisodesPage({ id, pageIndex }: { id: number; pageIndex: number }) {
 		return await WebUtil.ratelimitRetryFunc(async () => {
 			return (await WebUtil.fetch(
 				`https://api.jikan.moe/v4/anime/${id}/episodes?page=${pageIndex}`,
@@ -408,5 +402,7 @@ export default class MALCardFactory {
 				},
 			)) as EpisodesResponse | BadResponse;
 		});
-	}
-}
+	},
+};
+
+export default MALCardFactory;

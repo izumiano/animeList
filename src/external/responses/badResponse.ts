@@ -1,4 +1,4 @@
-import { IResponse, type IResponseData } from "./IResponse";
+import type { IResponse, IResponseData } from "./IResponse";
 
 export default class BadResponse
 	extends Error

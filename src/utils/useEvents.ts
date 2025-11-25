@@ -77,7 +77,7 @@ export const useDomEvent = <T extends HTMLElement>({
 		return () => {
 			currentElement.removeEventListener(event, onEvent);
 		};
-	}, [callback, element, event]);
+	}, [callback, event]);
 
 	return element;
 };

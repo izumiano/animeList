@@ -1,15 +1,16 @@
 import "./App.css";
-import Anime from "./models/anime";
-import LocalDB from "./indexedDb/indexedDb";
 import { useEffect, useRef, useState } from "react";
 import AppData, { devUtils } from "./appData";
 import AddAnimeMenu from "./components/addAnimeMenu/addAnimeMenu";
-import MainPage from "./components/mainPage";
-import LoadingSpinner from "./components/generic/loadingSpinner";
-import { showError } from "./utils/utils";
-import PageManager from "./components/generic/pageManager";
 import DetailsPage from "./components/detailsPage/detailsPage";
 import { detailsPageValid } from "./components/detailsPage/detailsPageConsts";
+import LoadingSpinner from "./components/generic/loadingSpinner";
+import PageManager from "./components/generic/pageManager";
+import MainPage from "./components/mainPage";
+import LocalDB from "./indexedDb/indexedDb";
+import Anime from "./models/anime";
+import { externalLinkId } from "./models/externalLink";
+import { showError } from "./utils/utils";
 
 export type Page = "main" | "details";
 
@@ -25,7 +26,13 @@ function Home({ startPage }: { startPage?: Page }) {
 
 		if (!animes) {
 			showError(
-				newAnimes.map((anime) => <b>{anime.title}</b>),
+				newAnimes.map((anime) => (
+					<b
+						key={`addAnimesErr:${externalLinkId(anime.externalLink, anime.order + anime.title)}`}
+					>
+						{anime.title}
+					</b>
+				)),
 				<span className="flexColumn">
 					<i>{<b>animes</b>} map was undefined.</i>{" "}
 					<span>The following will not show until refresh:</span>
@@ -39,7 +46,7 @@ function Home({ startPage }: { startPage?: Page }) {
 		});
 		setAnimesState(new Map(animes));
 
-		const doScroll = !params ? true : false;
+		const doScroll = !params;
 		if (doScroll) {
 			setTimeout(() => {
 				fullScreenScrollContainerRef.current?.scrollTo({

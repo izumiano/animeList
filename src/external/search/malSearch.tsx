@@ -1,38 +1,39 @@
 import WebUtil from "../../utils/webUtil";
 import JikanErrorHandler from "../errorHandlers/jikanErrorHandler";
 import BadResponse from "../responses/badResponse";
-import MALSearchResponse from "../responses/MALSearchResponse";
-import { MALSeasonDetails } from "../responses/MALSeasonDetails";
-import MALSeasonResponse from "../responses/MALSeasonResponse";
+import type MALSearchResponse from "../responses/MALSearchResponse";
+import type { MALSeasonDetails } from "../responses/MALSeasonDetails";
+import type MALSeasonResponse from "../responses/MALSeasonResponse";
 import { SeasonDetails } from "../responses/SeasonDetails";
 
-export default class MALSearch {
-	public static async getResults(
+const MALSearch = {
+	async getResults(
 		query: string,
 		limit: number = 9,
 	): Promise<MALSeasonDetails[] | BadResponse> {
-		const searchResultsData = await this.getResultsAsyncRetry(query, limit);
+		const searchResultsData = await MALSearch.getResultsAsyncRetry(
+			query,
+			limit,
+		);
 
 		if (searchResultsData instanceof BadResponse) {
 			return searchResultsData;
 		}
 
-		const result = await this.getResultsAsync(searchResultsData);
+		const result = await MALSearch.getResultsAsync(searchResultsData);
 
 		return result;
-	}
+	},
 
-	private static async getResultsAsync(
+	async getResultsAsync(
 		data: MALSearchResponse | MALSeasonResponse,
 	): Promise<MALSeasonDetails[] | BadResponse> {
 		if (data.statusCode !== 200) {
 			return new BadResponse(
-				(
-					<span>
-						Getting search results failed with status code:{" "}
-						<b>{data.statusCode}</b>
-					</span>
-				),
+				<span>
+					Getting search results failed with status code:{" "}
+					<b>{data.statusCode}</b>
+				</span>,
 				{ data: data },
 			);
 		}
@@ -76,28 +77,28 @@ export default class MALSearch {
 			}
 			return 1;
 		});
-	}
+	},
 
-	private static async getResultsAsyncRetry(query: string, limit: number) {
+	async getResultsAsyncRetry(query: string, limit: number) {
 		let _query = query;
 		const malUrlMatch =
 			/https:\/\/myanimelist\.net\/anime\/(?<malId>\d+)/g.exec(query);
-		if (malUrlMatch && malUrlMatch.groups) {
+		if (malUrlMatch?.groups) {
 			_query = malUrlMatch.groups.malId;
 		}
 		const id = parseInt(_query);
 		if (!Number.isNaN(id)) {
 			return await WebUtil.ratelimitRetryFunc(async () => {
-				return await this.getAnimeDataRetry(id);
+				return await MALSearch.getAnimeDataRetry(id);
 			});
 		}
 
 		return await WebUtil.ratelimitRetryFunc(async () => {
-			return await this.myAnimeListSearch(query, limit);
+			return await MALSearch.myAnimeListSearch(query, limit);
 		});
-	}
+	},
 
-	private static async myAnimeListSearch(query: string, limit: number) {
+	async myAnimeListSearch(query: string, limit: number) {
 		query = encodeURIComponent(query);
 		const animeDataResponse: MALSearchResponse | BadResponse =
 			await WebUtil.fetch(
@@ -113,9 +114,9 @@ export default class MALSearch {
 		}
 
 		return animeDataResponse;
-	}
+	},
 
-	public static async getAnimeDataRetry(id: number) {
+	async getAnimeDataRetry(id: number) {
 		try {
 			const response = (await WebUtil.fetch(
 				`https://api.jikan.moe/v4/anime/${id}/full`,
@@ -137,5 +138,7 @@ export default class MALSearch {
 			const err = ex as Error;
 			return new BadResponse(err.message, { data: err });
 		}
-	}
-}
+	},
+};
+
+export default MALSearch;

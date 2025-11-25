@@ -10,6 +10,7 @@ export function importAnimes(
 		return;
 	}
 
+	// biome-ignore lint/suspicious/noExplicitAny: <anything is allowed>
 	const animes: any[] = [];
 
 	function handleError(ex: unknown) {
@@ -56,6 +57,7 @@ export function importAnimes(
 							);
 						}
 
+						// biome-ignore lint/suspicious/noExplicitAny: <anything is allowed>
 						anime.seasons?.forEach((season: any) => {
 							if (typeof season.dateStarted === "number") {
 								season.dateStarted = thirdMilleniumSecondsToUnixMilli(

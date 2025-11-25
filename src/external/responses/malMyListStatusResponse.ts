@@ -1,4 +1,4 @@
-import { IResponse, type IResponseData } from "./IResponse";
+import type { IResponse, IResponseData } from "./IResponse";
 
 export default interface MALMyListStatusResponse
 	extends IResponse<MALMyListStatus> {

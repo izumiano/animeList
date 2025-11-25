@@ -9,7 +9,6 @@
 	grid-template-columns: repeat(auto-fit, minmax(1px, 1fr));
 	position: sticky;
 	top: 0;
-	background-color: var(--colBackground);
 	z-index: 10;
 
 	background-color: hsl(from var(--colPrimary) h s calc(l * 0.7));
@@ -27,12 +26,16 @@
 		--margin: 2rem;
 		width: calc(100% / var(--tabCount) - 2 * var(--margin));
 		height: 100%;
-		left: calc(var(--selectedTabIndex) / var(--tabCount) * 100% + var(--margin));
+		left: calc(
+			var(--selectedTabIndex) /
+			var(--tabCount) *
+			100% +
+			var(--margin)
+		);
 		background-color: var(--colPrimary);
 		z-index: -1;
 
 		border-radius: var(--borderRadius) var(--borderRadius) 0 0;
-
 	}
 }
 
@@ -60,7 +63,10 @@
 			background-color: rgb(from white r g b / 0.5);
 			border-radius: 100vw;
 
-			transition: width 0.3s, left 0.3s, background-color 0.2s;
+			transition:
+				width 0.3s,
+				left 0.3s,
+				background-color 0.2s;
 		}
 	}
 
@@ -78,7 +84,6 @@
 	position: relative;
 	overflow: hidden;
 	height: calc(100% + 6rem);
-
 
 	> div {
 		overflow: hidden;

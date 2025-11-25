@@ -1,52 +1,72 @@
 {
-  "version": "2.0.0",
-  "tasks": [
-    {
-      "label": "Start Dev",
-      "dependsOn": ["npm: typecheck", "npm: dev"],
-      "group": {
-        "kind": "build",
-        "isDefault": true
-      },
-      "presentation": {
-        "panel": "shared",
-        "showReuseMessage": true,
-        "clear": false
-      }
-    },
-    {
-      "type": "npm",
-      "script": "dev",
-      "problemMatcher": [],
-      "label": "npm: dev",
-      "detail": "start vite",
-      "group": {
-        "kind": "build",
-        "isDefault": false
-      }
-    },
-    {
-      "type": "npm",
-      "script": "typecheck",
-      "problemMatcher": "$tsc-watch",
-      "isBackground": true,
-      "label": "npm: typecheck",
-      "detail": "start vite",
-      "group": {
-        "kind": "build",
-        "isDefault": false
-      }
-    },
-    {
-      "type": "npm",
-      "script": "preview",
-      "problemMatcher": [],
-      "label": "npm: preview",
-      "detail": "preview vite",
-      "group": {
-        "kind": "build",
-        "isDefault": false
-      }
-    }
-  ]
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Start Dev",
+			"dependsOn": ["npm: typecheck", "npm: dev"],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"presentation": {
+				"panel": "shared",
+				"showReuseMessage": true,
+				"clear": false
+			}
+		},
+		{
+			"type": "npm",
+			"script": "dev",
+			"problemMatcher": [],
+			"label": "npm: dev",
+			"detail": "start vite",
+			"group": {
+				"kind": "build",
+				"isDefault": false
+			}
+		},
+		{
+			"type": "npm",
+			"script": "typecheck",
+			"problemMatcher": "$tsc-watch",
+			"isBackground": true,
+			"label": "npm: typecheck",
+			"detail": "typecheck project",
+			"group": {
+				"kind": "test",
+				"isDefault": false
+			}
+		},
+		{
+			"type": "npm",
+			"script": "preview",
+			"problemMatcher": [],
+			"label": "npm: preview",
+			"detail": "preview vite",
+			"group": {
+				"kind": "build",
+				"isDefault": false
+			}
+		},
+		{
+			"type": "npm",
+			"script": "lint",
+			"label": "biome: check",
+			"detail": "check biome",
+			"group": {
+				"kind": "test",
+				"isDefault": false
+			}
+		},
+		{
+			"type": "npm",
+			"script": "biomeFix",
+			"label": "biome: fix",
+			"detail": "fix with biome",
+			"group": {
+				"kind": "test",
+				"isDefault": false
+			}
+		}
+	]
 }

@@ -1,18 +1,18 @@
 import {
+	type ReactNode,
 	useCallback,
 	useEffect,
 	useRef,
 	useState,
-	type ReactNode,
 } from "react";
+import { toast } from "react-toastify";
+import { useWindowEvent } from "../../utils/useEvents";
 import useMultipleRef from "../../utils/useMultiple";
 import useTouch, {
 	type OnTouchEndType,
 	type OnTouchMoveType,
 } from "../../utils/useTouch";
 import { fullScreenWidth } from "../../utils/utils";
-import { toast } from "react-toastify";
-import { useWindowEvent } from "../../utils/useEvents";
 import "./pageManager.css";
 
 type PagePropsRet<Page extends string> = {
@@ -152,10 +152,7 @@ function useHandlePageState<Page extends string>(
 				if (pageKey === "main") {
 					continue;
 				}
-				if (
-					pages[pageKey].checkValidity &&
-					pages[pageKey].checkValidity(path).valid
-				) {
+				if (pages[pageKey].checkValidity?.(path).valid) {
 					validKey = pageKey;
 					break;
 				}

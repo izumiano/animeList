@@ -1,32 +1,32 @@
-import type Anime from "../../models/anime";
-import Image from "../generic/image";
 import {
+	type ReactNode,
 	useCallback,
 	useEffect,
 	useRef,
 	useState,
-	type ReactNode,
 } from "react";
-import SeasonPicker from "../animeCard/seasonPicker";
+import type Anime from "../../models/anime";
 import {
 	externalLinkId,
 	getExternalLogo,
 	getSeasonDetails,
 	getUrlFromExternalLink,
 } from "../../models/externalLink";
+import SeasonPicker from "../animeCard/seasonPicker";
+import Image from "../generic/image";
 import ProgressNode from "../generic/progress/progressNode";
 import "./detailsPage.css";
-import ExpandableText from "../generic/expandableText";
-import { CanceledOperation, formatDate } from "../../utils/utils";
-import DetailsPageForm from "./detailsPageForm";
-import TabsNode from "../generic/tabsNode";
 import detailsIcon from "assets/details.png";
 import listIcon from "assets/list.png";
-import EpisodeList from "../animeCard/episodeList";
-import { detailsPageValid } from "./detailsPageConsts";
-import StarRating from "../generic/starRating";
-import LoadingSpinner from "../generic/loadingSpinner";
 import ExternalSync from "../../external/externalSync";
+import { CanceledOperation, formatDate } from "../../utils/utils";
+import EpisodeList from "../animeCard/episodeList";
+import ExpandableText from "../generic/expandableText";
+import LoadingSpinner from "../generic/loadingSpinner";
+import StarRating from "../generic/starRating";
+import TabsNode from "../generic/tabsNode";
+import { detailsPageValid } from "./detailsPageConsts";
+import DetailsPageForm from "./detailsPageForm";
 
 export default function DetailsPage({
 	animes,

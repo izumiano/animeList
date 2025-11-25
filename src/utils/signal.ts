@@ -25,6 +25,8 @@ export default class Signal<T> {
 
 	public notify(value: T) {
 		this._value = value;
-		this.observers.forEach((notifyObserver) => notifyObserver(value));
+		this.observers.forEach((notifyObserver) => {
+			notifyObserver(value);
+		});
 	}
 }

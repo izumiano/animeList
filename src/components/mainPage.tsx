@@ -1,8 +1,8 @@
 import { useState } from "react";
+import type Anime from "../models/anime";
 import AnimeFilter from "../models/animeFilter";
 import AnimeCardList from "./animeCard/animeCardList";
 import MainMenuBar from "./mainMenuBar/mainMenuBar";
-import type Anime from "../models/anime";
 import "./mainPage.css";
 import type { Page } from "../Home";
 

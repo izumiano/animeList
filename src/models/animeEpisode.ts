@@ -29,11 +29,11 @@ export default class AnimeEpisode {
 
 		if (animeDbId) {
 			return new Proxy(this, {
-				set: function (
+				set: (
 					target: AnimeEpisode,
 					property: keyof AnimeEpisode,
-					value: any,
-				) {
+					value: unknown,
+				) => {
 					if (target[property] !== value) {
 						const prevValue = target[property];
 						Reflect.set(target, property, value);
@@ -44,7 +44,7 @@ export default class AnimeEpisode {
 								"to",
 								value,
 							);
-							AppData.animes.get(animeDbId!)?.saveToDb();
+							AppData.animes.get(animeDbId)?.saveToDb();
 
 							if (property === "watched" && seasonInfo) {
 								seasonInfo.season.updateDate();
@@ -75,9 +75,9 @@ export default class AnimeEpisode {
 	}
 
 	toIndexedDBObj() {
-		const objCopy: { [key: string]: any } = {};
+		const objCopy: { [key: string]: unknown } = {};
 		for (const key in this) {
-			if (Object.prototype.hasOwnProperty.call(this, key)) {
+			if (Object.hasOwn(this, key)) {
 				if (key === "animeDbId" || key === "pauseAutoSave") continue;
 
 				objCopy[key] = this[key];

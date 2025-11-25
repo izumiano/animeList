@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import AnimeEpisode from "../../models/animeEpisode";
 import "./episodeNode.css";
-import type AnimeSeason from "../../models/animeSeason";
-import Dropdown from "../generic/dropdown";
 import trashIcon from "assets/bin.png";
-import ConfirmationDropdown from "../generic/confirmationDropdown";
 import plusIcon from "assets/plus.png";
+import type AnimeSeason from "../../models/animeSeason";
+import ConfirmationDropdown from "../generic/confirmationDropdown";
+import Dropdown from "../generic/dropdown";
 import RainbowOutline from "../generic/rainbowOutline";
 
 export function EpisodeNode({

@@ -1,10 +1,10 @@
-import MALCardFactory from "./malCardFactory";
-import BadResponse from "../responses/badResponse";
 import type { ExternalLink } from "../../models/externalLink";
+import BadResponse from "../responses/badResponse";
+import MALCardFactory from "./malCardFactory";
 import TMDBCardFactory from "./tmdbCardFactory";
 
-export default class AnimeCardFactory {
-	public static create({
+const AnimeCardFactory = {
+	create({
 		externalLink,
 		order,
 		getSequels,
@@ -66,5 +66,7 @@ export default class AnimeCardFactory {
 					`Cannot construct new anime, invalid external link type ${externalLink?.type}`,
 				);
 		}
-	}
-}
+	},
+};
+
+export default AnimeCardFactory;

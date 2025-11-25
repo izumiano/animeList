@@ -1,13 +1,13 @@
 import {
+	type ReactNode,
 	useCallback,
 	useEffect,
 	useRef,
 	useState,
-	type ReactNode,
 } from "react";
 import "./dropdown.css";
-import { useOutsideClick } from "../../utils/useEvents";
 import type { Property } from "csstype";
+import { useOutsideClick } from "../../utils/useEvents";
 import type { Alignment } from "../../utils/utils";
 
 const Dropdown = ({

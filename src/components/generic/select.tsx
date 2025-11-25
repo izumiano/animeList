@@ -1,15 +1,15 @@
 import {
 	Children,
 	isValidElement,
+	type ReactNode,
 	useEffect,
 	useState,
-	type ReactNode,
 } from "react";
 import Dropdown from "./dropdown";
 import "./select.css";
-import { type Alignment } from "../../utils/utils";
 import dropdownIcon from "assets/dropdown.png";
 import type { Property } from "csstype";
+import type { Alignment } from "../../utils/utils";
 
 type OptionProp<T extends ValueType> = {
 	value?: T;

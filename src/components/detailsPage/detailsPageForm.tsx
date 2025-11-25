@@ -1,14 +1,15 @@
+/** biome-ignore-all lint/style/noNonNullAssertion: <seasonId is never null if season is not null> */
 import { Grid } from "@mui/material";
-import TextField from "../generic/form/textField";
-import type Anime from "../../models/anime";
-import type AnimeSeason from "../../models/animeSeason";
-import { dialogifyKey } from "../../utils/utils";
-import FormSelect from "../generic/form/formSelect";
-import { MediaTypeValues, type MediaType } from "../../models/anime";
-import { externalLinkId } from "../../models/externalLink";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import type Anime from "../../models/anime";
+import { type MediaType, MediaTypeValues } from "../../models/anime";
+import type AnimeSeason from "../../models/animeSeason";
+import { externalLinkId } from "../../models/externalLink";
+import { dialogifyKey } from "../../utils/utils";
 import DatePicker from "../generic/form/datePicker";
+import FormSelect from "../generic/form/formSelect";
+import TextField from "../generic/form/textField";
 
 const DetailsPageForm = ({
 	anime,
@@ -50,7 +51,9 @@ const DetailsPageForm = ({
 						id={animeId}
 						label="Date Started"
 						defaultValue={anime.dateStarted}
-						onChange={(value) => (anime.dateStarted = value)}
+						onChange={(value) => {
+							anime.dateStarted = value;
+						}}
 					/>
 				</Grid>
 				<Grid size={6}>
@@ -58,7 +61,9 @@ const DetailsPageForm = ({
 						id={animeId}
 						label="Date Finished"
 						defaultValue={anime.dateFinished}
-						onChange={(value) => (anime.dateFinished = value)}
+						onChange={(value) => {
+							anime.dateFinished = value;
+						}}
 					/>
 				</Grid>
 
@@ -83,7 +88,9 @@ const DetailsPageForm = ({
 								id={seasonId!}
 								label="Media Type"
 								defaultValue={season.mediaType}
-								onChange={(value) => (season.mediaType = value)}
+								onChange={(value) => {
+									season.mediaType = value;
+								}}
 							>
 								{MediaTypeValues.map((mediaType) => ({
 									value: mediaType,
@@ -96,7 +103,9 @@ const DetailsPageForm = ({
 								id={seasonId!}
 								label="Date Started"
 								defaultValue={season.dateStarted}
-								onChange={(value) => (season.dateStarted = value)}
+								onChange={(value) => {
+									season.dateStarted = value;
+								}}
 							/>
 						</Grid>
 						<Grid size={6}>
@@ -104,7 +113,9 @@ const DetailsPageForm = ({
 								id={seasonId!}
 								label="Date Finished"
 								defaultValue={season.dateFinished}
-								onChange={(value) => (season.dateFinished = value)}
+								onChange={(value) => {
+									season.dateFinished = value;
+								}}
 							/>
 						</Grid>
 					</>

@@ -5,9 +5,9 @@ import "@fontsource/roboto/700.css";
 
 import { ToastContainer } from "react-toastify";
 import "./App.css";
+import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { MALAuth } from "./external/auth/malAuth";
-import { useEffect } from "react";
 import { TMDBAuth } from "./external/auth/tmdbAuth";
 
 function App() {

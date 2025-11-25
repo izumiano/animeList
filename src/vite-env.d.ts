@@ -10,6 +10,7 @@ interface ImportMetaEnv {
 	readonly VITE_DELETE_ALL: string;
 }
 
+// //biome-ignore lint/correctness/noUnusedVariables: <required for vite typesafety>
 interface ImportMeta {
 	readonly env: ImportMetaEnv;
 }

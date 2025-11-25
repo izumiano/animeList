@@ -1,21 +1,21 @@
+import fileDownloadIcon from "assets/fileDownload.png";
+import fileUploadIcon from "assets/fileUpload.png";
 import { useRef, useState } from "react";
-import { SeasonDetails } from "../../external/responses/SeasonDetails";
-import type { ProgressButtonState } from "../generic/progress/progressButton";
-import AnimeSearch from "../../external/search/animeSearch";
-import { importAnimes } from "./animeImport";
-import SearchResults from "./searchResults";
-import ProgressButton from "../generic/progress/progressButton";
 import { toast } from "react-toastify";
+import AppData from "../../appData";
+import ExternalSync from "../../external/externalSync";
+import AnimeCardFactory from "../../external/factories/animeCardFactory";
+import BadResponse from "../../external/responses/badResponse";
+import type { SeasonDetails } from "../../external/responses/SeasonDetails";
+import AnimeSearch from "../../external/search/animeSearch";
+import LocalDB from "../../indexedDb/indexedDb";
 import Anime from "../../models/anime";
 import {
-	ExternalLinkTypeValues,
-	newExternalLink,
 	type ExternalLinkToValueType,
 	type ExternalLinkType,
+	ExternalLinkTypeValues,
+	newExternalLink,
 } from "../../models/externalLink";
-import AnimeCardFactory from "../../external/factories/animeCardFactory";
-import AppData from "../../appData";
-import BadResponse from "../../external/responses/badResponse";
 import {
 	allSuccess,
 	downloadObjectAsFile,
@@ -23,10 +23,10 @@ import {
 	showError,
 	sleepFor,
 } from "../../utils/utils";
-import LocalDB from "../../indexedDb/indexedDb";
-import ExternalSync from "../../external/externalSync";
-import fileUploadIcon from "assets/fileUpload.png";
-import fileDownloadIcon from "assets/fileDownload.png";
+import type { ProgressButtonState } from "../generic/progress/progressButton";
+import ProgressButton from "../generic/progress/progressButton";
+import { importAnimes } from "./animeImport";
+import SearchResults from "./searchResults";
 import "./addAnimeNode.css";
 import type ActivityTask from "../../utils/activityTask";
 

@@ -1,7 +1,7 @@
 import { toast } from "react-toastify";
 import BadResponse from "../external/responses/badResponse";
 import "../App.css";
-import { isValidElement, type CSSProperties, type ReactNode } from "react";
+import { type CSSProperties, isValidElement, type ReactNode } from "react";
 import { v4 as uuid } from "uuid";
 import { pushTask } from "./activityTask";
 
@@ -112,7 +112,7 @@ function _parseError(
 	} else {
 		return (
 			<span>
-				Unknown Error <b>{ex as any}</b>
+				Unknown Error <b>{ex as ReactNode}</b>
 			</span>
 		);
 	}
@@ -196,7 +196,7 @@ export function dialogifyKey(
 	if (word !== "") {
 		words.push(word);
 	}
-	return words.reduce((prev, word) => prev + " " + word);
+	return words.reduce((prev, word) => `${prev} ${word}`);
 }
 
 export function removeDiacritics(str: string) {
@@ -345,7 +345,7 @@ export function checkElementOverflow(element: HTMLElement) {
 export const fullScreenWidth = dvwToPx(100);
 
 export function isValidDate(date: Date) {
-	return date instanceof Date && !isNaN(date.getTime());
+	return date instanceof Date && !Number.isNaN(date.getTime());
 }
 
 export type MimeType =

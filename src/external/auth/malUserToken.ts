@@ -4,16 +4,16 @@ import { formatDate } from "../../utils/utils";
 import WebUtil from "../../utils/webUtil";
 import JikanErrorHandler from "../errorHandlers/jikanErrorHandler";
 import MalErrorHandler from "../errorHandlers/malErrorHandler";
-import type { MALUpdateMyListStatuses } from "../requests/malUpdateMyListStatus";
 import type MALUpdateMyListStatus from "../requests/malUpdateMyListStatus";
-import type MalAccountDetailsResponse from "../responses/malAccountDetailsResponse";
+import type { MALUpdateMyListStatuses } from "../requests/malUpdateMyListStatus";
 import BadResponse from "../responses/badResponse";
-import type MALDeleteResponse from "../responses/malDeleteResponse";
-import type { MALMyListStatus } from "../responses/malMyListStatusResponse";
-import type MALMyListStatusResponse from "../responses/malMyListStatusResponse";
 import type MALUserTokenResponse from "../responses/MALUserTokenResponse";
-import { MALAuth } from "./malAuth";
+import type MalAccountDetailsResponse from "../responses/malAccountDetailsResponse";
+import type MALDeleteResponse from "../responses/malDeleteResponse";
 import type MalFullAccountDetailsResponse from "../responses/malFullAcountDetailsResponse";
+import type MALMyListStatusResponse from "../responses/malMyListStatusResponse";
+import type { MALMyListStatus } from "../responses/malMyListStatusResponse";
+import { MALAuth } from "./malAuth";
 
 export class MALUserToken {
 	accessToken: string;
@@ -35,9 +35,9 @@ export class MALUserToken {
 	}
 
 	public static create(data?: MALUserTokenResponse | null) {
-		let accessToken;
-		let refreshToken;
-		let expiresAt;
+		let accessToken: string | null | undefined;
+		let refreshToken: string | null | undefined;
+		let expiresAt: Date | null;
 		if (!data) {
 			accessToken = localStorage.getItem("mal_accessToken");
 			refreshToken = localStorage.getItem("mal_refreshToken");

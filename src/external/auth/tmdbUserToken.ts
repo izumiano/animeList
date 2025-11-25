@@ -1,4 +1,4 @@
-import { type TMDBExternalLink } from "../../models/externalLink";
+import type { TMDBExternalLink } from "../../models/externalLink";
 import WebUtil from "../../utils/webUtil";
 import TMDBErrorHandler from "../errorHandlers/tmdbErrorHandler";
 import BadResponse from "../responses/badResponse";
@@ -15,7 +15,7 @@ export class TMDBUserToken {
 	}
 
 	public static create(data?: TMDBCreateSessionResponse | null) {
-		let accessToken;
+		let accessToken: string | null | undefined;
 		if (!data) {
 			accessToken = localStorage.getItem("tmdb_accessToken");
 		} else {
@@ -50,6 +50,7 @@ export class TMDBUserToken {
 		})) as TMDBAccountDetailsResponse | BadResponse;
 
 		if (response instanceof BadResponse) {
+			// biome-ignore lint/suspicious/noExplicitAny: <we dont know what data is>
 			const data = response.data?.data as any;
 			if (data.success === false && data.status_code === 3) {
 				TMDBAuth.instance.logout();

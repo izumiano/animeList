@@ -1,18 +1,18 @@
+import type { ExternalLinkType } from "../../models/externalLink";
+import { showError, sleepFor } from "../../utils/utils";
+import BadResponse from "../responses/badResponse";
 import {
-	SeasonDetails,
 	type MALSeasonDetailsRequireId,
+	SeasonDetails,
 	type TMDBSeasonDetailsRequireId,
 } from "../responses/SeasonDetails";
 import MALSearch from "./malSearch";
-import BadResponse from "../responses/badResponse";
-import { showError, sleepFor } from "../../utils/utils";
-import type { ExternalLinkType } from "../../models/externalLink";
 import TMDBSearch from "./tmdbSearch";
 
 let abortController = new AbortController();
 
-export default class AnimeSearch {
-	public static async search(
+const AnimeSearch = {
+	async search(
 		query: string,
 		callback: (params: {
 			seasons: SeasonDetails[];
@@ -97,5 +97,7 @@ export default class AnimeSearch {
 				externalType: "TMDB",
 			});
 		});
-	}
-}
+	},
+};
+
+export default AnimeSearch;

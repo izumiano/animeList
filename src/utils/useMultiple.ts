@@ -1,4 +1,4 @@
-import { type RefObject } from "react";
+import type { RefObject } from "react";
 
 export default function useMultipleRef<T extends HTMLElement>(
 	...refs: (
@@ -11,7 +11,6 @@ export default function useMultipleRef<T extends HTMLElement>(
 	return (node: T | null) => {
 		for (const ref of refs) {
 			if (!ref) {
-				continue;
 			} else if (typeof ref === "function") {
 				ref(node);
 			} else if (ref) {

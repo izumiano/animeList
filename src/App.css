@@ -339,7 +339,6 @@ hr {
 	align-self: center;
 	justify-content: center;
 	align-items: center;
-	border-radius: 100%;
 	background-color: var(--colAccent);
 
 	padding: 0;

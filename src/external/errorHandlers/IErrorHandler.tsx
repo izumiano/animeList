@@ -1,4 +1,5 @@
-import React, { type ReactNode } from "react";
+import type React from "react";
+import type { ReactNode } from "react";
 
 export default class IErrorHandler<TError> {
 	message: ReactNode;
@@ -7,7 +8,7 @@ export default class IErrorHandler<TError> {
 		this.message = typeof message === "string" ? <b>{message}</b> : message;
 	}
 
-	public isSuccess(_data: any, _acceptStatusCodes: number[]) {
+	public isSuccess(_data: unknown, _acceptStatusCodes: number[]) {
 		return true;
 	}
 

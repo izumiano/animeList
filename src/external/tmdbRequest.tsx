@@ -9,8 +9,8 @@ import type TMDBCreateSessionResponse from "./responses/tmdbCreateSessionRespons
 import type TMDBSeasonResponse from "./responses/tmdbSeasonResponse";
 import type TMDBShowResponse from "./responses/tmdbShowResponse";
 
-export default class TMDBRequest {
-	public static async getDetails(externalLink: TMDBExternalLink) {
+const TMDBRequest = {
+	async getDetails(externalLink: TMDBExternalLink) {
 		const mediaType = externalLink.mediaType === "movie" ? "movie" : "tv";
 		const url = new URL(
 			`https://api.themoviedb.org/3/${mediaType}/${externalLink.id}`,
@@ -35,9 +35,9 @@ export default class TMDBRequest {
 				response.original_name ??
 				response.original_title,
 		} as Omit<TMDBShowResponse, "title" | "original_name" | "original_title">;
-	}
+	},
 
-	public static async getSeasonDetails(
+	async getSeasonDetails(
 		externalLink: Require<TMDBExternalLink, "seasonId" | "mediaType">,
 	) {
 		const id = externalLink.id;
@@ -51,20 +51,18 @@ export default class TMDBRequest {
 		return await WebUtil.ratelimitRetryFunc(async () => {
 			return (await WebUtil.fetch(request, "GET", {
 				errorHandler: new TMDBErrorHandler(
-					(
-						<span>
-							Failed getting season <b>{seasonId}</b> details for id=
-							<b>
-								<i>TMDB{id}</i>
-							</b>
-						</span>
-					),
+					<span>
+						Failed getting season <b>{seasonId}</b> details for id=
+						<b>
+							<i>TMDB{id}</i>
+						</b>
+					</span>,
 				),
 			})) as TMDBSeasonResponse | BadResponse;
 		});
-	}
+	},
 
-	public static async createRequestToken() {
+	async createRequestToken() {
 		const url = new URL(
 			"https://api.themoviedb.org/3/authentication/token/new",
 		);
@@ -76,9 +74,9 @@ export default class TMDBRequest {
 				<span>Failed creating request token</span>,
 			),
 		})) as TMDBCreateRequestTokenResponse | BadResponse;
-	}
+	},
 
-	public static async createSession(requestToken: string) {
+	async createSession(requestToken: string) {
 		const url = new URL(
 			"https://api.themoviedb.org/3/authentication/session/new",
 		);
@@ -89,5 +87,7 @@ export default class TMDBRequest {
 		return (await WebUtil.fetch(request, "POST", {
 			bodyObj: { request_token: requestToken },
 		})) as TMDBCreateSessionResponse | BadResponse;
-	}
-}
+	},
+};
+
+export default TMDBRequest;

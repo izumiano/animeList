@@ -58,12 +58,13 @@ export default class AnimeSeason {
 			: new Date(params.dateFinished);
 
 		if (params.animeDbId) {
+			const animeDbId = params.animeDbId;
 			return new Proxy(this, {
-				set: function (
+				set: (
 					target: AnimeSeason,
 					property: keyof AnimeSeason,
-					value: any,
-				) {
+					value: unknown,
+				) => {
 					if (target[property] !== value) {
 						const prevValue = target[property];
 						Reflect.set(target, property, value);
@@ -74,7 +75,7 @@ export default class AnimeSeason {
 								"to",
 								value,
 							);
-							AppData.animes.get(params.animeDbId!)?.saveToDb();
+							AppData.animes.get(animeDbId)?.saveToDb();
 						}
 					}
 					return true;
@@ -121,11 +122,11 @@ export default class AnimeSeason {
 
 		this.episodes
 			.filter((episode) => episode.episodeNumber > atIndex)
-			.forEach((episode) =>
-				episode.runWithoutUpdatingDb(
-					() => (episode.episodeNumber += newEpisodes.length),
-				),
-			);
+			.forEach((episode) => {
+				episode.runWithoutUpdatingDb(() => {
+					episode.episodeNumber += newEpisodes.length;
+				});
+			});
 
 		newEpisodes = newEpisodes
 			.sort((lhs, rhs) => {
@@ -163,9 +164,11 @@ export default class AnimeSeason {
 	public removeEpisodeAtIndex(index: number) {
 		this.episodes
 			.filter((episode) => episode.episodeNumber > index)
-			.forEach((episode) =>
-				episode.runWithoutUpdatingDb(() => (episode.episodeNumber -= 1)),
-			);
+			.forEach((episode) => {
+				episode.runWithoutUpdatingDb(() => {
+					episode.episodeNumber -= 1;
+				});
+			});
 
 		this.runWithoutUpdatingDb(() => {
 			this.episodes.splice(index, 1);
@@ -211,9 +214,9 @@ export default class AnimeSeason {
 	}
 
 	public toIndexedDBObj() {
-		const objCopy: { [key: string]: any } = {};
+		const objCopy: { [key: string]: unknown } = {};
 		for (const key in this) {
-			if (Object.prototype.hasOwnProperty.call(this, key)) {
+			if (Object.hasOwn(this, key)) {
 				if (key === "animeDbId" || key === "anime" || key === "pauseAutoSave")
 					continue;
 

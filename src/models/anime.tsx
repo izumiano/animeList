@@ -1,14 +1,14 @@
 import { Fragment, type ReactNode } from "react";
+import { v4 as uuid } from "uuid";
 import { SeasonDetails } from "../external/responses/SeasonDetails";
 import LocalDB from "../indexedDb/indexedDb";
 import AnimeEpisode from "./animeEpisode";
 import AnimeSeason from "./animeSeason";
 import {
+	type ExternalLink,
 	externalLinkId,
 	newExternalLink,
-	type ExternalLink,
 } from "./externalLink";
-import { v4 as uuid } from "uuid";
 
 export const MediaTypeValues = [
 	"tv",
@@ -86,7 +86,7 @@ export default class Anime {
 
 		if (params.autoSave ?? false) {
 			return new Proxy(this, {
-				set: function (target: Anime, property: keyof Anime, value: any) {
+				set: (target: Anime, property: keyof Anime, value: unknown) => {
 					if (target[property] !== value) {
 						const prevValue = target[property];
 						Reflect.set(target, property, value);
@@ -137,11 +137,11 @@ export default class Anime {
 
 		this.seasons
 			.filter((season) => season.seasonNumber > atIndex)
-			.forEach((season) =>
-				season.runWithoutUpdatingDb(
-					() => (season.seasonNumber += newSeasons.length),
-				),
-			);
+			.forEach((season) => {
+				season.runWithoutUpdatingDb(() => {
+					season.seasonNumber += newSeasons.length;
+				});
+			});
 
 		let minSeasonNumber = 1;
 		newSeasons = newSeasons
@@ -189,9 +189,11 @@ export default class Anime {
 	public removeSeasonAtIndex(index: number) {
 		this.seasons
 			.filter((season) => season.seasonNumber > index + 1)
-			.forEach((season) =>
-				season.runWithoutUpdatingDb(() => (season.seasonNumber -= 1)),
-			);
+			.forEach((season) => {
+				season.runWithoutUpdatingDb(() => {
+					season.seasonNumber -= 1;
+				});
+			});
 
 		this.runWithoutUpdatingDb(() => {
 			this.seasons.splice(index, 1);
@@ -228,6 +230,7 @@ export default class Anime {
 		justAdded,
 		autoSave,
 	}: {
+		// biome-ignore lint/suspicious/noExplicitAny: <anything is allowed>
 		animeData: any;
 		justAdded: boolean;
 		autoSave?: boolean;
@@ -240,7 +243,7 @@ export default class Anime {
 
 		const seasons: AnimeSeason[] = [];
 		const animeDbId = autoSave
-			? this.getAnimeDbId(animeData.externalLink, animeData.title)
+			? Anime.getAnimeDbId(animeData.externalLink, animeData.title)
 			: undefined;
 
 		for (const season of animeData.seasons) {
@@ -320,9 +323,9 @@ export default class Anime {
 	}
 
 	toIndexedDBObj() {
-		const objCopy: { [key: string]: any } = {};
+		const objCopy: { [key: string]: unknown } = {};
 		for (const key in this) {
-			if (Object.prototype.hasOwnProperty.call(this, key)) {
+			if (Object.hasOwn(this, key)) {
 				if (key === "justAdded" || key === "pauseAutoSave") {
 					continue;
 				}
@@ -360,6 +363,7 @@ export default class Anime {
 }
 
 function validate(
+	// biome-ignore lint/suspicious/noExplicitAny: <anything is allowed>
 	animeData: any,
 ): { valid: true } | { valid: false; error: ReactNode } {
 	const errors: {
@@ -405,7 +409,8 @@ function validate(
 		);
 	}
 
-	const seasons = animeData.seasons as Array<any> | undefined;
+	// biome-ignore lint/suspicious/noExplicitAny: <anything is allowed>
+	const seasons = animeData.seasons as any[] | undefined;
 	for (const season of seasons ?? []) {
 		const seasonErrors = [];
 		let seasonTitle = season.title as string | number | undefined;
@@ -458,7 +463,8 @@ function validate(
 			);
 		}
 
-		const episodes = season.episodes as Array<any> | undefined;
+		// biome-ignore lint/suspicious/noExplicitAny: <anything is allowed>
+		const episodes = season.episodes as any[] | undefined;
 		for (const episode of episodes ?? []) {
 			const episodeErrors: ReactNode[] = [];
 

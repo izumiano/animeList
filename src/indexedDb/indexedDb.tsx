@@ -1,7 +1,7 @@
 import { toast } from "react-toastify";
+import AppData from "../appData";
 import Anime from "../models/anime";
 import { showError, sleepFor } from "../utils/utils";
-import AppData from "../appData";
 
 const dbName = "animesDB";
 const storeName = "animes";
@@ -54,8 +54,8 @@ export default class LocalDB {
 			await sleepFor(20);
 		}
 
-		this.Instance = new LocalDB(animesDB);
-		return this.Instance;
+		LocalDB.Instance = new LocalDB(animesDB);
+		return LocalDB.Instance;
 	}
 
 	private constructor(db: IDBDatabase) {
@@ -71,12 +71,12 @@ export default class LocalDB {
 			mode?: IDBTransactionMode | undefined;
 		} & TransactionResponse,
 	) {
-		if (!this.Instance) {
+		if (!LocalDB.Instance) {
 			console.error("LocalDB instance undefined");
 			new Promise((resolve) => {
 				(async () => {
-					const db = await this.Create();
-					this.doTransaction((store) => {
+					const db = await LocalDB.Create();
+					LocalDB.doTransaction((store) => {
 						return transaction(store, db);
 					}, params);
 					resolve(null);
@@ -85,10 +85,9 @@ export default class LocalDB {
 			return;
 		}
 
-		this.Instance.doTransaction(
-			(store) => transaction(store, this.Instance!),
-			params,
-		);
+		const instance = LocalDB.Instance;
+
+		instance.doTransaction((store) => transaction(store, instance), params);
 	}
 
 	public doTransaction(
@@ -108,7 +107,7 @@ export default class LocalDB {
 
 		if (Array.isArray(transactionResult)) {
 			const requests = transactionResult.map((request) => {
-				return new Promise<any>((resolve, reject) => {
+				return new Promise<unknown>((resolve, reject) => {
 					if (!request) {
 						resolve(null);
 						return;
@@ -208,7 +207,7 @@ export default class LocalDB {
 		);
 
 		function onError(
-			this: any,
+			this: unknown,
 			error: TransactionResponseErrorTypes | TransactionResponseErrorTypes[],
 		) {
 			toast.error(

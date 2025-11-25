@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
-import type BadResponse from "../external/responses/badResponse";
-import { showError, type ShowErrorParams, type UUIDType } from "./utils";
 import { v4 as uuid } from "uuid";
+import type BadResponse from "../external/responses/badResponse";
+import { type ShowErrorParams, showError, type UUIDType } from "./utils";
 
 export type ActivityTaskQueueType = Map<UUIDType, ActivityTask<unknown>>;
 const taskQueue: ActivityTaskQueueType = new Map();
@@ -41,9 +41,9 @@ class ActivityTaskListener {
 
 	public notify(task: ActivityTask<unknown>, args?: { isDeletion: boolean }) {
 		const isDeletion = args?.isDeletion ?? false;
-		this.observers.forEach((notifyObserver) =>
-			notifyObserver({ task: task, isDeletion: isDeletion }),
-		);
+		this.observers.forEach((notifyObserver) => {
+			notifyObserver({ task: task, isDeletion: isDeletion });
+		});
 	}
 }
 export const activityTaskListener = new ActivityTaskListener();
@@ -119,7 +119,7 @@ export default class ActivityTask<T> {
 			return this.result;
 		}
 
-		let taskResult;
+		let taskResult: ActivityTaskReturnType<T> | undefined;
 		let failed = false;
 		try {
 			taskResult = await this.task?.call(this, {

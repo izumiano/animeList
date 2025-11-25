@@ -1,8 +1,12 @@
-import { useEffect, useState, type ReactNode } from "react";
 import dropdownIcon from "assets/dropdown.png";
+import { type CSSProperties, type ReactNode, useEffect, useState } from "react";
 import "./details.css";
 import { useDomEvent } from "../../utils/useEvents";
 import useMultipleRef from "../../utils/useMultiple";
+
+interface DetailsContentCSSProperties extends CSSProperties {
+	"--openMaxHeight": string;
+}
 
 export default function Details({
 	title,
@@ -39,7 +43,7 @@ export default function Details({
 					{
 						"--openMaxHeight":
 							contentHeight != null ? `${contentHeight}px` : "100%",
-					} as any
+					} as DetailsContentCSSProperties
 				}
 			>
 				<div

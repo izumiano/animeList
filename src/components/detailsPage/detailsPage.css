@@ -4,7 +4,7 @@
 }
 
 .detailedCard > * > .animeImage {
-	max-height: calc(var(--cardHeight) * 0.8)
+	max-height: calc(var(--cardHeight) * 0.8);
 }
 
 .detailedCardInfo {

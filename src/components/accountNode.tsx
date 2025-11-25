@@ -1,19 +1,19 @@
 import { Fragment, useCallback, useId, useState } from "react";
-import { showError, sleepFor } from "../utils/utils";
 import { MALAuth } from "../external/auth/malAuth";
 import BadResponse from "../external/responses/badResponse";
+import { showError, sleepFor } from "../utils/utils";
 import "./accountNode.css";
-import Dropdown from "./generic/dropdown";
 import dropdownIcon from "assets/dropdown.png";
-import useSignal from "../utils/useSignal";
-import { FullSizeButtonList } from "./generic/fullSizeButtonList";
+import type IAuth from "../external/auth/IAuth";
 import { TMDBAuth } from "../external/auth/tmdbAuth";
 import {
+	type ExternalLinkToValueType,
 	getExternalHomepage,
 	getExternalLogo,
-	type ExternalLinkToValueType,
 } from "../models/externalLink";
-import type IAuth from "../external/auth/IAuth";
+import useSignal from "../utils/useSignal";
+import Dropdown from "./generic/dropdown";
+import { FullSizeButtonList } from "./generic/fullSizeButtonList";
 
 type UserDataType = ExternalLinkToValueType<
 	{ userName: string; imgUrl?: string } | "loading" | null

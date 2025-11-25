@@ -1,7 +1,17 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+	type CSSProperties,
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
 import "./expandableText.css";
-import { checkElementOverflow, sleepFor } from "../../utils/utils";
 import { useOtherElementEvent } from "../../utils/useEvents";
+import { checkElementOverflow, sleepFor } from "../../utils/utils";
+
+interface ExpandableTextCSSProperties extends CSSProperties {
+	"--maxLines": number;
+}
 
 const ExpandableText = ({
 	isExpanded,
@@ -73,7 +83,7 @@ const ExpandableText = ({
 				className={`leftAlignedText breakWord expandableText flexGrow ${
 					textIsExpanded ? "expanded" : ""
 				}`}
-				style={{ "--maxLines": maxLines } as any}
+				style={{ "--maxLines": maxLines } as ExpandableTextCSSProperties}
 			>
 				{text}
 			</span>

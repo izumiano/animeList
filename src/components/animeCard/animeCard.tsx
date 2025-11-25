@@ -1,14 +1,21 @@
 import "./animeCard.css";
-import Image from "../generic/image";
-import Anime from "../../models/anime";
-import EpisodeList from "./episodeList";
-import SeasonPicker from "./seasonPicker";
-import { useEffect, useRef, useState } from "react";
 import trashIcon from "assets/bin.png";
-import plusIcon from "assets/plus.png";
 import minusIcon from "assets/minus.png";
+import plusIcon from "assets/plus.png";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "react-toastify";
+import ExternalSync from "../../external/externalSync";
+import AnimeCardFactory from "../../external/factories/animeCardFactory";
+import BadResponse from "../../external/responses/badResponse";
+import type { Page } from "../../Home";
 import LocalDB from "../../indexedDb/indexedDb";
+import type Anime from "../../models/anime";
 import type AnimeFilter from "../../models/animeFilter";
+import {
+	getExternalLogo,
+	getUrlFromExternalLink,
+} from "../../models/externalLink";
+import { useOtherElementEvent } from "../../utils/useEvents";
 import {
 	allSuccess,
 	dvwToPx,
@@ -19,20 +26,13 @@ import {
 	showError,
 	waitForNextFrame,
 } from "../../utils/utils";
-import Dropdown from "../generic/dropdown";
-import ConfirmationDropdown from "../generic/confirmationDropdown";
-import { useOtherElementEvent } from "../../utils/useEvents";
-import {
-	getExternalLogo,
-	getUrlFromExternalLink,
-} from "../../models/externalLink";
-import ExternalSync from "../../external/externalSync";
 import AddAnimeNode from "../addAnimeMenu/addAnimeNode";
-import AnimeCardFactory from "../../external/factories/animeCardFactory";
-import BadResponse from "../../external/responses/badResponse";
-import { toast } from "react-toastify";
+import ConfirmationDropdown from "../generic/confirmationDropdown";
+import Dropdown from "../generic/dropdown";
+import Image from "../generic/image";
 import RefreshButton from "../generic/progress/refreshButton";
-import type { Page } from "../../Home";
+import EpisodeList from "./episodeList";
+import SeasonPicker from "./seasonPicker";
 
 const isOnScreenTolerance = remToPx(17);
 
@@ -144,8 +144,6 @@ const AnimeCard = ({
 			setAnimeSortByState(animeFilter.sortBy);
 		});
 	}
-
-	useEffect(checkIsOnScreen, [animating, isOnScreen]);
 
 	if (!shouldBeEnabled && !animating) {
 		return <div ref={cardRef}></div>;
@@ -388,7 +386,7 @@ const AnimeCard = ({
 												?.episodes.filter(
 													(episode) =>
 														episode.episodeNumber >=
-														selectedSeason!.episodes.length,
+														selectedSeason.episodes.length,
 												);
 											if (episodesData == null) {
 												onError();

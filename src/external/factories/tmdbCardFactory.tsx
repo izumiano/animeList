@@ -1,3 +1,4 @@
+import { v4 as uuid } from "uuid";
 import Anime from "../../models/anime";
 import AnimeEpisode from "../../models/animeEpisode";
 import AnimeSeason from "../../models/animeSeason";
@@ -7,8 +8,8 @@ import type { Require } from "../../utils/utils";
 import BadResponse from "../responses/badResponse";
 import TMDBRequest from "../tmdbRequest";
 
-export default class TMDBCardFactory {
-	public static create({
+const TMDBCardFactory = {
+	create({
 		externalLink,
 		order,
 		getSequels,
@@ -35,7 +36,7 @@ export default class TMDBCardFactory {
 			maxProgress: 1,
 			task: async ({ addProgress, addMaxProgress }) => {
 				if (!getSequels) {
-					const season = await this.getSeasonOrMovie(externalLink);
+					const season = await TMDBCardFactory.getSeasonOrMovie(externalLink);
 					if (season instanceof BadResponse) {
 						return season;
 					}
@@ -70,7 +71,7 @@ export default class TMDBCardFactory {
 							};
 						}
 
-						const seasonResponse = await this.getSeason({
+						const seasonResponse = await TMDBCardFactory.getSeason({
 							...externalLink,
 							seasonId: season.season_number,
 						});
@@ -89,18 +90,16 @@ export default class TMDBCardFactory {
 						{ failedSeasons },
 					);
 					return new BadResponse(
-						(
-							<span>
-								Could not get data for every season for id=
-								<b>TMDB{externalLink.id}</b>
-							</span>
-						),
+						<span>
+							Could not get data for every season for id=
+							<b>TMDB{externalLink.id}</b>
+						</span>,
 						{
 							data: failedSeasons
 								.map((ex) => {
 									const data = (ex.seasonResponse as BadResponse).data;
 									return (
-										<span className="flexColumn">
+										<span key={uuid()} className="flexColumn">
 											<b>Season {ex.seasonNumber}</b>
 											<span>{JSON.stringify(data, null, 2)}</span>
 										</span>
@@ -172,28 +171,26 @@ export default class TMDBCardFactory {
 				});
 			},
 		});
-	}
+	},
 
-	private static async getSeasonOrMovie(externalLink: TMDBExternalLink) {
+	async getSeasonOrMovie(externalLink: TMDBExternalLink) {
 		switch (externalLink.mediaType) {
 			case "tv":
 				if (externalLink.seasonId == null) {
 					return new BadResponse("Missing season id");
 				}
-				return await this.getSeason({
+				return await TMDBCardFactory.getSeason({
 					...externalLink,
 					seasonId: externalLink.seasonId,
 				});
 			case "movie":
-				return await this.getMovie(externalLink);
+				return await TMDBCardFactory.getMovie(externalLink);
 			default:
 				return new BadResponse(`Invalid media type ${externalLink.mediaType}`);
 		}
-	}
+	},
 
-	private static async getMovie(
-		externalLink: Omit<TMDBExternalLink, "seasonId">,
-	) {
+	async getMovie(externalLink: Omit<TMDBExternalLink, "seasonId">) {
 		const mediaType = externalLink.mediaType;
 		if (mediaType !== "movie") {
 			return new BadResponse(
@@ -224,11 +221,9 @@ export default class TMDBCardFactory {
 			dateStarted: null,
 			dateFinished: null,
 		});
-	}
+	},
 
-	private static async getSeason(
-		externalLink: Require<TMDBExternalLink, "seasonId">,
-	) {
+	async getSeason(externalLink: Require<TMDBExternalLink, "seasonId">) {
 		const seasonId = externalLink.seasonId;
 		if (seasonId == null) {
 			return new BadResponse("Missing season id in getSeason");
@@ -273,5 +268,7 @@ export default class TMDBCardFactory {
 			dateStarted: null,
 			dateFinished: null,
 		});
-	}
-}
+	},
+};
+
+export default TMDBCardFactory;

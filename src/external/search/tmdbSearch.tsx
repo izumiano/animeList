@@ -4,34 +4,32 @@ import BadResponse from "../responses/badResponse";
 import type TMDBSearchResponse from "../responses/tmdbSearchResponse";
 import TMDBRequest from "../tmdbRequest";
 
-export default class TMDBSearch {
-	public static async getResults(query: string) {
-		const searchResponse = await this.getResultsAsync(query);
+const TMDBSearch = {
+	async getResults(query: string) {
+		const searchResponse = await TMDBSearch.getResultsAsync(query);
 		if (searchResponse instanceof BadResponse) {
 			return searchResponse;
 		}
 
 		if (searchResponse.statusCode !== 200) {
 			return new BadResponse(
-				(
-					<span>
-						Getting search results failed with status code:{" "}
-						<b>{searchResponse.statusCode}</b>
-					</span>
-				),
+				<span>
+					Getting search results failed with status code:{" "}
+					<b>{searchResponse.statusCode}</b>
+				</span>,
 				{ data: searchResponse },
 			);
 		}
 
 		return searchResponse;
-	}
+	},
 
-	private static async getResultsAsync(
+	async getResultsAsync(
 		query: string,
 	): Promise<BadResponse | TMDBSearchResponse> {
 		let _query = query;
 		const tmdbUrlMatch = /themoviedb\.org\/tv\/(?<tmdbId>\d+)/g.exec(query);
-		if (tmdbUrlMatch && tmdbUrlMatch.groups) {
+		if (tmdbUrlMatch?.groups) {
 			_query = tmdbUrlMatch.groups.tmdbId;
 		}
 		const id = parseInt(_query);
@@ -89,5 +87,7 @@ export default class TMDBSearch {
 					| TMDBSearchResponse
 					| BadResponse,
 		);
-	}
-}
+	},
+};
+
+export default TMDBSearch;

@@ -1,8 +1,8 @@
 import {
-	useState,
 	type CSSProperties,
 	type ElementType,
 	type ReactNode,
+	useState,
 } from "react";
 import "./rainbowOutline.css";
 import { useDomEvent } from "../../utils/useEvents";

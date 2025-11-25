@@ -1,4 +1,4 @@
-import Anime from "../../models/anime";
+import type Anime from "../../models/anime";
 import AccountNode from "../accountNode";
 import "./addAnimeMenu.css";
 import AddAnimeNode from "./addAnimeNode";
@@ -16,7 +16,7 @@ const AddAnimeMenu = ({
 
 	return (
 		<>
-			<div
+			<nav
 				className={`thingToClose ${isOpenClass}`}
 				onClick={() => {
 					setIsOpenState(false);
@@ -26,7 +26,7 @@ const AddAnimeMenu = ({
 						isOpen ? "opacityOpenThing" : "opacityCloseThing"
 					} 0.4s forwards`,
 				}}
-			></div>
+			></nav>
 			<div
 				className={`addAnimeMenu flexColumn shimmerBackground ${isOpenClass}`}
 			>

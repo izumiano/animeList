@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
-import ProgressCircle from "./progressCircle";
-import ActivityTask, {
-	activityTaskListener,
-} from "../../../utils/activityTask";
-import { clamp, type Alignment, type UUIDType } from "../../../utils/utils";
+import type ActivityTask from "../../../utils/activityTask";
+import { activityTaskListener } from "../../../utils/activityTask";
+import { type Alignment, clamp, type UUIDType } from "../../../utils/utils";
 import Dropdown from "../dropdown";
+import ProgressCircle from "./progressCircle";
 import "./progressNode.css";
-import ProgressTask from "./progressTask";
 import warnIcon from "assets/warningYellow.png";
+import ProgressTask from "./progressTask";
 
 const ProgressNode = ({
 	size,

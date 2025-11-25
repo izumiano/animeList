@@ -1,9 +1,8 @@
 import { toast } from "react-toastify";
-import BadResponse from "../external/responses/badResponse";
-
-import Anime from "../models/anime";
 import AnimeCardFactory from "../external/factories/animeCardFactory";
+import BadResponse from "../external/responses/badResponse";
 import LocalDB from "../indexedDb/indexedDb";
+import Anime from "../models/anime";
 import type { ExternalLink } from "../models/externalLink";
 
 export async function setAnimesToTestState(
