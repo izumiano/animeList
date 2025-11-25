@@ -64,80 +64,80 @@ const ExternalSync = {
 					abortControllers.delete(id);
 				}
 
-				try {
-					const externalLink = season.externalLink;
-					switch (externalLink.type) {
-						case "MAL":
-							console.log("here");
-							return MALAuth.instance.userToken?.updateAnimeSeasonStatus(
-								season,
-								anime?.title,
-							);
-						case "TMDB": {
-							if (!anime) {
-								return new BadResponse(
-									"'anime' cannot be null when external type is tmdb",
-								);
-							}
-
-							const userToken = TMDBAuth.instance.userToken;
-
-							const scores = anime.seasons
-								.filter((season) =>
-									externalLinkEq(season.externalLink, externalLink),
-								)
-								.map((season) => season.score);
-
-							let score: number;
-							if (scores.some((score) => !score)) {
-								score = 0;
-								const response = await userToken?.setIsInWatchlist(
-									externalLink,
-									true,
-								);
-								if (response instanceof BadResponse) {
-									return response;
-								}
-							} else {
-								score = roundToNearestDecimal(
-									2 *
-										((scores as number[]).reduce((prev, curr) => prev + curr) /
-											scores.length),
-									0.5,
-								);
-							}
-
-							return userToken?.updateStatus(externalLink, {
-								score: score,
-							});
-						}
-						default:
-							return new BadResponse(
-								`Invalid external link type [${externalLink.type}]`,
-							);
-					}
-				} finally {
-					if (params.showToastOnSuccess) {
-						toast.info(
-							<span>
-								Successfully updated{" "}
-								<b>
-									{anime?.title} <i>[{season.title}]</i>
-								</b>
-							</span>,
+				const externalLink = season.externalLink;
+				switch (externalLink.type) {
+					case "MAL":
+						console.log("here");
+						return MALAuth.instance.userToken?.updateAnimeSeasonStatus(
+							season,
+							anime?.title,
 						);
+					case "TMDB": {
+						if (!anime) {
+							return new BadResponse(
+								"'anime' cannot be null when external type is tmdb",
+							);
+						}
+
+						const userToken = TMDBAuth.instance.userToken;
+
+						const scores = anime.seasons
+							.filter((season) =>
+								externalLinkEq(season.externalLink, externalLink),
+							)
+							.map((season) => season.score);
+
+						let score: number;
+						if (scores.some((score) => !score)) {
+							score = 0;
+							const response = await userToken?.setIsInWatchlist(
+								externalLink,
+								true,
+							);
+							if (response instanceof BadResponse) {
+								return response;
+							}
+						} else {
+							score = roundToNearestDecimal(
+								2 *
+									((scores as number[]).reduce((prev, curr) => prev + curr) /
+										scores.length),
+								0.5,
+							);
+						}
+
+						return userToken?.updateStatus(externalLink, {
+							score: score,
+						});
 					}
+					default:
+						return new BadResponse(
+							`Invalid external link type [${externalLink.type}]`,
+						);
 				}
 			},
 		});
 
-		if (params.doPushTask) {
-			return await pushTask(task);
+		try {
+			if (params.doPushTask) {
+				return await pushTask(task);
+			}
+
+			await task.start();
+
+			return task;
+		} finally {
+			if (params.showToastOnSuccess) {
+				toast.info(
+					<span>
+						Successfully updated{" "}
+						<b>
+							{anime?.title} <i>[{season.title}]</i>
+						</b>
+					</span>,
+				);
+			}
 		}
-
-		await task.start();
-
-		return task;
 	},
 
 	async deleteAnimeSeason(
