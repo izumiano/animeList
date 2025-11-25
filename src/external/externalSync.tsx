@@ -29,6 +29,10 @@ const ExternalSync = {
 			doPushTask?: boolean;
 		},
 	) {
+		if (!this.isConnected(season.externalLink)) {
+			return;
+		}
+
 		params ??= {};
 		params.showToastOnSuccess ??= true;
 		params.allowAbort ??= true;
@@ -44,10 +48,6 @@ const ExternalSync = {
 				</span>
 			),
 			task: async () => {
-				if (!ExternalSync.isConnected(season.externalLink)) {
-					return new AbortedOperation();
-				}
-
 				if (params.allowAbort) {
 					const id = externalLinkId(
 						season.externalLink,

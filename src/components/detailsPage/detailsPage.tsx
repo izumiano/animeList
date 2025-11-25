@@ -161,10 +161,10 @@ const InternalDetailsPage = ({
 				anime,
 				{ doPushTask: false, showToastOnSuccess: false },
 			);
-			if (task.failed) {
+			if (task?.failed) {
 				task.showError();
 			}
-			if (task.result instanceof CanceledOperation) {
+			if (task?.result instanceof CanceledOperation) {
 				return;
 			}
 			setUpdatingScoreIdsState((prev) => {

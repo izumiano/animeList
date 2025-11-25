@@ -54,7 +54,7 @@ export default class AnimeEpisode {
 										seasonInfo.season,
 										seasonInfo.anime,
 									).then((task) => {
-										if (task.failed) {
+										if (task?.failed) {
 											task.showError();
 										}
 									});
