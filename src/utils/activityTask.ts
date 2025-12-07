@@ -1,7 +1,12 @@
+import type BadResponse from "../external/responses/badResponse";
 import type { ReactNode } from "react";
 import { v4 as uuid } from "uuid";
-import type BadResponse from "../external/responses/badResponse";
-import { type ShowErrorParams, showError, type UUIDType } from "./utils";
+import {
+	type ShowErrorParams,
+	showError,
+	type UUIDType,
+	AbortedOperation,
+} from "./utils";
 
 export type ActivityTaskQueueType = Map<UUIDType, ActivityTask<unknown>>;
 const taskQueue: ActivityTaskQueueType = new Map();
@@ -64,9 +69,13 @@ export default class ActivityTask<T> {
 	task?: ActivityTaskType<T>;
 
 	result: ActivityTaskReturnType<T> | undefined;
-	failed: boolean;
+	#failed: boolean;
+	public get failed() {
+		return this.#failed;
+	}
 
 	private started = false;
+	private finished = false;
 
 	onProgressUpdate:
 		| ((params: { progress: number; maxProgress: number }) => void)
@@ -86,11 +95,11 @@ export default class ActivityTask<T> {
 		this.maxProgress = params.maxProgress ?? 1;
 		this.task = params.task;
 
-		this.failed = false;
+		this.#failed = false;
 
 		if (!params.task) {
 			this.result = params.value;
-			this.failed = !!params.failed;
+			this.#failed = !!params.failed;
 		}
 	}
 
@@ -115,7 +124,7 @@ export default class ActivityTask<T> {
 			maxProgress: this.maxProgress,
 		});
 
-		if (this.result) {
+		if (this.finished) {
 			return this.result;
 		}
 
@@ -151,7 +160,7 @@ export default class ActivityTask<T> {
 			this.progress = this.maxProgress;
 		}
 		this.result = taskResult;
-		this.failed = failed;
+		this.#failed = failed;
 		this._onProgressUpdate({
 			progress: this.progress,
 			maxProgress: this.maxProgress,
@@ -161,10 +170,21 @@ export default class ActivityTask<T> {
 			activityTaskListener.notify(this, { isDeletion: true });
 		}
 
+		this.finished = true;
 		return taskResult;
 	}
 
 	public showError(params?: ShowErrorParams) {
 		showError(this.result, this.label, params);
+	}
+
+	public wasAborted() {
+		if (!this.finished) {
+			throw new Error(
+				`Checked if task '${this.label}' was aborted, but it hadn't finished yet.`,
+			);
+		}
+
+		return this.result instanceof AbortedOperation;
 	}
 }

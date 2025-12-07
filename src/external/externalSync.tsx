@@ -9,7 +9,7 @@ import {
 } from "../models/externalLink";
 import ActivityTask, { pushTask } from "../utils/activityTask";
 import {
-	CanceledOperation as AbortedOperation,
+	AbortedOperation,
 	roundToNearestDecimal,
 	sleepFor,
 } from "../utils/utils";
@@ -67,7 +67,6 @@ const ExternalSync = {
 				const externalLink = season.externalLink;
 				switch (externalLink.type) {
 					case "MAL":
-						console.log("here");
 						return MALAuth.instance.userToken?.updateAnimeSeasonStatus(
 							season,
 							anime?.title,
@@ -118,26 +117,24 @@ const ExternalSync = {
 			},
 		});
 
-		try {
-			if (params.doPushTask) {
-				return await pushTask(task);
-			}
-
+		if (params.doPushTask) {
+			await pushTask(task);
+		} else {
 			await task.start();
-
-			return task;
-		} finally {
-			if (params.showToastOnSuccess) {
-				toast.info(
-					<span>
-						Successfully updated{" "}
-						<b>
-							{anime?.title} <i>[{season.title}]</i>
-						</b>
-					</span>,
-				);
-			}
 		}
+
+		if (params.showToastOnSuccess && !task.failed && !task.wasAborted()) {
+			toast.info(
+				<span>
+					Successfully updated{" "}
+					<b>
+						{anime?.title} <i>[{season.title}]</i>
+					</b>
+				</span>,
+			);
+		}
+
+		return task;
 	},
 
 	async deleteAnimeSeason(
@@ -170,76 +167,71 @@ const ExternalSync = {
 				abortControllers.get(id)?.abort();
 				abortControllers.delete(id);
 
-				try {
-					const externalLink = season.externalLink;
-					switch (externalLink.type) {
-						case "MAL":
-							return await MALAuth.instance.userToken?.deleteSeason(
-								season,
-								anime.title,
-							);
-						case "TMDB": {
-							const userToken = TMDBAuth.instance.userToken;
+				const externalLink = season.externalLink;
+				switch (externalLink.type) {
+					case "MAL":
+						return await MALAuth.instance.userToken?.deleteSeason(
+							season,
+							anime.title,
+						);
+					case "TMDB": {
+						const userToken = TMDBAuth.instance.userToken;
 
-							const scores = anime.seasons
-								.filter(
-									(checkSeason) =>
-										checkSeason !== season &&
-										externalLinkEq(checkSeason.externalLink, externalLink),
-								)
-								.map((season) => season.score);
+						const scores = anime.seasons
+							.filter(
+								(checkSeason) =>
+									checkSeason !== season &&
+									externalLinkEq(checkSeason.externalLink, externalLink),
+							)
+							.map((season) => season.score);
 
-							let score = 0;
-							if (!scores.some((score) => !score)) {
-								score = roundToNearestDecimal(
-									2 *
-										((scores as number[]).reduce(
-											(prev, curr) => prev + curr,
-											0,
-										) /
-											scores.length),
-									0.5,
-								);
-							}
-
-							const inWatchlist = scores.length > 1 && score === 0;
-
-							const statusResponse = userToken?.updateStatus(externalLink, {
-								score: params.forceDelete ? 0 : score,
-							});
-							if (statusResponse instanceof BadResponse) {
-								return statusResponse;
-							}
-
-							return await userToken?.setIsInWatchlist(
-								externalLink,
-								params.forceDelete ? false : inWatchlist,
+						let score = 0;
+						if (!scores.some((score) => !score)) {
+							score = roundToNearestDecimal(
+								2 *
+									((scores as number[]).reduce((prev, curr) => prev + curr, 0) /
+										scores.length),
+								0.5,
 							);
 						}
 
-						default:
-							break;
-					}
-				} finally {
-					if (params.showToastOnSuccess) {
-						toast.info(
-							<span>
-								Successfully Deleted{" "}
-								<b>
-									{anime.title} <i>[{season.title}]</i>
-								</b>
-							</span>,
+						const inWatchlist = scores.length > 1 && score === 0;
+
+						const statusResponse = userToken?.updateStatus(externalLink, {
+							score: params.forceDelete ? 0 : score,
+						});
+						if (statusResponse instanceof BadResponse) {
+							return statusResponse;
+						}
+
+						return await userToken?.setIsInWatchlist(
+							externalLink,
+							params.forceDelete ? false : inWatchlist,
 						);
 					}
+
+					default:
+						break;
 				}
 			},
 		});
 
 		if (params.doPushTask) {
-			return await pushTask(task);
+			await pushTask(task);
+		} else {
+			await task.start();
 		}
 
-		await task.start();
+		if (params.showToastOnSuccess && !task.failed) {
+			toast.info(
+				<span>
+					Successfully Deleted{" "}
+					<b>
+						{anime.title} <i>[{season.title}]</i>
+					</b>
+				</span>,
+			);
+		}
 
 		return task;
 	},

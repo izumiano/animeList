@@ -19,7 +19,7 @@ import "./detailsPage.css";
 import detailsIcon from "assets/details.png";
 import listIcon from "assets/list.png";
 import ExternalSync from "../../external/externalSync";
-import { CanceledOperation, formatDate } from "../../utils/utils";
+import { AbortedOperation, formatDate } from "../../utils/utils";
 import EpisodeList from "../animeCard/episodeList";
 import ExpandableText from "../generic/expandableText";
 import LoadingSpinner from "../generic/loadingSpinner";
@@ -164,7 +164,7 @@ const InternalDetailsPage = ({
 			if (task?.failed) {
 				task.showError();
 			}
-			if (task?.result instanceof CanceledOperation) {
+			if (task?.result instanceof AbortedOperation) {
 				return;
 			}
 			setUpdatingScoreIdsState((prev) => {
