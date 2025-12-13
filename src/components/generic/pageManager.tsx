@@ -1,5 +1,6 @@
 import {
 	type ReactNode,
+	Suspense,
 	useCallback,
 	useEffect,
 	useRef,
@@ -14,6 +15,7 @@ import useTouch, {
 } from "../../utils/useTouch";
 import { fullScreenWidth } from "../../utils/utils";
 import "./pageManager.css";
+import LoadingSpinner from "./loadingSpinner";
 
 type PagePropsRet<Page extends string> = {
 	[Key in Page]: {
@@ -132,7 +134,13 @@ export default function PageManager<Page extends string>({
 					pageManagerRef,
 				)}
 			>
-				{currentOverlayPage ? pages[currentOverlayPage].node : null}
+				<Suspense
+					fallback={
+						<LoadingSpinner props={{ centered: true, absolutePos: true }} />
+					}
+				>
+					{currentOverlayPage ? pages[currentOverlayPage].node : null}
+				</Suspense>
 			</div>
 			{pages.main.node}
 		</>

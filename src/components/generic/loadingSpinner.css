@@ -5,6 +5,13 @@
 .loadingSpinnerContainer.centered {
 	justify-content: center;
 	align-items: center;
+
+	> .loadingSpinner.absolute {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		translate: -50%, -50%;
+	}
 }
 
 .loadingSpinner {

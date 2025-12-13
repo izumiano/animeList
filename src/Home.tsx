@@ -1,8 +1,7 @@
 import "./App.css";
-import { useEffect, useRef, useState } from "react";
+import { lazy, useEffect, useRef, useState } from "react";
 import AppData, { devUtils } from "./appData";
 import AddAnimeMenu from "./components/addAnimeMenu/addAnimeMenu";
-import DetailsPage from "./components/detailsPage/detailsPage";
 import { detailsPageValid } from "./components/detailsPage/detailsPageConsts";
 import LoadingSpinner from "./components/generic/loadingSpinner";
 import PageManager from "./components/generic/pageManager";
@@ -74,11 +73,15 @@ function Home({ startPage }: { startPage?: Page }) {
 	if (!animes) {
 		return (
 			<div className="flexRow horizontalCenterItems verticalCenterItems fullScreenScrollContainer">
-				<LoadingSpinner />
+				<LoadingSpinner props={{ centered: true, absolutePos: true }} />
 			</div>
 		);
 	}
 	AppData.animes = animes;
+
+	const DetailsPage = lazy(
+		() => import("./components/detailsPage/detailsPage"),
+	);
 
 	return (
 		<div>
