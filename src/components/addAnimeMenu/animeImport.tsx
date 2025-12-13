@@ -70,7 +70,6 @@ export function importAnimes(
 								);
 							}
 							if (season.externalLink.type === "TMDB") {
-								season.externalLink.seasonId = season.externalLink?.id;
 								season.externalLink.id = anime.externalLink?.id;
 							}
 						});
