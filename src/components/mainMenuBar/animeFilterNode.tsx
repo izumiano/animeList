@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useId } from "react";
 import {
 	type AnimeFilterState,
 	type SortBy,
@@ -8,6 +8,10 @@ import { dialogifyKey } from "../../utils/utils";
 import Select from "../generic/select";
 import Toggle from "../generic/toggle";
 import "./animeFilterNode.css";
+import {
+	ExternalLinkTypeValues,
+	getExternalLogo,
+} from "../../models/externalLink";
 
 const AnimeFilterNode = ({
 	animeFilterState: [animeFilter, setAnimeFilterState],
@@ -24,6 +28,8 @@ const AnimeFilterNode = ({
 			behavior: "smooth",
 		});
 	}
+
+	const id = useId();
 
 	return (
 		<div className="animeFilterNode margin">
@@ -55,7 +61,32 @@ const AnimeFilterNode = ({
 				}
 			/>
 
-			<hr />
+			<div className="flexRow spaceBetween">
+				{ExternalLinkTypeValues.map((type, index) => (
+					<Toggle
+						key={`${id}_extTypeToggles_${index}`}
+						label={
+							<img
+								className="extTypeToggle buttonAnim"
+								src={getExternalLogo(type)}
+								width={2}
+							/>
+						}
+						checked={animeFilter.extTypeToggles[type ?? "None"]}
+						showToggleSlider={false}
+						onChange={() => {
+							setAnimeFilterState(
+								animeFilter.newWith("extTypeToggles", {
+									...animeFilter.extTypeToggles,
+									[type ?? "None"]: !animeFilter.extTypeToggles[type ?? "None"],
+								}),
+							);
+						}}
+					/>
+				))}
+			</div>
+
+			<hr className="light" />
 
 			<Select
 				defaultValue={animeFilter.sortBy}

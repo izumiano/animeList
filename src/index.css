@@ -50,16 +50,20 @@ button,
 	border-radius: 1rem;
 	color: white;
 	background-color: var(--colAccent);
+}
 
+button,
+.button,
+.buttonAnim {
 	transition: border-color 0.25s;
 }
 
-:is(button, .button):hover {
+:is(button, .button, .buttonAnim):hover {
 	border-color: #646cff;
 }
 
-:is(button, .button):focus,
-:is(button, .button):focus-visible {
+:is(button, .button, .buttonAnim):focus,
+:is(button, .button, .buttonAnim):focus-visible {
 	outline: 4px auto -webkit-focus-ring-color;
 }
 
@@ -74,7 +78,8 @@ button,
 	}
 
 	button,
-	.button {
+	.button,
+	.buttonAnim {
 		background-color: #f9f9f9;
 	}
 }

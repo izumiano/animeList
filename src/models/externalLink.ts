@@ -1,3 +1,4 @@
+import asterisk from "assets/asterisk.png";
 import malLogo from "assets/malLogo.png";
 import tmdbLogo from "assets/tmdbLogo.png";
 import { toast } from "react-toastify";
@@ -117,7 +118,7 @@ export function getExternalLogo(externalLinkType: ExternalLinkType) {
 			return tmdbLogo;
 
 		default:
-			return;
+			return asterisk;
 	}
 }
 

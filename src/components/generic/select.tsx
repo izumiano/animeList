@@ -86,7 +86,7 @@ function Select<T extends ValueType>({
 	return (
 		<div className="flexRow" style={{ margin: margin }}>
 			{label ? (
-				<div className="flexGrow leftAlignedText verticalCenterItems">
+				<div className="flexGrow leftAlignedText verticalCenterItems alignContentCenter">
 					{label}
 				</div>
 			) : null}

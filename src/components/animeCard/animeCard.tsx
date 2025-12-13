@@ -443,6 +443,10 @@ const AnimeCard = ({
 };
 
 function checkShouldBeEnabled(anime: Anime, animeFilter: AnimeFilter) {
+	if (!animeFilter.extTypeToggles[anime.externalLink.type ?? "None"]) {
+		return false;
+	}
+
 	if (!searchQueryMatched(anime, animeFilter.searchQuery)) {
 		return false;
 	}

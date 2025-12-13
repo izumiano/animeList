@@ -1,3 +1,5 @@
+import type { ExternalLinkToValueType } from "./externalLink";
+
 export type AnimeFilterState = [
 	AnimeFilter,
 	React.Dispatch<React.SetStateAction<AnimeFilter>>,
@@ -12,12 +14,16 @@ export type SortBy = (typeof SortByValues)[number];
 
 const saveIgnoreProperties: (keyof AnimeFilter)[] = [] as const;
 
+type ExtTypeToggles = ExternalLinkToValueType<boolean> & { None: boolean };
+
 export default class AnimeFilter {
 	showWatched: boolean;
 	showWatching: boolean;
 	showUnwatched: boolean;
 
 	searchQuery: string;
+
+	extTypeToggles: ExtTypeToggles;
 
 	sortBy: SortBy;
 
@@ -26,18 +32,25 @@ export default class AnimeFilter {
 		showWatching,
 		showUnwatched,
 		searchQuery,
+		extTypeToggles,
 		sortBy,
 	}: {
 		showWatched?: boolean;
 		showWatching?: boolean;
 		showUnwatched?: boolean;
 		searchQuery?: string;
+		extTypeToggles?: ExtTypeToggles;
 		sortBy?: SortBy;
 	}) {
 		this.showWatched = showWatched ?? true;
 		this.showWatching = showWatching ?? true;
 		this.showUnwatched = showUnwatched ?? true;
 		this.searchQuery = searchQuery ?? "";
+		this.extTypeToggles = extTypeToggles ?? {
+			MAL: true,
+			TMDB: true,
+			None: true,
+		};
 		this.sortBy = sortBy ?? "userOrder";
 	}
 
@@ -69,12 +82,13 @@ export default class AnimeFilter {
 		if (!saveIgnoreProperties.includes(property)) {
 			localStorage.setItem(property, JSON.stringify(value));
 		}
-		this[property] = value as this[T];
+		this.setVal(property, value);
 		return new AnimeFilter({
 			showWatched: this.showWatched,
 			showWatching: this.showWatching,
 			showUnwatched: this.showUnwatched,
 			searchQuery: this.searchQuery,
+			extTypeToggles: this.extTypeToggles,
 			sortBy: this.sortBy,
 		});
 	}

@@ -123,6 +123,10 @@ hr {
 	border-style: none;
 	background-color: var(--colNeutral);
 	height: 1px;
+
+	&.light {
+		background-color: var(--colWeakWhite);
+	}
 }
 
 .leftAlignedText {
@@ -147,6 +151,10 @@ hr {
 
 .verticalCenter {
 	align-self: center;
+}
+
+.alignContentCenter {
+	align-content: center;
 }
 
 .spaceBetween {
