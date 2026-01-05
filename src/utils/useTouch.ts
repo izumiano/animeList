@@ -81,7 +81,6 @@ export default function useTouch<T extends HTMLElement>({
 				event: event,
 			});
 		};
-		currentElem.addEventListener("touchstart", handleStart);
 
 		const handleMove = (event: TouchEvent) => {
 			const totalMove = { x: 0, y: 0 };
@@ -103,8 +102,10 @@ export default function useTouch<T extends HTMLElement>({
 
 			if (
 				!hasStartedTouch.current &&
-				((totalMove.x < minX.positive && totalMove.x > -minX.negative) ||
-					(totalMove.y < minY.positive && totalMove.y > -minY.negative))
+				(totalMove.x < minX.positive ||
+					totalMove.x < -minX.negative ||
+					totalMove.y < minY.positive ||
+					totalMove.y < -minY.negative)
 			) {
 				return;
 			}
@@ -116,7 +117,6 @@ export default function useTouch<T extends HTMLElement>({
 				event: event,
 			});
 		};
-		currentElem.addEventListener("touchmove", handleMove);
 
 		const handleEnd = (event: TouchEvent) => {
 			const totalSpeed = { x: 0, y: 0 };
@@ -147,6 +147,9 @@ export default function useTouch<T extends HTMLElement>({
 				hasStartedTouch.current = false;
 			}
 		};
+
+		currentElem.addEventListener("touchstart", handleStart);
+		currentElem.addEventListener("touchmove", handleMove);
 		currentElem.addEventListener("touchend", handleEnd);
 		currentElem.addEventListener("touchcancel", handleEnd);
 
