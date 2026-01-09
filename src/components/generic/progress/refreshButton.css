@@ -20,7 +20,6 @@
 	animation-play-state: paused;
 
 	transition: transform 0.8s ease-out !important;
-	/* biome-ignore lint/correctness/noMissingVarFunction: <var should not be used on a transition property> */
 	-webkit-transition: --refreshRotation 0.8s ease-out !important;
 	-moz-transition: transform 0.8s ease-out !important;
 
