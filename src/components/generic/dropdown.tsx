@@ -30,7 +30,7 @@ const Dropdown = ({
 	alignment?: Alignment;
 	className?: string;
 	buttonClass?: string;
-	buttonProps?: React.ComponentProps<"button">;
+	buttonProps?: React.ComponentProps<"div"> & { disabled?: boolean };
 	useDefaultButtonStyle?: boolean;
 	backgroundColor?: Property.BackgroundColor;
 	dropdownContentClassName?: string;
@@ -139,28 +139,26 @@ const Dropdown = ({
 		[onOpenChange],
 	);
 
+	const toggleOpen = () => {
+		!buttonProps?.disabled && setIsOpen(!isOpen);
+	};
+
 	return (
 		<div
 			ref={useOutsideClick(useCallback(() => setIsOpen(false), [setIsOpen]))}
 			className={`dropdown ${className} ${forceStaticPosition ? "forceStatic" : ""}`}
 		>
-			{useDefaultButtonStyle ? (
-				<button
-					className={buttonClass}
-					onClick={() => setIsOpenState(!isOpen)}
-					{...buttonProps}
-				>
-					{dropdownButton}
-				</button>
-			) : (
-				<button
-					type="button"
-					className={`reset ${buttonClass}`}
-					onClick={() => setIsOpen(!isOpen)}
-				>
-					{dropdownButton}
-				</button>
-			)}
+			{/** biome-ignore lint/a11y/useSemanticElements: <should allow buttons inside> */}
+			<div
+				{...buttonProps}
+				role="button"
+				tabIndex={0}
+				className={`${buttonClass} ${useDefaultButtonStyle ? "button" : ""} ${buttonProps?.disabled ? "disabledButton" : ""}`}
+				onClick={toggleOpen}
+				onKeyUp={(e) => e.key === "Enter" && toggleOpen()}
+			>
+				{dropdownButton}
+			</div>
 			<div className="arrowContainer">
 				<div className={`dropdownMenu ${isOpenClass}`}>
 					<div className="dropdownWrapper">

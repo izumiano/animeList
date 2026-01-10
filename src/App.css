@@ -387,3 +387,7 @@ a.staticStyle {
 :where(li, ul, ol).noListStyle {
 	list-style: none;
 }
+
+.disabledButton {
+	pointer-events: none;
+}
