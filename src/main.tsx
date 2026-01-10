@@ -1,4 +1,4 @@
-import { StrictMode } from "react";
+import { lazy, StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -6,7 +6,7 @@ import App from "./App.tsx";
 import Home from "./Home.tsx";
 import MyErrorBoundary from "./routeErrorPage.tsx";
 
-if (import.meta.env.MODE === "development") {
+if (import.meta.env.DEV) {
 	const matches = window.location.href.match(
 		/\?console(?:=(?<config>show|hide))?/,
 	);
@@ -22,17 +22,24 @@ if (import.meta.env.MODE === "development") {
 	}
 }
 
+const routes = [
+	{ index: true, element: <Home /> },
+	{ path: "malAuth", element: <Home /> },
+	{ path: "tmdbAuth", element: <Home /> },
+	{ path: "details/*", element: <Home startPage="details" /> },
+];
+
+if (import.meta.env.DEV) {
+	const StarRatingTest = lazy(() => import("./dev/starRatingTest"));
+	routes.push({ path: "dev", element: <StarRatingTest /> });
+}
+
 const router = createBrowserRouter([
 	{
 		path: import.meta.env.BASE_URL,
 		element: <App />,
 		errorElement: <MyErrorBoundary />,
-		children: [
-			{ index: true, element: <Home /> },
-			{ path: "malAuth", element: <Home /> },
-			{ path: "tmdbAuth", element: <Home /> },
-			{ path: "details/*", element: <Home startPage="details" /> },
-		],
+		children: routes,
 	},
 ]);
 
