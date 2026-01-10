@@ -79,9 +79,8 @@ function Home({ startPage }: { startPage?: Page }) {
 	}
 	AppData.animes = animes;
 
-	const DetailsPage = lazy(
-		() => import("./components/detailsPage/detailsPage"),
-	);
+	const DetailsPagePromise = import("./components/detailsPage/detailsPage");
+	const DetailsPage = lazy(() => DetailsPagePromise);
 
 	return (
 		<div>
