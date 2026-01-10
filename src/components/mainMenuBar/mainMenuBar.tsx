@@ -39,6 +39,10 @@ const MainMenuBar = ({
 						return;
 					}
 
+					fullScreenScrollContainerRef.current?.scrollTo({
+						top: 0,
+						behavior: "smooth",
+					});
 					setAnimeFilterState(
 						animeFilter.newWith("searchQuery", event.target.value),
 					);
