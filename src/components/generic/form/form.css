@@ -129,6 +129,10 @@ div:has(> .formDatePicker) {
 		& * {
 			color: var(--textColor);
 		}
+
+		& .MuiPickersArrowSwitcher-root > .MuiButtonBase-root.Mui-disabled {
+			opacity: 0.3;
+		}
 	}
 
 	& .MuiDayCalendar-root {
