@@ -179,10 +179,11 @@ export default function AddAnimeNode({
 							);
 						}}
 					/>
-					<img src={fileUploadIcon}></img>
+					<img src={fileUploadIcon} alt="upload user data"></img>
 				</label>
-				<div
-					className="fileButton"
+				<button
+					type="button"
+					className="reset fileButton"
 					onClick={() => {
 						downloadObjectAsFile({
 							fileName: `animeListData_${formatDate(new Date(), "yyyy-MM-dd", "")}.json`,
@@ -193,8 +194,8 @@ export default function AddAnimeNode({
 						});
 					}}
 				>
-					<img src={fileDownloadIcon} />
-				</div>
+					<img src={fileDownloadIcon} alt="download user data" />
+				</button>
 			</div>
 			<div>
 				<SearchResults
@@ -272,12 +273,21 @@ export default function AddAnimeNode({
 						(async () => {
 							if (
 								!selectedAnime.externalLink ||
-								selectedAnime.externalLink.id == null
+								selectedAnime.externalLink.id == null ||
+								!selectedAnimeInfo
 							) {
 								showError(selectedAnime.externalLink, "Invalid external link", {
 									showInProgressNode: true,
 								});
 								return;
+							}
+
+							if (
+								selectedAnime.externalLink.type === "TMDB" &&
+								selectedAnimeInfo.selectedSeasonId != null
+							) {
+								selectedAnime.externalLink.seasonId =
+									selectedAnimeInfo.selectedSeasonId;
 							}
 
 							const createAnimeTask = AnimeCardFactory.create({

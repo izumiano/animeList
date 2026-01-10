@@ -22,6 +22,7 @@ const ConfirmationDropdown = ({
 		<span className="smallMargin centerAlignedText">{title}</span>
 		<div className="equalRowItems thing">
 			<button
+				type="button"
 				className={`smallMargin ${confirmClass}`}
 				onClick={() => {
 					closeDropdown();
@@ -30,7 +31,11 @@ const ConfirmationDropdown = ({
 			>
 				{confirmMessage}
 			</button>
-			<button className={`smallMargin ${dismissClass}`} onClick={closeDropdown}>
+			<button
+				type="button"
+				className={`smallMargin ${dismissClass}`}
+				onClick={closeDropdown}
+			>
 				{dismissMessage}
 			</button>
 		</div>

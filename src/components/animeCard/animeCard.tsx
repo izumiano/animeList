@@ -179,7 +179,11 @@ const AnimeCard = ({
 			{isOnScreen ? (
 				<>
 					<div className="imageContainer">
-						<Image src={anime.imageLink} className="animeImage" />
+						<Image
+							src={anime.imageLink}
+							alt="show poster"
+							className="animeImage"
+						/>
 					</div>
 
 					<div className="cardInfo">
@@ -212,7 +216,10 @@ const AnimeCard = ({
 										target="_blank"
 										rel="noopener noreferrer"
 									>
-										<img src={getExternalLogo(seasonExternalLink.type)}></img>
+										<img
+											src={getExternalLogo(seasonExternalLink.type)}
+											alt="Open external show source"
+										></img>
 									</a>
 								) : null}
 							</h1>
@@ -220,7 +227,9 @@ const AnimeCard = ({
 								alignment="right"
 								buttonClass="transparentBackground"
 								useDefaultButtonStyle={true}
-								dropdownButton={<img src={trashIcon} width="25"></img>}
+								dropdownButton={
+									<img src={trashIcon} alt="delete show" width="25"></img>
+								}
 								listRef={listRef}
 								scrollElementRef={scrollElementRef}
 							>
@@ -281,7 +290,7 @@ const AnimeCard = ({
 								/>
 							) : null}
 							<Dropdown
-								dropdownButton={<img src={plusIcon}></img>}
+								dropdownButton={<img src={plusIcon} alt="add season"></img>}
 								buttonClass="circleButton"
 								className="verticalCenter"
 								alignment="left"
@@ -315,7 +324,9 @@ const AnimeCard = ({
 							{index != null && selectedSeason != null ? (
 								<>
 									<Dropdown
-										dropdownButton={<img src={minusIcon}></img>}
+										dropdownButton={
+											<img src={minusIcon} alt="remove season"></img>
+										}
 										buttonClass="circleButton"
 										className="verticalCenter"
 										alignment="center"

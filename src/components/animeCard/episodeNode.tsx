@@ -31,16 +31,19 @@ export function EpisodeNode({
 	}
 
 	return (
-		<li
-			className={`episodeContainer cursorPointer ${watched ? "watched" : ""}`}
-			onClick={() => {
-				setWatched(!watched);
-			}}
-		>
-			<p className="episodeNumber">
-				<b>{`${episode.episodeNumber + 1}.`}</b>
-			</p>
-			<p>{episode.title}</p>
+		<li className="noListStyle">
+			<button
+				type="button"
+				onClick={() => {
+					setWatched(!watched);
+				}}
+				className={`reset episodeContainer cursorPointer ${watched ? "watched" : ""}`}
+			>
+				<p className="episodeNumber">
+					<b>{`${episode.episodeNumber + 1}.`}</b>
+				</p>
+				<p>{episode.title}</p>
+			</button>
 		</li>
 	);
 }
@@ -52,6 +55,13 @@ export function AddEpisodeNode({
 	season: AnimeSeason;
 	updateEpisodes: () => void;
 }) {
+	const onClick = () => {
+		season.addEpisodes([
+			new AnimeEpisode({ episodeNumber: 0, title: "", watched: false }),
+		]);
+		updateEpisodes();
+	};
+
 	return (
 		<RainbowOutline
 			elementType="li"
@@ -61,18 +71,18 @@ export function AddEpisodeNode({
 			doRotate="onHover"
 			mobileDoRotate="never"
 		>
+			{/** biome-ignore lint/a11y/useSemanticElements: <style issues with button> */}
 			<div
+				role="button"
+				tabIndex={0}
 				className="episodeContainer addEpisode cursorPointer"
-				onClick={() => {
-					season.addEpisodes([
-						new AnimeEpisode({ episodeNumber: 0, title: "", watched: false }),
-					]);
-					updateEpisodes();
-				}}
+				onClick={onClick}
+				onKeyUp={(e) => e.key === "Enter" && onClick()}
 			>
 				<div className="episodeNumber flexRow">
 					<img
 						src={plusIcon}
+						alt="add episode icon"
 						width={10}
 						className="mediumIcon circle smallPadding"
 					/>
@@ -128,6 +138,7 @@ export function DetailedEpisodeNode({
 					type="text"
 					value={value}
 					placeholder={defaultValue}
+					// biome-ignore lint/a11y/noAutofocus: <i think auto focus is the expected outcome when adding a new episode>
 					autoFocus={autoFocus}
 					onFocus={(event) => {
 						event.target.select();
@@ -156,7 +167,9 @@ export function DetailedEpisodeNode({
 				alignment="right"
 				buttonClass="transparentBackground"
 				useDefaultButtonStyle={true}
-				dropdownButton={<img src={trashIcon} width="15"></img>}
+				dropdownButton={
+					<img src={trashIcon} alt="delete show" width="15"></img>
+				}
 				listRef={listRef}
 				scrollElementRef={scrollElementRef}
 				forceStaticPosition

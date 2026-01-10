@@ -28,15 +28,21 @@ export default function Details({
 
 	return (
 		<div className={`detailsContainer ${isOpen ? "isOpen" : ""}`}>
-			<div
+			<button
+				type="button"
 				onClick={() => {
 					setIsOpenState((prev) => !prev);
 				}}
-				className="detailsTitle cursorPointer"
+				className="reset detailsTitle cursorPointer"
 			>
 				<span>{title}</span>
-				<img src={dropdownIcon} width={25} className="smallIcon smallPadding" />
-			</div>
+				<img
+					src={dropdownIcon}
+					alt="dropdown icon"
+					width={25}
+					className="smallIcon smallPadding"
+				/>
+			</button>
 			<div
 				className="detailsContent"
 				style={

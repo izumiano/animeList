@@ -67,8 +67,9 @@ const AnimeFilterNode = ({
 						key={`${id}_extTypeToggles_${index}`}
 						label={
 							<img
-								className="extTypeToggle buttonAnim"
 								src={getExternalLogo(type)}
+								alt={`${type} logo`}
+								className="extTypeToggle buttonAnim"
 								width={2}
 							/>
 						}

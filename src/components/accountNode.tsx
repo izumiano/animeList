@@ -166,7 +166,11 @@ export default function AccountNode() {
 				dropdownButton={
 					<div className="flexRow verticalCenterItems">
 						<span>Connections</span>
-						<img src={dropdownIcon} className="smallIcon mediumMargin"></img>
+						<img
+							src={dropdownIcon}
+							alt="dropdown icon"
+							className="smallIcon mediumMargin"
+						></img>
 					</div>
 				}
 			>
@@ -189,7 +193,11 @@ export default function AccountNode() {
 											rel="noopener noreferrer"
 											className="staticStyle flexRow"
 										>
-											<img src={getExternalLogo(key)} width={25}></img>
+											<img
+												src={getExternalLogo(key)}
+												width={25}
+												alt={`${key} logo`}
+											></img>
 										</a>
 										{hasUserData ? (
 											<a
@@ -206,10 +214,13 @@ export default function AccountNode() {
 													src={userData.imgUrl}
 													width={225}
 													height={225}
+													// biome-ignore lint/a11y/noRedundantAlt: <this accurately describes the image>
+													alt="profile picture"
 												/>
 											</a>
 										) : (
 											<button
+												type="button"
 												onClick={() => {
 													externalLinkData.authInstance.login();
 												}}
@@ -237,6 +248,7 @@ export default function AccountNode() {
 											</div>
 
 											<button
+												type="button"
 												onClick={async () => {
 													await sleepFor(0); // required so that the onOutsideCLick handler on the dropdown will run first
 													externalLinkData.authInstance.logout();

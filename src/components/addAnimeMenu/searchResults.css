@@ -11,7 +11,9 @@
 
 .searchResultCard {
 	min-width: var(--minCardWidth);
-	transition: background-color 0.8s;
+	transition:
+		background-color 0.8s,
+		border-color 0.25s;
 
 	background-color: var(--colPrimary);
 
@@ -25,9 +27,17 @@
 
 	color: white;
 
-	> .seasonResult.selected {
-		background-color: white;
-		color: black;
+	> .seasonResult {
+		background-color: transparent;
+		display: block;
+		width: 100%;
+		height: 2rem;
+		font-size: 1rem;
+		padding: 0;
+		&.selected {
+			background-color: white;
+			color: black;
+		}
 	}
 }
 

@@ -25,6 +25,7 @@ export default function RefreshButton({
 
 	return (
 		<button
+			type="button"
 			className={className}
 			onClick={async () => {
 				abortController.current.abort();
@@ -53,6 +54,7 @@ export default function RefreshButton({
 		>
 			<img
 				src={refreshIcon}
+				alt="refresh icon"
 				onTransitionEnd={onTransitionEnd}
 				onTransitionCancel={onTransitionEnd}
 				className={`refreshImg ${isRefreshing && !isTransitioning ? "refreshing" : ""}`}

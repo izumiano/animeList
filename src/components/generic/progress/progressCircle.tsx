@@ -29,6 +29,7 @@ const ProgressCircle = ({
 			}
 		>
 			<svg viewBox="0 0 100 100">
+				<title>progress circle</title>
 				<circle cx="50" cy="50" fill="none" />
 				<circle
 					style={progressIndicatorStyle}

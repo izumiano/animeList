@@ -153,9 +153,13 @@ const Dropdown = ({
 					{dropdownButton}
 				</button>
 			) : (
-				<div className={buttonClass} onClick={() => setIsOpen(!isOpen)}>
+				<button
+					type="button"
+					className={`reset ${buttonClass}`}
+					onClick={() => setIsOpen(!isOpen)}
+				>
 					{dropdownButton}
-				</div>
+				</button>
 			)}
 			<div className="arrowContainer">
 				<div className={`dropdownMenu ${isOpenClass}`}>

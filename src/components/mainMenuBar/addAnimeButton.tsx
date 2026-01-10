@@ -10,12 +10,13 @@ const AddAnimeButton = ({
 }) => {
 	return (
 		<button
+			type="button"
 			className={className}
 			onClick={() => {
 				setIsOpenState(true);
 			}}
 		>
-			<img src={plusIcon}></img>
+			<img src={plusIcon} alt="open add new show panel"></img>
 		</button>
 	);
 };

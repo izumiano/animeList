@@ -38,7 +38,13 @@ const SearchResults = ({
 				return (
 					<Details
 						key={`${id}${externalType}`}
-						title={<img src={getExternalLogo(externalType)} width={25} />}
+						title={
+							<img
+								src={getExternalLogo(externalType)}
+								width={25}
+								alt={`${externalType} logo`}
+							/>
+						}
 						defaultIsOpen={true}
 						contentClassName="typeSearchResults"
 					>
@@ -120,43 +126,54 @@ function SearchResultCard({
 
 	const id = useId();
 
+	const onClick = async () => {
+		console.log("outside");
+		if (
+			selectedAnimeInfo?.type === seasonDetails.externalLink?.type &&
+			selectedAnimeInfo?.index === animeIndex
+		) {
+			setSelectedAnimeInfoState(null);
+			return;
+		}
+
+		setSelectedAnimeInfoState({
+			index: animeIndex,
+			type: seasonDetails.externalLink?.type,
+			selectedSeasonId: selectedSeasonIndex,
+		});
+
+		const externalLink = seasonDetails.externalLink;
+		if (
+			!getSequels &&
+			externalLink?.type === "TMDB" &&
+			externalLink.mediaType === "tv"
+		) {
+			const showDetails = await TMDBRequest.getDetails(externalLink);
+			setSeasons("loading");
+			if (showDetails instanceof BadResponse) {
+				showError(showDetails);
+				setSeasons(undefined);
+				setSelectedAnimeInfoState(null);
+				return;
+			}
+			setSeasons(showDetails.seasons);
+		}
+	};
+
 	return (
-		<button className={`searchResultCard ${selected ? "selected" : ""}`}>
-			<div
-				onClick={async () => {
-					if (
-						selectedAnimeInfo?.type === seasonDetails.externalLink?.type &&
-						selectedAnimeInfo?.index === animeIndex
-					) {
-						setSelectedAnimeInfoState(null);
-						return;
-					}
-
-					setSelectedAnimeInfoState({
-						index: animeIndex,
-						type: seasonDetails.externalLink?.type,
-						selectedSeasonId: selectedSeasonIndex,
-					});
-
-					const externalLink = seasonDetails.externalLink;
-					if (
-						!getSequels &&
-						externalLink?.type === "TMDB" &&
-						externalLink.mediaType === "tv"
-					) {
-						const showDetails = await TMDBRequest.getDetails(externalLink);
-						setSeasons("loading");
-						if (showDetails instanceof BadResponse) {
-							showError(showDetails);
-							setSeasons(undefined);
-							setSelectedAnimeInfoState(null);
-							return;
-						}
-						setSeasons(showDetails.seasons);
-					}
-				}}
-			>
-				<Image src={seasonDetails.images?.jpg?.large_image_url} />
+		// biome-ignore lint/a11y/useSemanticElements: <we need a nested button>
+		<div
+			role="button"
+			onClick={onClick}
+			onKeyUp={(e) => e.key === "Enter" && onClick()}
+			tabIndex={0}
+			className={`searchResultCard button ${selected ? "selected" : ""}`}
+		>
+			<div>
+				<Image
+					src={seasonDetails.images?.jpg?.large_image_url}
+					alt="show poster"
+				/>
 				<h2>{seasonDetails.title}</h2>
 			</div>
 			{selected ? (
@@ -164,10 +181,12 @@ function SearchResultCard({
 					<LoadingSpinner props={{ centered: true }} />
 				) : seasons && seasons.length > 0 ? (
 					seasons.map((season, index) => (
-						<div
+						<button
+							type="button"
 							key={`${id}${index}`}
 							className={`seasonResult ${index === selectedSeasonIndex ? "selected" : ""}`}
-							onClick={() => {
+							onClick={(event) => {
+								event.stopPropagation();
 								setSelectedSeasonIndex(index);
 								setSelectedAnimeInfoState({
 									index: animeIndex,
@@ -177,11 +196,11 @@ function SearchResultCard({
 							}}
 						>
 							{season.name}
-						</div>
+						</button>
 					))
 				) : null
 			) : null}
-		</button>
+		</div>
 	);
 }
 

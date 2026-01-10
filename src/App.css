@@ -383,3 +383,7 @@ a.staticStyle {
 		color: white;
 	}
 }
+
+:where(li, ul, ol).noListStyle {
+	list-style: none;
+}

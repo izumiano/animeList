@@ -38,8 +38,11 @@ h1 {
 	line-height: 1.1;
 }
 
-button,
-.button {
+:where(.reset) {
+	all: unset;
+}
+
+:where(:is(button, .button):not(.reset)) {
 	border: 1px solid transparent;
 	padding: 0.6em 1.2em;
 	font-size: 1em;
@@ -52,34 +55,15 @@ button,
 	background-color: var(--colAccent);
 }
 
-button,
-.button,
-.buttonAnim {
+:where(:is(button, .button, .buttonAnim):not(.reset)) {
 	transition: border-color 0.25s;
-}
 
-:is(button, .button, .buttonAnim):hover {
-	border-color: #646cff;
-}
-
-:is(button, .button, .buttonAnim):focus,
-:is(button, .button, .buttonAnim):focus-visible {
-	outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-	:root {
-		color: #213547;
-		background-color: #ffffff;
+	&:hover {
+		border-color: #646cff;
 	}
 
-	a:hover {
-		color: #747bff;
-	}
-
-	button,
-	.button,
-	.buttonAnim {
-		background-color: #f9f9f9;
+	&:focus,
+	&:focus-visible {
+		outline: 4px auto -webkit-focus-ring-color;
 	}
 }

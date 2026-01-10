@@ -96,7 +96,11 @@ function Select<T extends ValueType>({
 				dropdownButton={
 					<div className="flexRow verticalCenterItems">
 						<span className="selectValue flexGrow">{dropdownTitle}</span>
-						<img src={dropdownIcon} className="smallIcon"></img>
+						<img
+							src={dropdownIcon}
+							alt="dropdown icon"
+							className="smallIcon"
+						></img>
 					</div>
 				}
 				onOpenChange={onOpenChange}
@@ -116,6 +120,7 @@ function Select<T extends ValueType>({
 
 							return (
 								<button
+									type="button"
 									className={`${
 										isSelected ? optionSelectedClass : ""
 									} padding ${option.className}`}

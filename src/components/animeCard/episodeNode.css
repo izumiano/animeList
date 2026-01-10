@@ -8,6 +8,9 @@
 	display: flex;
 	flex-direction: row;
 	align-items: center;
+	width: 100%;
+	height: 100%;
+	border-radius: 1rem;
 
 	--backgroundCol: var(--colAccent);
 	--placeholderCol: rgb(from white r g b / 0.5);

@@ -88,6 +88,7 @@ const ExpandableText = ({
 				{text}
 			</span>
 			<button
+				type="button"
 				className={`readMoreButton transparentBackground ${
 					readMoreButtonEnabled ? "" : "hidden"
 				}`}

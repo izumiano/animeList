@@ -21,7 +21,6 @@
 		"enabled": true,
 		"rules": {
 			"recommended": true,
-			"a11y": { "recommended": false },
 			"correctness": {
 				"useExhaustiveDependencies": {
 					"level": "warn",

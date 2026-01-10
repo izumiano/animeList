@@ -43,6 +43,7 @@ const ProgressTask = ({
 					{failed ? (
 						<img
 							src={warnIcon}
+							alt="warn icon"
 							className="mediumIcon smallPadding verticalCenter"
 						></img>
 					) : null}
@@ -56,6 +57,7 @@ const ProgressTask = ({
 				/>
 				{failed ? (
 					<button
+						type="button"
 						onClick={() => {
 							setForceCloseState(true);
 						}}

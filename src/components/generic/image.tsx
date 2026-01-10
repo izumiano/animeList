@@ -2,6 +2,7 @@ import missingImage from "assets/missingImage.png";
 
 const Image = ({
 	src,
+	alt,
 	className,
 	minWidth,
 	maxWidth,
@@ -9,6 +10,7 @@ const Image = ({
 	maxHeight,
 }: {
 	src: string | null | undefined;
+	alt: string;
 	className?: string;
 	minWidth?: string | number;
 	maxWidth?: string | number;
@@ -22,6 +24,7 @@ const Image = ({
 	return (
 		<img
 			src={src ?? missingImage}
+			alt={alt}
 			className={className}
 			style={{
 				backgroundImage: `url('${missingImage}') no-repeat`,

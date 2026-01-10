@@ -73,6 +73,7 @@ export default function TabsNode({
 				{children.map((child, index) => {
 					return (
 						<button
+							type="button"
 							key={`${tabsId}${index}_tab`}
 							onClick={() => {
 								scrollParent?.scroll({ top: 0, behavior: "smooth" });

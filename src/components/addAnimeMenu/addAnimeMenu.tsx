@@ -14,19 +14,25 @@ const AddAnimeMenu = ({
 }) => {
 	const isOpenClass = isOpen ? "open" : "";
 
+	const setClose = () => {
+		setIsOpenState(false);
+	};
+
 	return (
 		<>
-			<nav
+			{/** biome-ignore lint/a11y/useSemanticElements: <TODO: make this accessible> */}
+			<div
+				role="button"
+				tabIndex={0}
 				className={`thingToClose ${isOpenClass}`}
-				onClick={() => {
-					setIsOpenState(false);
-				}}
+				onClick={setClose}
+				onKeyUp={(e) => e.key === "Enter" && setClose()}
 				style={{
 					animation: `${
 						isOpen ? "opacityOpenThing" : "opacityCloseThing"
 					} 0.4s forwards`,
 				}}
-			></nav>
+			></div>
 			<div
 				className={`addAnimeMenu flexColumn shimmerBackground ${isOpenClass}`}
 			>

@@ -180,7 +180,11 @@ const InternalDetailsPage = ({
 		<>
 			<div className="cardBase detailedCard">
 				<div className="imageContainer">
-					<Image src={anime.imageLink} className="animeImage" />
+					<Image
+						src={anime.imageLink}
+						alt="show poster"
+						className="animeImage"
+					/>
 				</div>
 
 				<div
@@ -202,7 +206,10 @@ const InternalDetailsPage = ({
 										target="_blank"
 										rel="noopener noreferrer"
 									>
-										<img src={getExternalLogo(seasonExternalLink.type)}></img>
+										<img
+											src={getExternalLogo(seasonExternalLink.type)}
+											alt={`${seasonExternalLink.type} logo`}
+										></img>
 									</a>
 								) : null}
 							</h1>
@@ -252,11 +259,19 @@ const InternalDetailsPage = ({
 			<TabsNode scrollParent={scrollParent.current}>
 				{[
 					{
-						tab: <img src={detailsIcon} className="mediumIcon" />,
+						tab: (
+							<img src={detailsIcon} alt="Details Tab" className="mediumIcon" />
+						),
 						content: <DetailsPageForm anime={anime} season={selectedSeason} />,
 					},
 					{
-						tab: <img src={listIcon} className="mediumIcon" />,
+						tab: (
+							<img
+								src={listIcon}
+								alt="Episode List Tab"
+								className="mediumIcon"
+							/>
+						),
 						content: (
 							<EpisodeList
 								type="detailed"

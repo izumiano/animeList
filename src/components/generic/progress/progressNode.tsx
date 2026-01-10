@@ -90,6 +90,7 @@ const ProgressNode = ({
 					/>
 					<img
 						src={warnIcon}
+						alt="warn icon"
 						className={`largeIcon warnIcon ${hasFailure ? "show" : "hide"}`}
 					></img>
 				</div>
