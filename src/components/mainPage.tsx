@@ -27,6 +27,7 @@ const MainPage = ({
 				setIsOpenState={setIsOpenState}
 				animeFilterState={animeFilterState}
 				fullScreenScrollContainerRef={fullScreenScrollContainerRef}
+				setCurrentPageState={setCurrentPageState}
 			/>
 			<div
 				ref={fullScreenScrollContainerRef}

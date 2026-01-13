@@ -27,6 +27,7 @@ const routes = [
 	{ path: "malAuth", element: <Home /> },
 	{ path: "tmdbAuth", element: <Home /> },
 	{ path: "details/*", element: <Home startPage="details" /> },
+	{ path: "stats", element: <Home startPage="stats" /> },
 ];
 
 if (import.meta.env.DEV) {

@@ -5,6 +5,8 @@
 	width: 100%;
 	height: var(--height);
 
+	gap: 1rem;
+
 	z-index: 1;
 
 	align-items: center;

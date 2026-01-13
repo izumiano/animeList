@@ -6,12 +6,13 @@ import { detailsPageValid } from "./components/detailsPage/detailsPageConsts";
 import LoadingSpinner from "./components/generic/loadingSpinner";
 import PageManager from "./components/generic/pageManager";
 import MainPage from "./components/mainPage";
+import { statsPageValid } from "./components/statsPage/statsPageConsts";
 import LocalDB from "./indexedDb/indexedDb";
 import Anime from "./models/anime";
 import { externalLinkId } from "./models/externalLink";
 import { showError } from "./utils/utils";
 
-export type Page = "main" | "details";
+export type Page = "main" | "details" | "stats";
 
 function Home({ startPage }: { startPage?: Page }) {
 	const [animes, setAnimesState] = useState<Map<string, Anime> | undefined>();
@@ -82,6 +83,9 @@ function Home({ startPage }: { startPage?: Page }) {
 	const DetailsPagePromise = import("./components/detailsPage/detailsPage");
 	const DetailsPage = lazy(() => DetailsPagePromise);
 
+	const StatsPagePromise = import("./components/statsPage/statsPage");
+	const StatsPage = lazy(() => StatsPagePromise);
+
 	return (
 		<div>
 			<PageManager startPage={startPage}>
@@ -107,6 +111,10 @@ function Home({ startPage }: { startPage?: Page }) {
 					details: {
 						checkValidity: detailsPageValid,
 						node: <DetailsPage animes={animes} pageFailed={pageFailed} />,
+					},
+					stats: {
+						checkValidity: statsPageValid,
+						node: <StatsPage animes={animes} />,
 					},
 				})}
 			</PageManager>

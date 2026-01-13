@@ -7,6 +7,8 @@ import AddAnimeButton from "./addAnimeButton";
 import AnimeFilterButton from "./animeFilterButton";
 import AnimeFilterNode from "./animeFilterNode";
 import "./mainMenuBar.css";
+import type { Page } from "../../Home";
+import StatsButton from "./statsButton";
 
 let searchQueryAbortController = new AbortController();
 
@@ -14,10 +16,12 @@ const MainMenuBar = ({
 	setIsOpenState,
 	animeFilterState: [animeFilter, setAnimeFilterState],
 	fullScreenScrollContainerRef,
+	setCurrentPageState,
 }: {
 	setIsOpenState: (isOpen: boolean) => void;
 	animeFilterState: AnimeFilterState;
 	fullScreenScrollContainerRef: React.RefObject<HTMLDivElement | null>;
+	setCurrentPageState: (page: Page) => void;
 }) => {
 	return (
 		<div id="mainMenuBar" className="mainMenuBarProps">
@@ -25,6 +29,7 @@ const MainMenuBar = ({
 				setIsOpenState={setIsOpenState}
 				className="menuBarButton"
 			/>
+			<StatsButton setCurrentPageState={setCurrentPageState} />
 			<ProgressNode size={"var(--defaultItemWidth)"} />
 			<div className="flexGrow"></div>
 			<input
