@@ -4,6 +4,7 @@ import {
 	ExternalLinkTypeValues,
 	externalLinkId,
 	getExternalLogo,
+	getUrlFromExternalLink,
 } from "../../models/externalLink";
 import Image from "../generic/image";
 import LoadingSpinner from "../generic/loadingSpinner";
@@ -161,10 +162,16 @@ function SearchResultCard({
 	};
 
 	return (
-		// biome-ignore lint/a11y/useSemanticElements: <we need a nested button>
-		<div
-			role="button"
-			onClick={onClick}
+		<a
+			onClick={(e) => {
+				e.preventDefault();
+				onClick();
+			}}
+			href={
+				seasonDetails.externalLink
+					? (getUrlFromExternalLink(seasonDetails.externalLink) ?? "")
+					: ""
+			}
 			onKeyUp={(e) => e.key === "Enter" && onClick()}
 			tabIndex={0}
 			className={`searchResultCard button ${selected ? "selected" : ""}`}
@@ -187,6 +194,7 @@ function SearchResultCard({
 							className={`seasonResult ${index === selectedSeasonIndex ? "selected" : ""}`}
 							onClick={(event) => {
 								event.stopPropagation();
+								event.preventDefault();
 								setSelectedSeasonIndex(index);
 								setSelectedAnimeInfoState({
 									index: animeIndex,
@@ -200,7 +208,7 @@ function SearchResultCard({
 					))
 				) : null
 			) : null}
-		</div>
+		</a>
 	);
 }
 
