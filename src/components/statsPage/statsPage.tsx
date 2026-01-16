@@ -7,7 +7,7 @@ function calculateAnimeStats(animes: Map<string, Anime>) {
 	const animeScores: { [score: number]: number } = {};
 
 	const seasonCounts: { [seasonCount: number]: number } = {};
-	let seasonCountsMaxValue = -Infinity;
+	let seasonCountsMaxValue = 0;
 
 	const watchedStatus: {
 		watched: number;
@@ -90,8 +90,6 @@ export default function StatsPage({ animes }: { animes: Map<string, Anime> }) {
 		valueAxis: { width: 40, minPixelDistance: 38 },
 		positioning: 20,
 	};
-
-	// BUG: this crashes (on re-render?) in react strict mode
 
 	return (
 		<div>
