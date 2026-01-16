@@ -73,11 +73,7 @@ function calculateAnimeStats(animes: Map<string, Anime>) {
 }
 
 export default function StatsPage({ animes }: { animes: Map<string, Anime> }) {
-	const {
-		watchedStatus,
-		scores,
-		seasonCounts: _seasonCounts,
-	} = calculateAnimeStats(animes);
+	const { watchedStatus, scores, seasonCounts } = calculateAnimeStats(animes);
 
 	const options = {
 		backgroundColor: { r: 10, g: 10, b: 10, a: 100 },
@@ -218,7 +214,6 @@ export default function StatsPage({ animes }: { animes: Map<string, Anime> }) {
 					}}
 				/>
 
-				{/* FIXME: make work with variable `data` length 
 				<h1>
 					{"<"}--Season Counts--{">"}
 				</h1>
@@ -234,9 +229,9 @@ export default function StatsPage({ animes }: { animes: Map<string, Anime> }) {
 					options={{
 						...options,
 						barOptions: { ...options.barOptions, minHeight: 0 },
-						valueAxis: { ...options.valueAxis, minPixelDistance: 15 },
+						valueAxis: { ...options.valueAxis, minPixelDistance: 16 },
 					}}
-				/> */}
+				/>
 			</GraphContext>
 		</div>
 	);
