@@ -163,7 +163,7 @@ export default function StarRating({
 	);
 }
 
-function StarIcon({
+export function StarIcon({
 	mainStarProps,
 	outlineStarProps,
 	backgroundStarProps,
@@ -188,7 +188,7 @@ function StarIcon({
 
 type EmptyStarProps = { color?: string };
 
-function EmptyStar({ color }: EmptyStarProps) {
+export function EmptyStar({ color }: EmptyStarProps) {
 	color ??= "#eee";
 
 	return (
@@ -219,7 +219,7 @@ interface FilledStarCSSProperties extends CSSProperties {
 
 type FilledStarProps = { color?: string; fillAmount?: number };
 
-function FilledStar({ color, fillAmount }: FilledStarProps) {
+export function FilledStar({ color, fillAmount }: FilledStarProps) {
 	color ??= "#eee";
 	fillAmount ??= 0;
 

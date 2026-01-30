@@ -1,6 +1,10 @@
-import { BarChartNode, GraphContext } from "@izumiano/react-assembled-graph";
+import { GraphContext } from "@izumiano/react-assembled-graph";
 import type Anime from "../../models/anime";
 import { roundToNearestDecimal } from "../../utils/utils";
+import SeasonScores from "./seasonScores";
+import ShowScores from "./showScores";
+import WatchedStatus from "./watchedStatus";
+import SeasonCounts from "./seasonCounts";
 
 function calculateAnimeStats(animes: Map<string, Anime>) {
 	const seasonScores: { [score: number]: number } = {};
@@ -84,154 +88,19 @@ export default function StatsPage({ animes }: { animes: Map<string, Anime> }) {
 		},
 		titleFontSize: 15,
 		valueAxis: { width: 40, minPixelDistance: 38 },
-		positioning: 20,
+		positioning: { top: 20, left: 20, right: 20, bottom: 30 },
 	};
 
 	return (
 		<div>
 			<GraphContext>
-				<h1>
-					{"<"}--Season Scores--{">"}
-				</h1>
-				<BarChartNode
-					height="50%"
-					style={{
-						margin: "2rem",
-						border: "1px solid white",
-					}}
-					data={[
-						{
-							title: "1/2",
-							displayTitle: "⭐",
-							value: scores.seasons[0.5] ?? 0,
-						},
-						{ title: "⭐", displayTitle: "", value: scores.seasons[1] ?? 0 },
-						{
-							title: "⭐1/2",
-							displayTitle: "",
-							value: scores.seasons[1.5] ?? 0,
-						},
-						{ title: "⭐⭐", displayTitle: "", value: scores.seasons[2] ?? 0 },
-						{
-							title: "⭐⭐1/2",
-							displayTitle: "",
-							value: scores.seasons[2.5] ?? 0,
-						},
-						{
-							title: "⭐⭐⭐",
-							displayTitle: "",
-							value: scores.seasons[3] ?? 0,
-						},
-						{
-							title: "⭐⭐⭐1/2",
-							displayTitle: "",
-							value: scores.seasons[3.5] ?? 0,
-						},
-						{
-							title: "⭐⭐⭐⭐",
-							displayTitle: "",
-							value: scores.seasons[4] ?? 0,
-						},
-						{
-							title: "⭐⭐⭐⭐1/2",
-							displayTitle: "",
-							value: scores.seasons[4.5] ?? 0,
-						},
-						{ title: "⭐⭐⭐⭐⭐", value: scores.seasons[5] ?? 0 },
-					]}
-					options={options}
-				/>
+				<SeasonScores scores={scores.seasons} options={options} />
 
-				<h1>
-					{"<"}--Show Scores--{">"}
-				</h1>
-				<BarChartNode
-					height="50%"
-					style={{
-						margin: "2rem",
-						border: "1px solid white",
-					}}
-					data={[
-						{
-							title: "1/2",
-							displayTitle: "⭐",
-							value: scores.animes[0.5] ?? 0,
-						},
-						{ title: "⭐", displayTitle: "", value: scores.animes[1] ?? 0 },
-						{
-							title: "⭐1/2",
-							displayTitle: "",
-							value: scores.animes[1.5] ?? 0,
-						},
-						{ title: "⭐⭐", displayTitle: "", value: scores.animes[2] ?? 0 },
-						{
-							title: "⭐⭐1/2",
-							displayTitle: "",
-							value: scores.animes[2.5] ?? 0,
-						},
-						{
-							title: "⭐⭐⭐",
-							displayTitle: "",
-							value: scores.animes[3] ?? 0,
-						},
-						{
-							title: "⭐⭐⭐1/2",
-							displayTitle: "",
-							value: scores.animes[3.5] ?? 0,
-						},
-						{
-							title: "⭐⭐⭐⭐",
-							displayTitle: "",
-							value: scores.animes[4] ?? 0,
-						},
-						{
-							title: "⭐⭐⭐⭐1/2",
-							displayTitle: "",
-							value: scores.animes[4.5] ?? 0,
-						},
-						{ title: "⭐⭐⭐⭐⭐", value: scores.animes[5] ?? 0 },
-					]}
-					options={options}
-				/>
+				<ShowScores scores={scores.animes} options={options} />
 
-				<h1>
-					{"<"}--Watched Status--{">"}
-				</h1>
-				<BarChartNode
-					height="50%"
-					style={{
-						margin: "2rem",
-						border: "1px solid white",
-					}}
-					data={[
-						{ title: "Watched", value: watchedStatus.watched },
-						{ title: "Watching", value: watchedStatus.watching },
-						{ title: "Unwatched", value: watchedStatus.unwatched },
-					]}
-					options={{
-						...options,
-						barOptions: { ...options.barOptions, gap: 100 },
-					}}
-				/>
+				<WatchedStatus watchedStatus={watchedStatus} options={options} />
 
-				<h1>
-					{"<"}--Season Counts--{">"}
-				</h1>
-				<BarChartNode
-					height="50%"
-					style={{
-						margin: "2rem",
-						border: "1px solid white",
-					}}
-					data={seasonCounts.map(([key, value]) => {
-						return { title: key, value };
-					})}
-					options={{
-						...options,
-						barOptions: { ...options.barOptions, minHeight: 0 },
-						valueAxis: { ...options.valueAxis, minPixelDistance: 16 },
-					}}
-				/>
+				<SeasonCounts seasonCounts={seasonCounts} options={options} />
 			</GraphContext>
 		</div>
 	);
