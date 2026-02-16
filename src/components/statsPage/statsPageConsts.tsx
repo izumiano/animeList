@@ -7,67 +7,67 @@ export function statsPageValid(path: string) {
 export function createScoresData(scores: { [score: number]: number }) {
 	return [
 		{
-			title: (
+			label: (
 				<>
 					<StarIcon />
 				</>
 			),
-			displayTitle: <FilledStar />,
+			displayLabel: <FilledStar />,
 			value: scores[0.5] ?? 0,
 		},
 		{
-			title: (
+			label: (
 				<>
 					<FilledStar />
 				</>
 			),
-			displayTitle: null,
+			displayLabel: null,
 			value: scores[1] ?? 0,
 		},
 		{
-			title: (
+			label: (
 				<>
 					<FilledStar />
 					<StarIcon />
 				</>
 			),
-			displayTitle: null,
+			displayLabel: null,
 			value: scores[1.5] ?? 0,
 		},
 		{
-			title: (
+			label: (
 				<>
 					<FilledStar />
 					<FilledStar />
 				</>
 			),
-			displayTitle: null,
+			displayLabel: null,
 			value: scores[2] ?? 0,
 		},
 		{
-			title: (
+			label: (
 				<>
 					<FilledStar />
 					<FilledStar />
 					<StarIcon />
 				</>
 			),
-			displayTitle: null,
+			displayLabel: null,
 			value: scores[2.5] ?? 0,
 		},
 		{
-			title: (
+			label: (
 				<>
 					<FilledStar />
 					<FilledStar />
 					<FilledStar />
 				</>
 			),
-			displayTitle: null,
+			displayLabel: null,
 			value: scores[3] ?? 0,
 		},
 		{
-			title: (
+			label: (
 				<>
 					<FilledStar />
 					<FilledStar />
@@ -75,11 +75,11 @@ export function createScoresData(scores: { [score: number]: number }) {
 					<StarIcon />
 				</>
 			),
-			displayTitle: null,
+			displayLabel: null,
 			value: scores[3.5] ?? 0,
 		},
 		{
-			title: (
+			label: (
 				<>
 					<FilledStar />
 					<FilledStar />
@@ -87,11 +87,11 @@ export function createScoresData(scores: { [score: number]: number }) {
 					<FilledStar />
 				</>
 			),
-			displayTitle: null,
+			displayLabel: null,
 			value: scores[4] ?? 0,
 		},
 		{
-			title: (
+			label: (
 				<>
 					<FilledStar />
 					<FilledStar />
@@ -100,11 +100,11 @@ export function createScoresData(scores: { [score: number]: number }) {
 					<StarIcon />
 				</>
 			),
-			displayTitle: null,
+			displayLabel: null,
 			value: scores[4.5] ?? 0,
 		},
 		{
-			title: (
+			label: (
 				<>
 					<FilledStar />
 					<FilledStar />

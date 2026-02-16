@@ -26,9 +26,9 @@ export default function WatchedStatus({
 					border: "1px solid white",
 				}}
 				data={[
-					{ title: "Watched", value: watchedStatus.watched },
-					{ title: "Watching", value: watchedStatus.watching },
-					{ title: "Unwatched", value: watchedStatus.unwatched },
+					{ label: "Watched", value: watchedStatus.watched },
+					{ label: "Watching", value: watchedStatus.watching },
+					{ label: "Unwatched", value: watchedStatus.unwatched },
 				]}
 				options={{
 					...options,

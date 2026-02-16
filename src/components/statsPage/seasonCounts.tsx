@@ -22,7 +22,7 @@ export default function SeasonCounts({
 					border: "1px solid white",
 				}}
 				data={seasonCounts.map(([key, value]) => {
-					return { title: key, value };
+					return { label: key, value };
 				})}
 				options={{
 					...options,
