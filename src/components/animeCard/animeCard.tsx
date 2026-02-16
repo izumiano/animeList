@@ -181,8 +181,10 @@ const AnimeCard = ({
 					<div className="imageContainer">
 						<Image
 							src={anime.imageLink}
-							alt="show poster"
+							alt={undefined}
 							className="animeImage"
+							width={172}
+							height={248}
 						/>
 					</div>
 

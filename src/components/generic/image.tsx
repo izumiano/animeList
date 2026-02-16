@@ -4,18 +4,14 @@ const Image = ({
 	src,
 	alt,
 	className,
-	minWidth,
-	maxWidth,
-	minHeight,
-	maxHeight,
+	width,
+	height,
 }: {
 	src: string | null | undefined;
-	alt: string;
+	alt: string | undefined;
 	className?: string;
-	minWidth?: string | number;
-	maxWidth?: string | number;
-	minHeight?: string | number;
-	maxHeight?: string | number;
+	width?: number;
+	height?: number;
 }) => {
 	if (src === "") {
 		src = null;
@@ -26,12 +22,12 @@ const Image = ({
 			src={src ?? missingImage}
 			alt={alt}
 			className={className}
+			width={width}
+			height={height}
 			style={{
-				backgroundImage: `url('${missingImage}') no-repeat`,
-				minWidth: minWidth,
-				maxWidth: maxWidth,
-				minHeight: minHeight,
-				maxHeight: maxHeight,
+				backgroundImage: `url('${missingImage}')`,
+				backgroundSize: "cover",
+				backgroundPosition: "center",
 			}}
 		></img>
 	);

@@ -92,7 +92,7 @@
 }
 
 .imageContainer {
-	max-width: var(--imageWidth);
+	width: var(--imageWidth);
 	height: 100%;
 	align-content: center;
 
@@ -102,10 +102,14 @@
 .animeImage {
 	margin-top: var(--marginTopBottom);
 	margin-bottom: var(--marginTopBottom);
-	margin-right: 0.7rem;
-	max-width: clamp(0px, 15dvw, var(--imageWidth));
-	min-height: 10px;
-	max-height: calc(var(--cardHeight) - var(--marginTopBottom) * 2);
+	--marginRight: 0.7rem;
+	margin-right: var(--marginRight);
+	object-fit: cover;
+	width: clamp(10px, 15dvw, var(--imageWidth) - var(--marginRight));
+	height: auto;
+	/* max-height: clamp(10px, 100%, 25dvw); */
+	/* min-height: 10px; */
+	/* max-height: calc(var(--cardHeight) - var(--marginTopBottom) * 2); */
 	border-radius: var(--cardBorderRadius);
 
 	--marginTopBottom: 0.5rem;
