@@ -1,0 +1,76 @@
+.searchNode {
+	position: relative;
+	border-radius: var(--defaultItemWidth);
+	display: flex;
+
+	justify-content: left;
+
+	transition: all 0.2s;
+
+	border: none;
+
+	> input {
+		font-size: large;
+		width: 0;
+		padding: 0;
+		border: none;
+		border-radius: 0;
+		background-color: transparent;
+		caret-color: rgb(182, 182, 182);
+
+		&:focus {
+			outline: none;
+		}
+	}
+
+	&::after {
+		position: absolute;
+		content: "";
+		width: 0;
+		height: 1px;
+		right: calc(var(--buttonPadding) + var(--defaultImgWidth));
+		bottom: calc(var(--buttonPadding) - 0.2rem);
+		background-color: rgb(228, 228, 228);
+
+		transition: width 0.2s;
+	}
+
+	&.open {
+		width: 15rem;
+
+		> input {
+			width: calc(100% - var(--defaultImgWidth));
+			height: 100%;
+		}
+
+		&::after {
+			width: calc(100% - var(--buttonPadding) * 2 - var(--defaultImgWidth));
+		}
+	}
+
+	> img {
+		position: absolute;
+		right: calc(var(--defaultItemWidth) / 2 - var(--defaultImgWidth) / 2);
+	}
+
+	> .dismissButton {
+		pointer-events: all;
+
+		padding: 0.5rem;
+		position: absolute;
+		right: calc(var(--defaultItemWidth) / 2 + var(--defaultImgWidth) / 2);
+
+		opacity: 1;
+
+		transition: opacity 0.2s;
+
+		&.disabled {
+			pointer-events: none;
+			opacity: 0;
+		}
+
+		> img {
+			width: 1.2rem;
+		}
+	}
+}

@@ -19,12 +19,14 @@
 
 	border-radius: 0 0 1rem 1rem;
 
-	padding: 1rem;
+	--buttonPadding: 1rem;
+	padding: var(--buttonPadding);
 
 	--defaultItemWidth: calc(var(--height) / 13 * 8);
 }
 
 .menuBarButton {
+	--defaultImgWidth: calc(var(--defaultItemWidth) * 0.6);
 	width: var(--defaultItemWidth);
 	height: var(--defaultItemWidth);
 	display: flex;
@@ -35,5 +37,5 @@
 }
 
 .menuBarButton > img {
-	width: calc(var(--defaultItemWidth) * 0.6);
+	width: var(--defaultImgWidth);
 }

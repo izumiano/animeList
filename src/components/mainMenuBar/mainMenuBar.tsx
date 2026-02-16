@@ -1,6 +1,5 @@
 import { useCallback } from "react";
 import type { AnimeFilterState } from "../../models/animeFilter";
-import { sleepFor } from "../../utils/utils";
 import Dropdown from "../generic/dropdown";
 import ProgressNode from "../generic/progress/progressNode";
 import AddAnimeButton from "./addAnimeButton";
@@ -9,8 +8,7 @@ import AnimeFilterNode from "./animeFilterNode";
 import "./mainMenuBar.css";
 import type { Page } from "../../Home";
 import StatsButton from "./statsButton";
-
-let searchQueryAbortController = new AbortController();
+import SearchNode from "./searchNode";
 
 const MainMenuBar = ({
 	setIsOpenState,
@@ -32,27 +30,10 @@ const MainMenuBar = ({
 			<StatsButton setCurrentPageState={setCurrentPageState} />
 			<ProgressNode size={"var(--defaultItemWidth)"} />
 			<div className="flexGrow"></div>
-			<input
-				type="text"
-				defaultValue={animeFilter.searchQuery}
-				onChange={async (event) => {
-					searchQueryAbortController.abort();
-					searchQueryAbortController = new AbortController();
-					if (
-						(await sleepFor(500, searchQueryAbortController.signal)).wasAborted
-					) {
-						return;
-					}
-
-					fullScreenScrollContainerRef.current?.scrollTo({
-						top: 0,
-						behavior: "smooth",
-					});
-					setAnimeFilterState(
-						animeFilter.newWith("searchQuery", event.target.value),
-					);
-				}}
-			></input>
+			<SearchNode
+				animeFilterState={[animeFilter, setAnimeFilterState]}
+				fullScreenScrollContainerRef={fullScreenScrollContainerRef}
+			/>
 			<Dropdown
 				alignment="right"
 				useDefaultButtonStyle={false}
