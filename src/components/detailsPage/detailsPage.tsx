@@ -13,7 +13,6 @@ import {
 	getUrlFromExternalLink,
 } from "../../models/externalLink";
 import SeasonPicker from "../animeCard/seasonPicker";
-import Image from "../generic/image";
 import ProgressNode from "../generic/progress/progressNode";
 import "./detailsPage.css";
 import detailsIcon from "assets/details.png";
@@ -27,6 +26,7 @@ import StarRating from "../generic/starRating";
 import TabsNode from "../generic/tabsNode";
 import { detailsPageValid } from "./detailsPageConsts";
 import DetailsPageForm from "./detailsPageForm";
+import DetailsPoster from "./detailsPoster";
 
 export default function DetailsPage({
 	animes,
@@ -179,13 +179,7 @@ const InternalDetailsPage = ({
 	return (
 		<>
 			<div className="cardBase detailedCard">
-				<div className="imageContainer">
-					<Image
-						src={anime.imageLink}
-						alt="show poster"
-						className="animeImage"
-					/>
-				</div>
+				<DetailsPoster anime={anime} selectedSeason={selectedSeason} />
 
 				<div
 					className={`detailedCardInfo flexGrow flexColumn ${

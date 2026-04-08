@@ -3,8 +3,13 @@
 	min-height: var(--detailedCardHeight);
 }
 
-.detailedCard > * > .animeImage {
+.detailedCard .animeImage {
 	max-height: calc(var(--cardHeight) * 0.8);
+}
+
+.imageEdit {
+	min-width: calc(var(--cardHeight) * 2);
+	padding: 1rem;
 }
 
 .detailedCardInfo {
