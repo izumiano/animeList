@@ -29,6 +29,10 @@ const Image = ({
 				backgroundSize: "cover",
 				backgroundPosition: "center",
 			}}
+			onError={(event) => {
+				event.currentTarget.src = missingImage;
+				event.currentTarget.onerror = null;
+			}}
 		></img>
 	);
 };
