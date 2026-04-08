@@ -33,13 +33,14 @@ html {
 	--mediumMargin: 0.5rem;
 	--smallMargin: 0.3rem;
 
-	background-color: var(--colBackground);
+	background-color: #3a2a32;
 }
 
 #root {
 	position: relative;
 	width: 100%;
 	height: 100vh;
+	background-color: var(--colBackground);
 }
 
 pre {
