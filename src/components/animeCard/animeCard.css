@@ -84,11 +84,12 @@
 	text-align: left;
 	width: 100%;
 	margin: 0.3rem 0 0.3rem 0;
-}
 
-.title > a > img {
-	max-width: 1.7rem;
-	vertical-align: middle;
+	> img,
+	> a > img {
+		max-width: 1.7rem;
+		vertical-align: middle;
+	}
 }
 
 .imageContainer {

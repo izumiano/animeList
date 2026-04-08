@@ -118,6 +118,10 @@ const InternalDetailsPage = ({
 		selectedSeason?.watched ?? false,
 	);
 	const seasonExternalLink = selectedSeason?.externalLink;
+	const seasonExternalUrls = {
+		url: seasonExternalLink ? getUrlFromExternalLink(seasonExternalLink) : null,
+		imgUrl: getExternalLogo(seasonExternalLink?.type),
+	};
 
 	const [updatingScoreIds, setUpdatingScoreIdsState] = useState(new Set());
 
@@ -191,21 +195,23 @@ const InternalDetailsPage = ({
 							<h1 className="title flexGrow">
 								<b>{anime.title}</b>
 								<span style={{ color: "rgb(160, 160, 160)" }}> | </span>
-								{seasonExternalLink ? (
+								{seasonExternalUrls.url ? (
 									<a
-										href={
-											getUrlFromExternalLink(seasonExternalLink) ??
-											"javascript:undefined"
-										}
+										href={seasonExternalUrls.url}
 										target="_blank"
 										rel="noopener noreferrer"
 									>
 										<img
-											src={getExternalLogo(seasonExternalLink.type)}
-											alt={`${seasonExternalLink.type} logo`}
+											src={seasonExternalUrls.imgUrl}
+											alt="Open external show source"
 										></img>
 									</a>
-								) : null}
+								) : (
+									<img
+										src={seasonExternalUrls.imgUrl}
+										alt="Open external show source"
+									></img>
+								)}
 							</h1>
 							{selectedSeason ? (
 								<div className="flexRow mediumGap">

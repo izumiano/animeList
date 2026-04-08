@@ -149,6 +149,11 @@ const AnimeCard = ({
 		return <div ref={cardRef}></div>;
 	}
 
+	const externalUrls = {
+		url: seasonExternalLink ? getUrlFromExternalLink(seasonExternalLink) : null,
+		imgUrl: getExternalLogo(seasonExternalLink?.type),
+	};
+
 	const isWatchedClass = watched ? "watched" : "";
 	const isToBeRemovedClass =
 		toBeRemoved || (!visible && animating) ? "toRemove" : "";
@@ -209,21 +214,23 @@ const AnimeCard = ({
 									<b>{anime.title}</b>
 								</a>
 								<span style={{ color: "rgb(160, 160, 160)" }}> | </span>
-								{seasonExternalLink ? (
+								{externalUrls.url ? (
 									<a
-										href={
-											getUrlFromExternalLink(seasonExternalLink) ??
-											"javascript:undefined"
-										}
+										href={externalUrls.url}
 										target="_blank"
 										rel="noopener noreferrer"
 									>
 										<img
-											src={getExternalLogo(seasonExternalLink.type)}
+											src={externalUrls.imgUrl}
 											alt="Open external show source"
 										></img>
 									</a>
-								) : null}
+								) : (
+									<img
+										src={externalUrls.imgUrl}
+										alt="Open external show source"
+									></img>
+								)}
 							</h1>
 							<Dropdown
 								alignment="right"

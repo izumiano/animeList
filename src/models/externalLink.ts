@@ -1,7 +1,6 @@
 import asterisk from "assets/asterisk.png";
 import malLogo from "assets/malLogo.png";
 import tmdbLogo from "assets/tmdbLogo.png";
-import { toast } from "react-toastify";
 import MALRequest from "../external/malRequest";
 import BadResponse from "../external/responses/badResponse";
 import { SeasonDetails } from "../external/responses/SeasonDetails";
@@ -66,7 +65,6 @@ export function getUrlFromExternalLink(externalLink: ExternalLink) {
 			return `https://www.themoviedb.org/${mediaType}/${externalLink.id}`;
 		}
 		default:
-			toast.error("Invalid external link type in getUrlFromExternalLink");
 			return null;
 	}
 }
