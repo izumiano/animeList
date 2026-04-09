@@ -1,15 +1,8 @@
 import { type MediaType, MediaTypeValues } from "../../models/anime";
 import type { ExternalLink } from "../../models/externalLink";
+import { showError } from "../../utils/utils";
 import type { MALSeasonDetails } from "./MALSeasonDetails";
 import type TMDBSeasonResponse from "./tmdbSeasonResponse";
-
-export type MALSeasonDetailsRequireId = Omit<MALSeasonDetails, "mal_id"> & {
-	mal_id: number;
-};
-
-export type TMDBSeasonDetailsRequireId = Omit<TMDBSeasonResponse, "id"> & {
-	id: number;
-};
 
 export class SeasonDetails {
 	externalLink?: ExternalLink;
@@ -134,18 +127,29 @@ export class SeasonDetails {
 	}
 
 	public static createFromMal(
-		malSeasonDetails: Omit<MALSeasonDetailsRequireId, "statusCode">,
+		malSeasonDetails: Omit<MALSeasonDetails, "statusCode">,
 	) {
+		const title = SeasonDetails.getTitle({
+			title_english: malSeasonDetails.title_english,
+			title: malSeasonDetails.title,
+		});
+
+		if (malSeasonDetails.mal_id == null) {
+			showError(
+				<span>
+					<b>{title}</b> is missing a <i>mal_id</i>
+				</span>,
+			);
+			return null;
+		}
+
 		return new SeasonDetails({
 			synopsis: malSeasonDetails.synopsis,
 			externalLink: { type: "MAL", id: malSeasonDetails.mal_id },
 			approved: malSeasonDetails.approved,
 			images: malSeasonDetails.images,
 			popularity: malSeasonDetails.popularity,
-			title: SeasonDetails.getTitle({
-				title_english: malSeasonDetails.title_english,
-				title: malSeasonDetails.title,
-			}),
+			title,
 			episodes: malSeasonDetails.episodes,
 			status: malSeasonDetails.status,
 			media_type: malSeasonDetails.type,
@@ -153,7 +157,36 @@ export class SeasonDetails {
 		});
 	}
 
-	public static createFromTmdb(tmdbSeasonDetails: TMDBSeasonDetailsRequireId) {
+	public static createFromTmdb(tmdbSeasonDetails: TMDBSeasonResponse) {
+		const title = SeasonDetails.getTitle({
+			title_english: tmdbSeasonDetails.name ?? tmdbSeasonDetails.title,
+			title:
+				tmdbSeasonDetails.original_name ?? tmdbSeasonDetails.original_title,
+		});
+
+		if (tmdbSeasonDetails.id == null) {
+			console.log(`${title} is missing an id`, tmdbSeasonDetails);
+			showError(
+				<span>
+					<b>{title}</b> is missing an <i>id</i>
+				</span>,
+				null,
+				{ showInProgressNode: true },
+			);
+			return null;
+		}
+
+		if (!tmdbSeasonDetails.media_type) {
+			showError(
+				<span>
+					<b>{title}</b> is missing a <i>media_type</i>
+				</span>,
+				null,
+				{ showInProgressNode: true },
+			);
+			return null;
+		}
+
 		const mediaType =
 			tmdbSeasonDetails.media_type !== "person"
 				? tmdbSeasonDetails.media_type
@@ -175,11 +208,7 @@ export class SeasonDetails {
 					}
 				: undefined,
 			popularity: tmdbSeasonDetails.popularity,
-			title: SeasonDetails.getTitle({
-				title_english: tmdbSeasonDetails.name ?? tmdbSeasonDetails.title,
-				title:
-					tmdbSeasonDetails.original_name ?? tmdbSeasonDetails.original_title,
-			}),
+			title,
 			episodes: tmdbSeasonDetails.episodes?.length,
 			status: undefined,
 			media_type: "tv",

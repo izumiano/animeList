@@ -6,28 +6,32 @@ import type { MALSeasonDetails } from "../responses/MALSeasonDetails";
 import type MALSeasonResponse from "../responses/MALSeasonResponse";
 import { SeasonDetails } from "../responses/SeasonDetails";
 
+type MatchResult = { matches: true; id: number } | { matches: false };
+
 const MALSearch = {
 	async getResults(
 		query: string,
 		limit: number = 9,
+		matchResult: MatchResult,
 	): Promise<MALSeasonDetails[] | BadResponse> {
 		const searchResultsData = await MALSearch.getResultsAsyncRetry(
 			query,
 			limit,
+			matchResult,
 		);
 
 		if (searchResultsData instanceof BadResponse) {
 			return searchResultsData;
 		}
 
-		const result = await MALSearch.getResultsAsync(searchResultsData);
+		const result = await MALSearch.parseResults(searchResultsData);
 
 		return result;
 	},
 
-	async getResultsAsync(
+	parseResults(
 		data: MALSearchResponse | MALSeasonResponse,
-	): Promise<MALSeasonDetails[] | BadResponse> {
+	): MALSeasonDetails[] | BadResponse {
 		if (data.statusCode !== 200) {
 			return new BadResponse(
 				<span>
@@ -79,15 +83,34 @@ const MALSearch = {
 		});
 	},
 
-	async getResultsAsyncRetry(query: string, limit: number) {
-		let _query = query;
-		const malUrlMatch =
-			/https:\/\/myanimelist\.net\/anime\/(?<malId>\d+)/g.exec(query);
+	matchLink(query: string): MatchResult {
+		const malUrlMatch = /myanimelist\.net\/anime\/(?<malId>\d+)/g.exec(query);
 		if (malUrlMatch?.groups) {
-			_query = malUrlMatch.groups.malId;
+			return { matches: true, id: parseInt(malUrlMatch.groups.malId) };
 		}
-		const id = parseInt(_query);
-		if (!Number.isNaN(id)) {
+		return { matches: false };
+	},
+
+	async getResultsAsyncRetry(
+		query: string,
+		limit: number,
+		matchResult: MatchResult,
+	) {
+		let id: number | null = null;
+		if (matchResult.matches && !Number.isNaN(matchResult.id)) {
+			id = matchResult.id;
+		} else {
+			const queryId = parseInt(query);
+			if (!Number.isNaN(queryId)) {
+				if (queryId < 1) {
+					return { data: null, statusCode: 200 } as MALSearchResponse;
+				}
+
+				id = queryId;
+			}
+		}
+
+		if (id != null) {
 			return await WebUtil.ratelimitRetryFunc(async () => {
 				return await MALSearch.getAnimeDataRetry(id);
 			});
@@ -126,7 +149,15 @@ const MALSearch = {
 				},
 			)) as MALSeasonResponse | BadResponse;
 
-			if (!(response instanceof BadResponse) && response.data) {
+			if (response instanceof BadResponse) {
+				const data = response.data?.data as { type?: string; message?: string };
+				if (
+					data.type === "BadResponseException" &&
+					data.message === "Resource does not exist"
+				) {
+					return { statusCode: 200, data: null };
+				}
+			} else if (response.data) {
 				response.data.type = SeasonDetails.getTypeName(response.data.type);
 			}
 

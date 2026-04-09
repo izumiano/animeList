@@ -34,6 +34,7 @@ const TMDBRequest = {
 				response.title ??
 				response.original_name ??
 				response.original_title,
+			media_type: mediaType,
 		} as Omit<TMDBShowResponse, "title" | "original_name" | "original_title">;
 	},
 

@@ -1,4 +1,5 @@
 import type { IResponse } from "./IResponse";
+import type { TMDBSeasonResponseMediaType } from "./tmdbSeasonResponse";
 import type TMDBSeasonResponse from "./tmdbSeasonResponse";
 
 export default interface TMDBShowResponse extends IResponse<null> {
@@ -13,4 +14,5 @@ export default interface TMDBShowResponse extends IResponse<null> {
 	seasons?: TMDBSeasonResponse[];
 	airedDate?: string;
 	release_date?: string;
+	media_type?: TMDBSeasonResponseMediaType;
 }

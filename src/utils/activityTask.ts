@@ -100,6 +100,10 @@ export default class ActivityTask<T> {
 		if (!params.task) {
 			this.result = params.value;
 			this.#failed = !!params.failed;
+
+			if (this.#failed) {
+				this.finished = true;
+			}
 		}
 	}
 
@@ -160,6 +164,7 @@ export default class ActivityTask<T> {
 			this.progress = this.maxProgress;
 		}
 		this.result = taskResult;
+		console.log("here", { failed });
 		this.#failed = failed;
 		this._onProgressUpdate({
 			progress: this.progress,

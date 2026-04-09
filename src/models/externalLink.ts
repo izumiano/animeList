@@ -10,10 +10,11 @@ import type AnimeSeason from "./animeSeason";
 export const ExternalLinkTypeValues = ["MAL", "TMDB", undefined] as const;
 export type ExternalLinkType = (typeof ExternalLinkTypeValues)[number];
 
+export type TMDBMediaType = "tv" | "movie";
 export type TMDBExternalLink = {
 	type: `TMDB`;
 	id: number;
-	mediaType?: "tv" | "movie";
+	mediaType?: TMDBMediaType;
 	seasonId?: number;
 };
 

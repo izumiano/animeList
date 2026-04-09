@@ -45,7 +45,6 @@ const WebUtil = {
 				!acceptedStatusCodes.includes(statusCode) ||
 				!(params?.errorHandler?.isSuccess(data, acceptedStatusCodes) ?? true)
 			) {
-				console.warn("1");
 				return new BadResponse(
 					getFailMessage({
 						message: params?.errorHandler?.getFailureMessage(

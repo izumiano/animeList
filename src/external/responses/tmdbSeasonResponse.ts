@@ -13,8 +13,10 @@ export default interface TMDBSeasonResponse extends IResponse<null> {
 	first_air_date?: string;
 	air_date?: string;
 	season_number?: number;
-	media_type?: "tv" | "person" | "movie";
+	media_type?: TMDBSeasonResponseMediaType;
 }
+
+export type TMDBSeasonResponseMediaType = "tv" | "person" | "movie";
 
 interface TMDBEpisode {
 	name?: string;

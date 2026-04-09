@@ -1,11 +1,7 @@
 import type { ExternalLinkType } from "../../models/externalLink";
 import { showError, sleepFor } from "../../utils/utils";
 import BadResponse from "../responses/badResponse";
-import {
-	type MALSeasonDetailsRequireId,
-	SeasonDetails,
-	type TMDBSeasonDetailsRequireId,
-} from "../responses/SeasonDetails";
+import { SeasonDetails } from "../responses/SeasonDetails";
 import MALSearch from "./malSearch";
 import TMDBSearch from "./tmdbSearch";
 
@@ -28,23 +24,37 @@ const AnimeSearch = {
 			return;
 		}
 
+		const malMatch = MALSearch.matchLink(query);
+		const tmdbMatch = TMDBSearch.matchLink(query);
+
+		if (malMatch.matches) {
+			console.log("Mal match");
+			callback({ seasons: [], externalType: "TMDB" });
+		} else if (tmdbMatch.matches) {
+			callback({ seasons: [], externalType: "MAL" });
+		}
+
 		if ((await sleepFor(1000, abortController.signal)).wasAborted) {
 			return;
 		}
 
-		const malSearch = MALSearch.getResults(query, limit);
-		const tmdbSearch = TMDBSearch.getResults(query);
+		const malSearch = !tmdbMatch.matches
+			? MALSearch.getResults(query, limit, malMatch)
+			: null;
+		const tmdbSearch = !malMatch.matches
+			? TMDBSearch.getResults(query, tmdbMatch)
+			: null;
 
-		malSearch.catch((results) => {
+		malSearch?.catch((results) => {
 			showError(results);
 			callback({ seasons: [], externalType: "MAL" });
 		});
-		tmdbSearch.catch((results) => {
+		tmdbSearch?.catch((results) => {
 			showError(results);
 			callback({ seasons: [], externalType: "TMDB" });
 		});
 
-		malSearch.then((results) => {
+		malSearch?.then((results) => {
 			if (results instanceof BadResponse) {
 				showError(results);
 				callback({ seasons: [], externalType: "MAL" });
@@ -58,22 +68,16 @@ const AnimeSearch = {
 			}
 
 			callback({
-				seasons: results.map((result) =>
-					SeasonDetails.createFromMal(result as MALSeasonDetailsRequireId),
-				),
+				seasons: results
+					.map((result) => SeasonDetails.createFromMal(result))
+					.filter((result) => !!result),
 				externalType: "MAL",
 			});
 		});
-		tmdbSearch.then((results) => {
+		tmdbSearch?.then((results) => {
 			if (results instanceof BadResponse || !results.results) {
 				showError(results);
 				callback({ seasons: [], externalType: "TMDB" });
-				return;
-			}
-
-			if (results.results.some((results) => results.id === undefined)) {
-				showError("A show is missing an id");
-				callback({ seasons: [], externalType: "MAL" });
 				return;
 			}
 
@@ -91,9 +95,8 @@ const AnimeSearch = {
 						return 1;
 					})
 					.slice(0, limit)
-					.map((result) =>
-						SeasonDetails.createFromTmdb(result as TMDBSeasonDetailsRequireId),
-					),
+					.map((result) => SeasonDetails.createFromTmdb(result))
+					.filter((result) => !!result),
 				externalType: "TMDB",
 			});
 		});
