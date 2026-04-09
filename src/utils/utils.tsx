@@ -58,7 +58,7 @@ function _parseError(
 	const handleScroll = params?.handleScroll ?? true;
 
 	if (ex == null) {
-		return null;
+		return "null";
 	} else if (typeof ex === "string") {
 		return ex;
 	} else if (ex instanceof BadResponse) {
@@ -112,7 +112,7 @@ function _parseError(
 	} else {
 		return (
 			<span>
-				Unknown Error <b>{ex as ReactNode}</b>
+				Unknown Error <b>{JSON.stringify(ex)}</b>
 			</span>
 		);
 	}
