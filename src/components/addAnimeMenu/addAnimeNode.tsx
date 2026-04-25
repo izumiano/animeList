@@ -360,13 +360,21 @@ function getSelectedAnime(
 				),
 			);
 	if (alreadyExistingAnime) {
-		toast.error(
-			<span>
-				<b>{selectedAnime.title}</b> has already been added with name:
-				<br></br>
-				<b>{alreadyExistingAnime.title}</b>
-			</span>,
-		);
+		if (selectedAnime.title === alreadyExistingAnime.title) {
+			toast.error(
+				<span>
+					<b>{selectedAnime.title}</b> has already been added
+				</span>,
+			);
+		} else {
+			toast.error(
+				<span>
+					<b>{selectedAnime.title}</b> has already been added with name:
+					<br></br>
+					<b>{alreadyExistingAnime.title}</b>
+				</span>,
+			);
+		}
 		return;
 	}
 	return selectedAnime;
