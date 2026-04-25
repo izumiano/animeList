@@ -92,7 +92,7 @@ function TypeSearchResults({
 					);
 				})
 			) : (
-				<LoadingSpinner props={{ centered: true }} />
+				<LoadingSpinner props={{ centered: true, absolutePos: true }} />
 			)}
 		</>
 	);
@@ -128,11 +128,11 @@ function SearchResultCard({
 	const id = useId();
 
 	const onClick = async () => {
-		console.log("outside");
 		if (
 			selectedAnimeInfo?.type === seasonDetails.externalLink?.type &&
 			selectedAnimeInfo?.index === animeIndex
 		) {
+			setSelectedSeasonIndex(null);
 			setSelectedAnimeInfoState(null);
 			return;
 		}
@@ -149,8 +149,8 @@ function SearchResultCard({
 			externalLink?.type === "TMDB" &&
 			externalLink.mediaType === "tv"
 		) {
-			const showDetails = await TMDBRequest.getDetails(externalLink);
 			setSeasons("loading");
+			const showDetails = await TMDBRequest.getDetails(externalLink);
 			if (showDetails instanceof BadResponse) {
 				showError(showDetails);
 				setSeasons(undefined);
@@ -162,54 +162,132 @@ function SearchResultCard({
 	};
 
 	return (
-		<a
-			onClick={(e) => {
-				e.preventDefault();
-				onClick();
-			}}
-			href={
-				seasonDetails.externalLink
-					? (getUrlFromExternalLink(seasonDetails.externalLink) ?? "")
-					: ""
-			}
+		// biome-ignore lint/a11y/useSemanticElements: <nested>
+		<div
+			role="button"
+			onClick={onClick}
 			onKeyUp={(e) => e.key === "Enter" && onClick()}
 			tabIndex={0}
 			className={`searchResultCard button ${selected ? "selected" : ""}`}
 		>
-			<div>
+			<div className="imageContainer">
 				<Image
 					src={seasonDetails.images?.jpg?.large_image_url}
-					alt="show poster"
+					alt={`${seasonDetails.title} poster`}
 				/>
-				<h2>{seasonDetails.title}</h2>
 			</div>
-			{selected ? (
-				seasons === "loading" ? (
-					<LoadingSpinner props={{ centered: true }} />
-				) : seasons && seasons.length > 0 ? (
-					seasons.map((season, index) => (
-						<button
-							type="button"
-							key={`${id}${index}`}
-							className={`seasonResult ${index === selectedSeasonIndex ? "selected" : ""}`}
-							onClick={(event) => {
-								event.stopPropagation();
-								event.preventDefault();
-								setSelectedSeasonIndex(index);
-								setSelectedAnimeInfoState({
-									index: animeIndex,
-									type: seasonDetails.externalLink?.type,
-									selectedSeasonId: season.season_number,
-								});
-							}}
-						>
-							{season.name}
-						</button>
-					))
-				) : null
-			) : null}
-		</a>
+			<div
+				className={`overlay absolute fullWidth fullHeight flexColumn ${selected && seasons ? "darkened" : ""}`}
+			>
+				<div className="flexGrow scroll flexColumn mediumGap margin-horizontal marginTop">
+					{selected &&
+						(seasons === "loading" ? (
+							<LoadingSpinner props={{ centered: true }} />
+						) : (
+							seasons &&
+							seasons.length > 0 &&
+							seasons.map((season, index) => (
+								<button
+									type="button"
+									key={`${id}${index}`}
+									className={`seasonResult ${index === selectedSeasonIndex ? "selected" : ""}`}
+									onClick={(event) => {
+										event.stopPropagation();
+										event.preventDefault();
+
+										if (selectedSeasonIndex === index) {
+											setSelectedSeasonIndex(null);
+											setSelectedAnimeInfoState({
+												index: animeIndex,
+												type: seasonDetails.externalLink?.type,
+												selectedSeasonId: null,
+											});
+											return;
+										}
+
+										setSelectedSeasonIndex(index);
+										setSelectedAnimeInfoState({
+											index: animeIndex,
+											type: seasonDetails.externalLink?.type,
+											selectedSeasonId: season.season_number,
+										});
+									}}
+								>
+									{season.name}
+								</button>
+							))
+						))}
+				</div>
+				<a
+					onClick={(e) => e.stopPropagation()}
+					href={
+						seasonDetails.externalLink
+							? (getUrlFromExternalLink(seasonDetails.externalLink) ?? "")
+							: ""
+					}
+					target="_blank"
+					rel="noopener noreferrer"
+					className="cardTitle"
+				>
+					{seasonDetails.title}
+				</a>
+			</div>
+		</div>
 	);
+
+	// return (
+	// // biome-ignore lint/a11y/useSemanticElements: <nested button>
+	// <div
+	// 	onClick={(e) => {
+	// 		console.log(e);
+	// 		e.preventDefault();
+	// 		onClick();
+	// 	}}
+	// 	contextMenu="hello"
+	// 	// href={
+	// 	// 	seasonDetails.externalLink
+	// 	// 		? (getUrlFromExternalLink(seasonDetails.externalLink) ?? "")
+	// 	// 		: ""
+	// 	// }
+	// 	role="button"
+	// 	onKeyUp={(e) => e.key === "Enter" && onClick()}
+	// 	tabIndex={0}
+	// 	className={`searchResultCard button ${selected ? "selected" : ""}`}
+	// >
+	// 	<div>
+	// <Image
+	// 	src={seasonDetails.images?.jpg?.large_image_url}
+	// 	alt="show poster"
+	// />
+	// 		<h2>{seasonDetails.title}</h2>
+	// 	</div>
+	// 	{selected ? (
+	// 		seasons === "loading" ? (
+	// 			<LoadingSpinner props={{ centered: true }} />
+	// 		) : seasons && seasons.length > 0 ? (
+	// seasons.map((season, index) => (
+	// 	<button
+	// type="button"
+	// key={`${id}${index}`}
+	// className={`seasonResult ${index === selectedSeasonIndex ? "selected" : ""}`}
+	// onClick={(event) => {
+	// 	event.stopPropagation();
+	// 	event.preventDefault();
+	// 	setSelectedSeasonIndex(index);
+	// 	setSelectedAnimeInfoState({
+	// 		index: animeIndex,
+	// 		type: seasonDetails.externalLink?.type,
+	// 		selectedSeasonId: season.season_number,
+	// 	});
+	// }}
+	// 	>
+	// 		{season.name}
+	// 	</button>
+	// 			))
+	// 		) : null
+	// 	) : null}
+	// </div>
+	// );
 }
 
 export default SearchResults;

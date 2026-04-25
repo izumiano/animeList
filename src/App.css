@@ -295,6 +295,12 @@ hr {
 	position: relative;
 }
 
+.absolute {
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
 .absoluteCentered {
 	position: absolute;
 	top: 50%;
@@ -391,4 +397,9 @@ a.staticStyle {
 
 .disabledButton {
 	pointer-events: none;
+}
+
+.unselectable {
+	user-select: none;
+	-webkit-user-select: none;
 }
