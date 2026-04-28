@@ -182,7 +182,7 @@ function SearchResultCard({
 				<div className="flexGrow scroll flexColumn mediumGap margin-horizontal marginTop">
 					{selected &&
 						(seasons === "loading" ? (
-							<LoadingSpinner props={{ centered: true }} />
+							<LoadingSpinner props={{ centered: true }} className="fullSize" />
 						) : (
 							seasons &&
 							seasons.length > 0 &&

@@ -2,11 +2,17 @@ import "./loadingSpinner.css";
 
 const LoadingSpinner = ({
 	props,
+	className,
 }: {
-	props?: { centered?: boolean; size?: string; absolutePos?: boolean };
+	props?: {
+		centered?: boolean;
+		size?: string;
+		absolutePos?: boolean;
+	};
+	className?: string;
 }) => (
 	<div
-		className={`loadingSpinnerContainer ${props?.centered ? "centered" : ""}`}
+		className={`loadingSpinnerContainer ${props?.centered ? "centered" : ""} ${className}`}
 	>
 		<div
 			className={`loadingSpinner ${props?.absolutePos ? "absolute" : ""}`}
