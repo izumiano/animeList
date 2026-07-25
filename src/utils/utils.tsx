@@ -380,26 +380,35 @@ export function downloadObjectAsFile({
 	mimeType ??= "text/plain";
 	excludeKeys ??= [];
 
-	const a = document.createElement("a");
-	a.href = `data:${mimeType};charset=utf-8,${encodeURIComponent(
-		typeof data === "string"
-			? data
-			: JSON.stringify(
-					data,
-					(key, value) => {
-						if (excludeKeys.includes(key)) {
-							return undefined;
-						}
-						return value;
-					},
-					jsonSpace,
-				),
-	)}`;
-	a.download = fileName;
+	try {
+		const a = document.createElement("a");
+		a.href = URL.createObjectURL(
+			new Blob(
+				[
+					typeof data === "string"
+						? data
+						: JSON.stringify(
+								data,
+								(key, value) => {
+									if (excludeKeys.includes(key)) {
+										return undefined;
+									}
+									return value;
+								},
+								jsonSpace,
+							),
+				],
+				{ type: mimeType },
+			),
+		);
+		a.download = fileName;
 
-	document.body.appendChild(a);
-	a.click();
-	document.body.removeChild(a);
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+	} catch (ex) {
+		showError(ex);
+	}
 }
 
 export type Require<T extends object, Incl extends keyof T> = Omit<T, Incl> & {
