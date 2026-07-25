@@ -186,7 +186,7 @@ export default function AddAnimeNode({
 					className="reset fileButton"
 					onClick={() => {
 						downloadObjectAsFile({
-							fileName: `animeListData_${formatDate(new Date(), "yyyy-MM-dd", "")}.json`,
+							fileName: `tokeiData_${formatDate(new Date(), "yyyy-MM-dd", "")}.json`,
 							data: Array.from(AppData.animes.values()),
 							mimeType: "application/json",
 							excludeKeys: ["anime", "pauseAutoSave", "justAdded"],
