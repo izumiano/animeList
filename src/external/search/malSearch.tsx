@@ -1,10 +1,13 @@
+import { tokeiUrl } from "../../appData";
 import WebUtil from "../../utils/webUtil";
 import JikanErrorHandler from "../errorHandlers/jikanErrorHandler";
+import TokeiErrorHandler from "../errorHandlers/tokeiErrorHandler";
 import BadResponse from "../responses/badResponse";
 import type MALSearchResponse from "../responses/MALSearchResponse";
 import type { MALSeasonDetails } from "../responses/MALSeasonDetails";
 import type MALSeasonResponse from "../responses/MALSeasonResponse";
 import { SeasonDetails } from "../responses/SeasonDetails";
+import { trace } from "@izumiano/vite-logger";
 
 type MatchResult = { matches: true; id: number } | { matches: false };
 
@@ -24,28 +27,28 @@ const MALSearch = {
 			return searchResultsData;
 		}
 
-		const result = await MALSearch.parseResults(searchResultsData);
+		const result = MALSearch.parseResults(
+			searchResultsData.results,
+			searchResultsData.statusCode,
+		);
 
 		return result;
 	},
 
 	parseResults(
-		data: MALSearchResponse | MALSeasonResponse,
+		seasons: MALSeasonDetails[] | MALSeasonResponse,
+		statusCode: number | undefined,
 	): MALSeasonDetails[] | BadResponse {
-		if (data.statusCode !== 200) {
+		if (statusCode == null || statusCode !== 200) {
 			return new BadResponse(
 				<span>
-					Getting search results failed with status code:{" "}
-					<b>{data.statusCode}</b>
+					Getting search results failed with status code: <b>{statusCode}</b>
 				</span>,
-				{ data: data },
+				{ data: seasons },
 			);
 		}
 
-		const seasons = data.data;
-		if (!seasons) {
-			return [];
-		}
+		trace({ seasons });
 
 		if (!Array.isArray(seasons)) {
 			return [seasons];
@@ -57,14 +60,6 @@ const MALSearch = {
 			if (!seasonMalId) {
 				throw new Error("mal_id not found");
 			}
-			const approved = season.approved;
-			if (approved === undefined) {
-				throw new Error("approved not found");
-			}
-			if (!approved) {
-				console.debug(`${seasonMalId} not approved`);
-				continue;
-			}
 			if (searchResults.some((result) => result.mal_id === seasonMalId)) {
 				console.debug("mal_id already added");
 				continue;
@@ -72,15 +67,7 @@ const MALSearch = {
 
 			searchResults.push(season);
 		}
-		return searchResults.sort((resultA, resultB) => {
-			if (
-				(resultA.popularity ?? Number.POSITIVE_INFINITY) <
-				(resultB.popularity ?? Number.POSITIVE_INFINITY)
-			) {
-				return -1;
-			}
-			return 1;
-		});
+		return searchResults;
 	},
 
 	matchLink(query: string): MatchResult {
@@ -95,7 +82,7 @@ const MALSearch = {
 		query: string,
 		limit: number,
 		matchResult: MatchResult,
-	) {
+	): Promise<MALSearchResponse | BadResponse> {
 		let id: number | null = null;
 		if (matchResult.matches && !Number.isNaN(matchResult.id)) {
 			id = matchResult.id;
@@ -111,9 +98,13 @@ const MALSearch = {
 		}
 
 		if (id != null) {
-			return await WebUtil.ratelimitRetryFunc(async () => {
+			const anime = await WebUtil.ratelimitRetryFunc(async () => {
 				return await MALSearch.getAnimeDataRetry(id);
 			});
+			if (anime instanceof BadResponse) {
+				return anime;
+			}
+			return { statusCode: anime.statusCode, results: [anime], data: null };
 		}
 
 		return await WebUtil.ratelimitRetryFunc(async () => {
@@ -121,12 +112,17 @@ const MALSearch = {
 		});
 	},
 
-	async myAnimeListSearch(query: string, limit: number) {
+	async myAnimeListSearch(
+		query: string,
+		_limit: number,
+	): Promise<MALSearchResponse | BadResponse> {
 		query = encodeURIComponent(query);
 		const animeDataResponse: MALSearchResponse | BadResponse =
-			await WebUtil.fetch(
-				`https://api.jikan.moe/v4/anime?q=${query}&limit=${limit}&sfw`,
-			);
+			await WebUtil.fetch(`${tokeiUrl}/search/mal?q=${query}`, "GET", {
+				errorHandler: new TokeiErrorHandler(
+					"Failed getting MAL search results",
+				),
+			});
 
 		if (animeDataResponse instanceof BadResponse) {
 			return animeDataResponse;
@@ -135,6 +131,8 @@ const MALSearch = {
 		if (!animeDataResponse.statusCode) {
 			throw new BadResponse("Season data did not return with a status code");
 		}
+
+		trace({ animeDataResponse });
 
 		return animeDataResponse;
 	},

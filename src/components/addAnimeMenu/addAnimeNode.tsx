@@ -29,6 +29,7 @@ import { importAnimes } from "./animeImport";
 import SearchResults from "./searchResults";
 import "./addAnimeNode.css";
 import type ActivityTask from "../../utils/activityTask";
+import { trace } from "@izumiano/vite-logger";
 
 export type SearchResultsType = ExternalLinkToValueType<
 	SeasonDetails[] | "loading"
@@ -150,6 +151,7 @@ export default function AddAnimeNode({
 						setAllSearchResults("loading");
 						setSelectedAnimeInfoState(null);
 						AnimeSearch.search(text, ({ seasons, externalType }) => {
+							trace({ seasons, externalType });
 							switch (externalType) {
 								case "MAL":
 									setSearchResultsState((prev) => ({

@@ -11,6 +11,8 @@ export const externalSyncEnabled =
 
 export const isInDev = import.meta.env.DEV;
 
+export const tokeiUrl = import.meta.env.VITE_TOKEI_URL;
+
 export let devUtils: typeof import("./utils/devUtils") | undefined = undefined;
 if (isInDev) {
 	if (import.meta.env.VITE_DEV_UTILS_ENABLED === "true") {

@@ -1,4 +1,6 @@
-import { IResponse } from "./IResponse";
+import type { IResponse } from "./IResponse";
 import type { MALSeasonDetails } from "./MALSeasonDetails";
 
-export default class MALSearchResponse extends IResponse<MALSeasonDetails[]> {}
+export default interface MALSearchResponse extends IResponse<null> {
+	results: MALSeasonDetails[];
+}

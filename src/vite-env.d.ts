@@ -8,6 +8,7 @@ interface ImportMetaEnv {
 	readonly VITE_USE_MOCK_DATA: string;
 	readonly VITE_FORCE_MOCK_DATA: string;
 	readonly VITE_DELETE_ALL: string;
+	readonly VITE_TOKEI_URL: string;
 }
 
 // //biome-ignore lint/correctness/noUnusedVariables: <required for vite typesafety>
