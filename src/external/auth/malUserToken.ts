@@ -2,7 +2,6 @@ import type AnimeSeason from "../../models/animeSeason";
 import ActivityTask from "../../utils/activityTask";
 import { formatDate } from "../../utils/utils";
 import WebUtil from "../../utils/webUtil";
-import JikanErrorHandler from "../errorHandlers/jikanErrorHandler";
 import MalErrorHandler from "../errorHandlers/malErrorHandler";
 import type MALUpdateMyListStatus from "../requests/malUpdateMyListStatus";
 import type { MALUpdateMyListStatuses } from "../requests/malUpdateMyListStatus";
@@ -14,6 +13,8 @@ import type MalFullAccountDetailsResponse from "../responses/malFullAcountDetail
 import type MALMyListStatusResponse from "../responses/malMyListStatusResponse";
 import type { MALMyListStatus } from "../responses/malMyListStatusResponse";
 import { MALAuth } from "./malAuth";
+import TokeiErrorHandler from "../errorHandlers/tokeiErrorHandler";
+import { tokeiUrl } from "../../appData";
 
 export class MALUserToken {
 	accessToken: string;
@@ -367,10 +368,10 @@ export class MALUserToken {
 	public async getAccountDetailsFull(username: string) {
 		return await WebUtil.ratelimitRetryFunc(async () => {
 			return (await WebUtil.fetch(
-				`https://api.jikan.moe/v4/users/${username}`,
+				`${tokeiUrl}/account/mal?username=${username}`,
 				"GET",
 				{
-					errorHandler: new JikanErrorHandler("Failed getting account icon"),
+					errorHandler: new TokeiErrorHandler("Failed getting account icon"),
 				},
 			)) as MalFullAccountDetailsResponse | BadResponse;
 		});

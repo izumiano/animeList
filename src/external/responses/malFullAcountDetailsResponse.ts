@@ -1,7 +1,5 @@
-import { IResponse, type IResponseData } from "./IResponse";
+import type { IResponse } from "./IResponse";
 
-export default class MalFullAccountDetailsResponse extends IResponse<FullAcountDetailsData> {}
-
-interface FullAcountDetailsData extends IResponseData {
-	images: { jpg: { image_url: string } };
+export default interface MalFullAccountDetailsResponse extends IResponse<null> {
+	accountIcon: string;
 }

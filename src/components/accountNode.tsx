@@ -105,7 +105,7 @@ export default function AccountNode() {
 
 				setMalData({
 					userName: details.name,
-					imgUrl: fullDetails.data?.images.jpg.image_url ?? defaultImg,
+					imgUrl: fullDetails.accountIcon ?? defaultImg,
 				});
 			})();
 		}, []),
