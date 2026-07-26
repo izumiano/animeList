@@ -1,11 +1,10 @@
 import { tokeiUrl } from "../../appData";
 import WebUtil from "../../utils/webUtil";
-import JikanErrorHandler from "../errorHandlers/jikanErrorHandler";
 import TokeiErrorHandler from "../errorHandlers/tokeiErrorHandler";
 import BadResponse from "../responses/badResponse";
 import type MALSearchResponse from "../responses/MALSearchResponse";
 import type { MALSeasonDetails } from "../responses/MALSeasonDetails";
-import type MALSeasonResponse from "../responses/MALSeasonResponse";
+import type { MALSeasonResponse } from "../responses/MALSeasonResponse";
 import { SeasonDetails } from "../responses/SeasonDetails";
 import { trace } from "@izumiano/vite-logger";
 
@@ -140,10 +139,10 @@ const MALSearch = {
 	async getAnimeDataRetry(id: number) {
 		try {
 			const response = (await WebUtil.fetch(
-				`https://api.jikan.moe/v4/anime/${id}/full`,
+				`${tokeiUrl}/anime/mal/${id}`,
 				"GET",
 				{
-					errorHandler: new JikanErrorHandler("Failed getting anime data"),
+					errorHandler: new TokeiErrorHandler("Failed getting anime data"),
 				},
 			)) as MALSeasonResponse | BadResponse;
 
@@ -155,8 +154,8 @@ const MALSearch = {
 				) {
 					return { statusCode: 200, data: null };
 				}
-			} else if (response.data) {
-				response.data.type = SeasonDetails.getTypeName(response.data.type);
+			} else {
+				response.type = SeasonDetails.getTypeName(response.type);
 			}
 
 			return response;

@@ -214,11 +214,11 @@ const MALCardFactory = {
 			return season;
 		}
 
-		const animeStatus = season.data?.status;
+		const animeStatus = season.status;
 		if (!animeStatus) {
 			return new BadResponse("Did not find anime status");
 		}
-		return season.data;
+		return season;
 	},
 
 	async getSeasons(season: MALSeasonDetails) {
