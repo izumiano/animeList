@@ -239,7 +239,7 @@ export default class LocalDB {
 					if (anime instanceof Anime) {
 						animes.set(anime.getAnimeDbId(), anime);
 					} else {
-						showError(anime.error);
+						showError(anime.error, null, { showInProgressNode: true });
 					}
 
 					cursor.continue();

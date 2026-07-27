@@ -465,7 +465,7 @@ function validate(
 
 		// biome-ignore lint/suspicious/noExplicitAny: <anything is allowed>
 		const episodes = season.episodes as any[] | undefined;
-		for (const episode of episodes ?? []) {
+		for (const [index, episode] of (episodes ?? []).entries()) {
 			const episodeErrors: ReactNode[] = [];
 
 			let episodeTitle = episode.title as string | number | undefined;
@@ -484,16 +484,15 @@ function validate(
 				episodeTitle = episode.episodeNumber;
 			}
 
-			if (episode.episodeNumber == null) {
+			if (episode.episodeNumber !== index) {
 				errors.hasError = true;
 				episodeErrors.push(
 					<span>
-						Missing{" "}
-						<b>
-							<i>"episodeNumber"</i>
-						</b>{" "}
+						<i>'episodeNumber'</i> = <b>{episode.episodeNumber}</b>, but should
+						be <b>{index}</b>
 					</span>,
 				);
+				episode.episodeNumber = index;
 			}
 
 			if (episodeErrors.length > 0) {

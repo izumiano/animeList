@@ -1,10 +1,11 @@
 import type { IResponse, IResponseData } from "./IResponse";
 
-export default interface EpisodesResponse extends IResponse<EpisodeDetails[]> {
-	pagination?: { last_visible_page?: number };
+export default interface EpisodesResponse extends IResponse<null> {
+	episodes: EpisodeDetails[];
+	lastVisiblePage?: number;
 }
 
 export interface EpisodeDetails extends IResponseData {
-	mal_id: number;
-	title: string;
+	episodeNumber: number;
+	title?: string;
 }

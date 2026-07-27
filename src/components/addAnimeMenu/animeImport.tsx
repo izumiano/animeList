@@ -19,6 +19,7 @@ export function importAnimes(
 			<span>
 				<b>Failed importing data</b>
 			</span>,
+			{ showInProgressNode: true },
 		);
 	}
 

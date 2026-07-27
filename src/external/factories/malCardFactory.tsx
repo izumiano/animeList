@@ -5,13 +5,14 @@ import AnimeSeason from "../../models/animeSeason";
 import { newExternalLink } from "../../models/externalLink";
 import ActivityTask from "../../utils/activityTask";
 import WebUtil from "../../utils/webUtil";
-import JikanErrorHandler from "../errorHandlers/jikanErrorHandler";
 import BadResponse from "../responses/badResponse";
 import type EpisodesResponse from "../responses/MALEpisodesResponse";
 import type { EpisodeDetails } from "../responses/MALEpisodesResponse";
 import type { MALSeasonDetails } from "../responses/MALSeasonDetails";
 import { SeasonDetails } from "../responses/SeasonDetails";
 import MALSearch from "../search/malSearch";
+import TokeiErrorHandler from "../errorHandlers/tokeiErrorHandler";
+import { tokeiUrl } from "../../appData";
 
 const MALCardFactory = {
 	create({
@@ -120,8 +121,8 @@ const MALCardFactory = {
 			episodesData.forEach((episodeInfo) => {
 				episodes.push(
 					new AnimeEpisode({
-						episodeNumber: episodeInfo.mal_id - 1,
-						title: episodeInfo.title,
+						episodeNumber: episodeInfo.episodeNumber,
+						title: episodeInfo.title ?? `Episode ${episodeInfo.episodeNumber}`,
 						watched: false,
 					}),
 				);
@@ -303,16 +304,16 @@ const MALCardFactory = {
 
 		const episodeCount = season.episodes ?? 0;
 		let pageCount = Math.ceil(episodeCount / 100);
-		let pageStartIndex = 1;
+		let pageStartIndex = 0;
 		let possiblePageOne: EpisodeDetails[] = [];
 		if (pageCount < 1) {
 			const pageData = await MALCardFactory.getPaginatedEpisodesSlow(id);
 			if (pageData instanceof BadResponse) {
 				return pageData;
 			}
-			possiblePageOne = pageData.data;
-			pageCount = pageData.lastVisiblePage;
-			pageStartIndex = 2;
+			possiblePageOne = pageData.episodes;
+			pageCount = pageData.lastVisiblePage ?? pageCount;
+			pageStartIndex = 1;
 		}
 
 		const episodePromises = [];
@@ -330,13 +331,7 @@ const MALCardFactory = {
 							return;
 						}
 
-						const data = episodeResponse.data;
-						if (!data) {
-							reject("Missing data in GetPaginatedEpisodes");
-							return;
-						}
-
-						resolve(data ?? []);
+						resolve(episodeResponse.episodes);
 					})();
 				}),
 			);
@@ -347,10 +342,14 @@ const MALCardFactory = {
 				.flat()
 				.concat(possiblePageOne)
 				.sort((lhs, rhs) => {
-					if (lhs.mal_id < rhs.mal_id) {
+					if (lhs.episodeNumber < rhs.episodeNumber) {
 						return -1;
 					}
 					return 1;
+				})
+				.map((episode, index) => {
+					episode.episodeNumber = index;
+					return episode;
 				});
 		} catch (ex) {
 			if (ex instanceof BadResponse) {
@@ -370,33 +369,30 @@ const MALCardFactory = {
 	async getPaginatedEpisodesSlow(id: number) {
 		const episodeResponse = await MALCardFactory.getEpisodesPage({
 			id: id,
-			pageIndex: 1,
+			pageIndex: 0,
 		});
 		if (episodeResponse instanceof BadResponse) {
 			return episodeResponse;
 		}
 
-		const data = episodeResponse.data;
-		if (!data) {
-			return new BadResponse("Missing data in GetPaginatedEpisodes");
-		}
-		const lastVisiblePage = episodeResponse.pagination?.last_visible_page;
-		if (!lastVisiblePage) {
+		const lastVisiblePage = episodeResponse.lastVisiblePage;
+		if (lastVisiblePage == null) {
 			return new BadResponse(
-				"Missing last_visible_page in GetPaginatedEpisodes",
+				"Missing lastVisiblePage in GetPaginatedEpisodes",
+				{ data: episodeResponse },
 			);
 		}
 
-		return { data: data, lastVisiblePage: lastVisiblePage };
+		return episodeResponse;
 	},
 
 	async getEpisodesPage({ id, pageIndex }: { id: number; pageIndex: number }) {
 		return await WebUtil.ratelimitRetryFunc(async () => {
 			return (await WebUtil.fetch(
-				`https://api.jikan.moe/v4/anime/${id}/episodes?page=${pageIndex}`,
+				`${tokeiUrl}/anime/mal/${id}/episodes?page=${pageIndex}`,
 				"GET",
 				{
-					errorHandler: new JikanErrorHandler(
+					errorHandler: new TokeiErrorHandler(
 						"Failed getting paginated episodes",
 					),
 				},
