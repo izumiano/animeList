@@ -112,8 +112,9 @@ const MALCardFactory = {
 
 			const episodes = [];
 
-			const episodesData =
-				await MALCardFactory.getPaginatedEpisodes(seasonData);
+			const episodesData = seasonData.hasEpisodes
+				? await MALCardFactory.getPaginatedEpisodes(seasonData)
+				: [];
 			if (episodesData instanceof BadResponse) {
 				return episodesData;
 			}
@@ -130,7 +131,7 @@ const MALCardFactory = {
 
 			if (
 				episodes.length === 0 &&
-				(seasonData.type === "movie" || seasonData.status === "Finished Airing")
+				(seasonData.type !== "tv" || seasonData.status === "Finished Airing")
 			) {
 				const title = SeasonDetails.getTitle({
 					title_english: seasonData.title_english,
@@ -280,7 +281,7 @@ const MALCardFactory = {
 					console.warn("did not find sequel type");
 					continue;
 				}
-				if (sequelType !== "anime") {
+				if (sequelType !== "anime" && sequelType !== "movie") {
 					continue;
 				}
 				const malId = season.mal_id;

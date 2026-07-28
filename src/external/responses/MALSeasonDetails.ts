@@ -13,6 +13,7 @@ export class MALSeasonDetails implements IResponseData {
 	title_english?: string;
 	title?: string;
 	episodes?: number;
+	hasEpisodes?: boolean;
 	status?: string;
 	relations?: SeasonRelation[];
 	type?: MediaType;
@@ -28,5 +29,5 @@ interface SeasonRelation {
 interface MALSeasonRelationEntry {
 	mal_id?: number;
 	name?: number;
-	type?: "anime" | "manga" | "novel";
+	type?: "anime" | "movie" | "manga" | "novel";
 }

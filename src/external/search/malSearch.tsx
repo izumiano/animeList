@@ -146,6 +146,7 @@ const MALSearch = {
 				},
 			)) as MALSeasonResponse | BadResponse;
 
+			// TODO: fix this for tokei
 			if (response instanceof BadResponse) {
 				const data = response.data?.data as { type?: string; message?: string };
 				if (
